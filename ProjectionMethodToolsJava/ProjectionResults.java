@@ -1,5 +1,5 @@
-package gov.frb.ma.msu.ProjectionTools;
-import gov.frb.ma.msu.ProjectionTools.Utilities;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.Utilities;
 public class ProjectionResults {
 private	WeightedStochasticBasis theWeightedStochasticBasis;
 private	double [][] resWeights;

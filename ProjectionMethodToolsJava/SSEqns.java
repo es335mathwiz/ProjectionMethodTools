@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 
 public class SSEqns extends EquateAtGridPoints {
 	private double [] params;

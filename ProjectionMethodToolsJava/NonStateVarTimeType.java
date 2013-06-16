@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 import Jama.Matrix;
 public abstract class NonStateVarTimeType extends VarTimeType {
 

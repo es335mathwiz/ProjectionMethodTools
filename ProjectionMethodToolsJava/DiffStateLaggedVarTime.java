@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 
 public class DiffStateLaggedVarTime extends VarTimeType {
 

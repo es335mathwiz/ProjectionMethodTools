@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;

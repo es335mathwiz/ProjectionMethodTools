@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 import Jama.Matrix;
 /**
  * Associates state variables with an outer-product of Chebyshev polynomials

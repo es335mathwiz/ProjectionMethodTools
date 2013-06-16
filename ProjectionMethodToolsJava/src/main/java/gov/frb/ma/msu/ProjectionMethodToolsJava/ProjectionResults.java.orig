@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 package gov.frb.ma.msu.ProjectionMethodToolsJava;
-import gov.frb.ma.msu.ProjectionTools.Utilities;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.Utilities;
 public class ProjectionResults {
 private	WeightedStochasticBasis theWeightedStochasticBasis;
 private	double [][] resWeights;
@@ -282,7 +282,7 @@ public void setNewtonItersSeq(StrategyIterSequenceInfo newtonIS) {
 
 =======
 package gov.frb.ma.msu.ProjectionMethodToolsJava;
-import gov.frb.ma.msu.ProjectionTools.Utilities;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.Utilities;
 public class ProjectionResults {
 private	WeightedStochasticBasis theWeightedStochasticBasis;
 private	double [][] resWeights;

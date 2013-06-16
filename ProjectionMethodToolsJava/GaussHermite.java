@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 import java.lang.System;
 public class GaussHermite {
 public static final double sqrt2=Math.sqrt(2);

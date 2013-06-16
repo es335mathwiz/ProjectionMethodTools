@@ -1,10 +1,10 @@
-package gov.frb.ma.msu.ProjectionTools;
-import gov.frb.ma.msu.ProjectionTools.EquationValDrv;
-import gov.frb.ma.msu.ProjectionTools.GridPointsSpec;
-import gov.frb.ma.msu.ProjectionTools.GridVars;
-import gov.frb.ma.msu.ProjectionTools.RootEqns;
-import gov.frb.ma.msu.ProjectionTools.StateVariablePolynomials;
-import gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.EquationValDrv;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.GridPointsSpec;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.GridVars;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.RootEqns;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.StateVariablePolynomials;
+import gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis;
 public abstract class RootEvaluater  extends Evaluater {
 public abstract	EquationValDrv[] genCoeffs(Basis polyBasis);
 private WeightedStochasticBasis polyBasis;

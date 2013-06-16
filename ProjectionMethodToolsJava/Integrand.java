@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 public interface Integrand {
     public EquationValDrv evaluate(double [] dd, StochasticBasis theProj) throws ProjectionRuntimeException ;
     /*   public eqValDrv [] evaluate(double [] dd, CollocationSolution theProj) throws projectionRuntimeException ;

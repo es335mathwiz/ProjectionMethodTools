@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 
 public class ParticularValuesEqns extends EquateAtGridPoints {
 	public ParticularValuesEqns(GridPointsSpec aGrid,int numVals){

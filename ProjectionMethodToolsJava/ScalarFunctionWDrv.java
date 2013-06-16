@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 public interface ScalarFunctionWDrv {
     public double[] evaluate(double[] dd) throws Exception ;
     public double [][] evaluate(double [][] dd) throws Exception ;

@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 /**
  * Characterizes a variable for orthogonal polynomial.
  * Typically each variable will have a user provided name and upper

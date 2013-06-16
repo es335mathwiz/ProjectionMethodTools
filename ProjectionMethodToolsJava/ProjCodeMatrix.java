@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 public class ProjCodeMatrix {
 	protected Jama.Matrix JamaRepresentation;
 	protected org.ujmp.core.Matrix UJMPRepresentation;

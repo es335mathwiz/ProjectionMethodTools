@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 //import java.lang.Math;
 /*
 http://www.cs.princeton.edu/introcs/96optimization/

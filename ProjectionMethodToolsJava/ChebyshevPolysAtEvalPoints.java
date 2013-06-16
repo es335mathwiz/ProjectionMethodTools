@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 /**
  * Evaluates Chebyshev polynomials and derivatives at Chebyshev nodes (both untransformed and transformed)
  * Organizes their outer product in ProjectionMethodToolsOrder

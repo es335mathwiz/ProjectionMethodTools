@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 import gov.frb.ma.msu.gsmin.ValueDerivative;
 import Jama.Matrix;
 public interface VectorFunction {

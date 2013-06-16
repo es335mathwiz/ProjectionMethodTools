@@ -1,4 +1,4 @@
-package gov.frb.ma.msu.ProjectionTools;
+package gov.frb.ma.msu.ProjectionMethodToolsJava;
 import Jama.Matrix;
 /**
  * Contains Information describing the non state variables and the state variables which upon which they are based
