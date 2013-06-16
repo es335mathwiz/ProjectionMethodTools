@@ -1,0 +1,11 @@
+Resources[
+    Version[1],
+    Java[
+        Directory["javaOutput"],
+        Directory["ProjectionMethodTools/Java"]
+    ],
+    ExecutionBuildCommand["<<ProjectionMethodTools`"],
+    Paclet[
+        FunctionPaclet[False]
+    ]
+]
