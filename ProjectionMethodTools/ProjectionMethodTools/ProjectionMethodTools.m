@@ -164,7 +164,7 @@ doBigRng[theModel_Symbol,smlLow_?NumberQ,smlHigh_?NumberQ,polyRanges_List,polyPo
     Module[ {highRes,highPoly},
     	With[{snsVarsStrs = 
     		Map[ToString,getStateNonState[theModel],{-1}]},
-		With[{pm = JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",snsVarsStrs[[1]],snsVarsStrs[[2]], 
+		With[{pm = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",snsVarsStrs[[1]],snsVarsStrs[[2]], 
   polyRanges,polyPowers]},
     {highRes,highPoly} = Catch[ doRng[pm,smlHigh,anInit,modEqns],nada,ffDoBigRng];
  If[ MatrixQ[highRes],
@@ -259,10 +259,10 @@ With[{theRanges=theRes[getRanges[]],thePows=theRes[getOrders[]],thePhi=1-(theRes
                 {thePolys,theSoln,thePi}]]]]]
     
 getPiEtcForPhiVary[thePhi_?NumberQ,theModel_Symbol,someSubs_List,polyRanges_List,polyPowers_List,wtFunc_Symbol,modEqns_?JavaObjectQ] :=
-    Module[ {realpm = JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",snsVarsStrs[[1]],snsVarsStrs[[2]], 
+    Module[ {realpm = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",snsVarsStrs[[1]],snsVarsStrs[[2]], 
   polyRanges,0*polyPowers]},
     	With[{snsVarsStrs = Map[ToString,getStateNonState[theModel],{-1}]},
-		With[{pm = JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",snsVarsStrs[[1]],snsVarsStrs[[2]], 
+		With[{pm = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",snsVarsStrs[[1]],snsVarsStrs[[2]], 
   polyRanges,0*polyPowers]},
         With[ {initForPhi = foldDoRng[pm,thePhi,someSubs,modEqns,wtFunc,polyPowers]},(*Print["done initForPhi",initForPhi];*)
             With[ {},
@@ -329,19 +329,19 @@ svs = {"AA", "AA$Shock", "bigDelta", "GG", "GG$Shock"},
 nsvs=	{"bigPi", "CC", "FF", "HH", "RR", "SS", "varphi1", "varphi2", 
 "varphi3", "varphi4", "varphi5", "varphi6"}},
 newModEqns[updateParams[targParams]];
-pm = JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis", svs, nsvs, initRngs, {0, 0, 0, 0, 0}];
+pm = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis", svs, nsvs, initRngs, {0, 0, 0, 0, 0}];
 vf = JavaNew["gov.frb.ma.msu.gsmin.experTackVecFun", newModEqns, 
    newModCnstrnsEqns, pm];
 (*   aMat = JavaNew["Jama.Matrix", initWts];
 theVD = vf[evaluate[aMat]];
 theSS = vf[evaluateSumSq[aMat]];
 theCn = vf[evaluateCnstrns[aMat]];
-try = JavaNew["gov.frb.ma.msu.ProjectionTools.gsmMinProb", initWts, vf];
+try = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.gsmMinProb", initWts, vf];
 try[iterateToConvergence[.000001]];
 peek[];
 theRes = try[xNow];
 newInit = theRes[getArray[]];*)newInit=initWts;
-res00 = JavaNew["gov.frb.ma.msu.ProjectionTools.ProjectionResults", pm, newInit, newModEqns];
+res00 = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults", pm, newInit, newModEqns];
 Prent["res00converged?",res00[convergedQ]];
 res01 = res00[incOrder[{0, 0, 1, 0, 0}]];
 res02 = res01[incOrder[{0, 0, 1, 0, 0}]];
@@ -357,29 +357,29 @@ peek[] := With[{xn = try[xNow]}, Print["xNow=", xn[getArray[]]]]
 
 
 makeVarSpec[var_String,low_?NumberQ,high_?NumberQ] :=
-    JavaNew["gov.frb.ma.msu.ProjectionTools.GridVarSpec",var,low,high];
+    JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.GridVarSpec",var,low,high];
 
 makeVarSpecs[theStateVars_] :=
-    JavaNew["gov.frb.ma.msu.ProjectionTools.GridVarSpec",theStateVars]/;VectorQ[theStateVars,varSpecQ]
-varSpecQ = "gov.frb.ma.msu.ProjectionTools.varSpec"== ClassName[#]&;
+    JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.GridVarSpec",theStateVars]/;VectorQ[theStateVars,varSpecQ]
+varSpecQ = "gov.frb.ma.msu.ProjectionMethodToolsJava.varSpec"== ClassName[#]&;
 
 makeGrid[vars_,ords_] :=
-    JavaNew["gov.frb.ma.msu.ProjectionTools.GridVarSpec",vars,ords]/;And[varSpecsQ[vars],VectorQ[ords,IntegerQ]]
-varSpecsQ = ClassName[#]== "gov.frb.ma.msu.ProjectionTools.varSpecs"&;
+    JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.GridVarSpec",vars,ords]/;And[varSpecsQ[vars],VectorQ[ords,IntegerQ]]
+varSpecsQ = ClassName[#]== "gov.frb.ma.msu.ProjectionMethodToolsJava.varSpecs"&;
 
 makeStatePoly[aGrid_,initWts_] :=
-    JavaNew["gov.frb.ma.msu.ProjectionTools.StateVariablePolynomials",aGrid,initWts]/;And[gridSpecQ[aGrid],MatrixQ[initWts,NumberQ]]
-gridSpecQ = ClassName[#]== "gov.frb.ma.msu.ProjectionTools.gridSpec"&;
+    JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVariablePolynomials",aGrid,initWts]/;And[gridSpecQ[aGrid],MatrixQ[initWts,NumberQ]]
+gridSpecQ = ClassName[#]== "gov.frb.ma.msu.ProjectionMethodToolsJava.gridSpec"&;
 (*
 makeNonStatePoly[aState_,nsWts_,nsNames_] :=
-    JavaNew["gov.frb.ma.msu.ProjectionTools.nonStatePoly",aState,nsWts,nsNames]/;And[statePolyQ[aState],MatrixQ[nsWts,NumberQ],VectorQ[nsNames,StringQ]]
-statePolyQ = ClassName[#]== "gov.frb.ma.msu.ProjectionTools.statePoly"&;
-nonStatePolyQ = ClassName[#]== "gov.frb.ma.msu.ProjectionTools.nonStatePoly"&;
+    JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.nonStatePoly",aState,nsWts,nsNames]/;And[statePolyQ[aState],MatrixQ[nsWts,NumberQ],VectorQ[nsNames,StringQ]]
+statePolyQ = ClassName[#]== "gov.frb.ma.msu.ProjectionMethodToolsJava.statePoly"&;
+nonStatePolyQ = ClassName[#]== "gov.frb.ma.msu.ProjectionMethodToolsJava.nonStatePoly"&;
 aPolyQ[xx_] :=
     Or[statePolyQ[xx],nonStatePolyQ[xx]]
 *)
 makeWeightedStochasticBasis[aPoly_?aPolyQ] :=
-    JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",aPoly]
+    JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",aPoly]
 
 
 
@@ -468,14 +468,14 @@ reformatSNSVars[snsVars_SV] :=
     ]
 ComputeInitialCollocationWeights[basis_?JavaObjectQ,
 	initWts_?MatrixQ,modEqns_?JavaObjectQ]:=
-JavaNew["gov.frb.ma.msu.ProjectionTools.ProjectionResults", basis, initWts, modEqns];
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults", basis, initWts, modEqns];
 ComputeCollocationWeightsToOrder[previousResult_?JavaObjectQ,
 	targetOrders_List]:=
 	previousResult[toOrder[targetOrders]];
 	
 	ComputeInitialCollocationWeights[basis_?JavaObjectQ,
 	initWts_?MatrixQ,modEqns_?JavaObjectQ,strategy_?JavaObjectQ]:=
-JavaNew["gov.frb.ma.msu.ProjectionTools.ProjectionResults", basis, initWts, modEqns,strategy];
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults", basis, initWts, modEqns,strategy];
 ComputeCollocationWeightsToOrder[previousResult_?JavaObjectQ,
 	targetOrders_List]:=
 	previousResult[toOrder[targetOrders]];
@@ -587,12 +587,12 @@ GenerateModelCode[theModel_Symbol] :=
     
 GenerateBasis[{stateVars_List,nonStateVars_List},
 	initRanges_?MatrixQ,initPowers_List]:=
-JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",stateVars,nonStateVars,
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",stateVars,nonStateVars,
 initRanges,initPowers]
 
 GenerateBasis[stateVars_List,stateRanges_?MatrixQ,statePowers_List,
 	shockVars_List,shockMeans_?VectorQ,shockStDevs_?VectorQ,intOrders_?VectorQ,shockPowers_List,nonStateVars_List]:=
-JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",
 	stateVars,stateRanges,statePowers,shockVars,shockMeans,shockStDevs,intOrders,shockPowers,nonStateVars]
 
 
@@ -657,7 +657,7 @@ augEqns[eqNameList_List] :=
     "EquationValDrv sys="<>((eqNameList//.{yy_,xx_,zz___}:> {yy<>".augSys("<>xx<>")",zz})[[1]])<>";\n"
 
 
-modelTop = "import gov.frb.ma.msu.ProjectionTools.*;\n public class"
+modelTop = "import gov.frb.ma.msu.ProjectionMethodToolsJava.*;\n public class"
 modelNearTop = "extends DoEqns {\n";
 meFuncDef=" meFunc(){return(this);}\n"
 
@@ -824,7 +824,7 @@ ToString[StringForm["return(``);}};\n\n",intName]]<>
 ToString[StringForm["EquationValDrv `1`=gh.integrate(`1`$Func,theStochasticBasis);\n\n",intName]]<>"\n"
 
 forIntFooter[theEqns_List]:=""
-forIntHeader="gov.frb.ma.msu.ProjectionTools.GaussHermite gh = theStochasticBasis.getTheGaussHermite();\n\n"
+forIntHeader="gov.frb.ma.msu.ProjectionMethodToolsJava.GaussHermite gh = theStochasticBasis.getTheGaussHermite();\n\n"
 	
 defShocks[theEqns_List]:=With[{theShocks=getShocks[theEqns]},
 	With[{numShocks=Length[theShocks]},""<>
@@ -924,7 +924,7 @@ adjustRanges[sns_List,rngs_List]:=rngs(*If[Length[sns[[1]]]==2,
 		{pws[[1]],pws[[2]],pws[[1]]}]*)
 
 modForEpsilon[snsVarsStrs_List,polyRanges_List,polyPowers_List] :=
-JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",
 	snsVarsStrs[[1]],snsVarsStrs[[2]],polyRanges,polyPowers]
 
 
@@ -973,7 +973,7 @@ makeVarSpecList[sVars_List,polyRanges_List] :=
     ]
 *)
 makeVarSpecList[sVars_List,polyRanges_?MatrixQ] :=
-JavaNew["gov.frb.ma.msu.ProjectionTools.GridVarSpec",sVars,polyRanges]
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.GridVarSpec",sVars,polyRanges]
 	
 	SetAttributes[handleRootExceptions,HoldAll];
 
@@ -994,7 +994,7 @@ handleRootExceptions[rootFunction_] :=
 
 
     useModForEpsilon[snsVarsStrs_List,polyRanges_List,polyPowers_List,initWts_List,modEqns_?JavaObjectQ] :=
-    With[{pm = JavaNew["gov.frb.ma.msu.ProjectionTools.WeightedStochasticBasis",
+    With[{pm = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",
     	snsVarsStrs[[1]],snsVarsStrs[[2]],polyRanges,polyPowers]},
     	pm[collocateProjWts[initWts,modEqns]]]
     
@@ -1254,13 +1254,13 @@ computeChebCoeffs[theFunc_, thePows_List, theRanges_List] := With[{top =
 pFlatten[xx_List] := Plus @@ Flatten[xx]
 
 
-NewtonIterInfoQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionTools.NewtonIterInfo"
+NewtonIterInfoQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterInfo"
 
-NewtonIterSequenceInfoQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionTools.NewtonIterSequenceInfo"
+NewtonIterSequenceInfoQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo"
 
-StrategyIterSequenceInfoQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionTools.StrategyIterSequenceInfo"
+StrategyIterSequenceInfoQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"
 
-ProjectionResultsQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionTools.ProjectionResults"
+ProjectionResultsQ[xx_?JavaObjectQ]:=ClassName[xx]=="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
 
 displayInfo[xx_?NewtonIterInfoQ]:=
 {{"delta",xx[getDelta[]]},{"fVal",xx[getfVal[]]},{"lambda",xx[getLambda[]]},{"xVal",xx[getXx[]]},{"isConvergedQ",xx[isConvergedQ[]]}}
