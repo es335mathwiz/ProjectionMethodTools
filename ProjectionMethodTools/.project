@@ -20,4 +20,11 @@
 		<nature>com.wolfram.eclipse.MEET.SimpleMathematicaNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>gsminLib/experTackVecFun.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/ProjectionMethodToolsJava/target/classes/gov/frb/ma/msu/gsmin/experTackVecFun.class</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

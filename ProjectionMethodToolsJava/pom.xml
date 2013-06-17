@@ -41,6 +41,11 @@
     	<artifactId>ujmp</artifactId>
     	<version>0.2.5</version>
     </dependency>
+    <dependency>
+    	<groupId>com.grepcode</groupId>
+    	<artifactId>mtj</artifactId>
+    	<version>0.9.14</version>
+    </dependency>
   </dependencies>
  
 </project>
