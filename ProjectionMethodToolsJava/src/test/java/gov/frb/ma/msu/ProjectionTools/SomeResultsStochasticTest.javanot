@@ -1,0 +1,66 @@
+package gov.frb.ma.msu;
+
+import junit.framework.TestCase;
+
+public class SomeResultsStochasticTest extends TestCase {
+	CollocationSolution cs;SimpleShockForTests ssft;
+	protected void setUp() throws Exception {
+		super.setUp();
+		String[] stateVars ={"AA","PP"};
+		double [][] stateRanges = {{-1.,1.},{-1.,1.}};
+		int [] statePowers={0,0};
+		String[] shockVars={"AA$Shock","PP$Shock"};
+		double [] shockMeans={0.,0.};
+		double [] shockStDevs={1.,.1};
+		int [] intOrders={3,3};
+		int [] shockPowers={0,0};
+		String[]nonStateVars={"PPNxt","PPSqrd"};
+		cs= new CollocationSolution(
+		    	stateVars,stateRanges,statePowers,
+		    	shockVars,shockMeans,shockStDevs,intOrders,shockPowers,
+		    	nonStateVars);
+		ssft=new SimpleShockForTests();
+		    	
+	}
+	
+	
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+
+	public void testToOrder() throws Exception{
+		double [][] initWts={{1},{1},{1},{1}};
+		double [][] expWts=
+		{{0.6123724356957945}, {0.6123724356957945}, {1.}, {1.}, 
+				{0.6123724356957946}, {0.03374999999999992}};/*
+{{1.7180795594188687}, {1.7180795594188687}, {0.}, {0.}, {1.7180795594188683}, {0.2656617635243643}};*/
+someResults sr= new someResults( cs, initWts, ssft);
+MyAssert.assertArrayEquals(expWts,sr.getResWeights(),1e-8);
+//int[] ord1000={1,0,0,0};
+//double [][] exp1000={{1.7180795594188687, 0.5}, {1.7180795594188687, 0.}, {0., 0.}, {0., 0.}, {1.7180795594188683, 0.}, 
+//		{0.2656617635243643, 0.}};
+//someResults sr1000=sr.toOrder(ord1000);
+//MyAssert.assertArrayEquals(exp1000,sr1000.getResWeights(),1e-8);
+
+//int[] ord1100={1,0,1,0};
+//someResults sr1100=sr1000.toOrder(ord1100);
+
+
+//int[] ord1110={1,1,1,0};
+//omeResults sr1110=sr1100.toOrder(ord1110);
+
+
+
+//int[] ord1111={1,1,1,1};
+//double [][] exp1111={{1.7180795594188687, 0.49999999999999994, 0, 0, -1.7180795594188683, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+//		 {1.718079559418869, 0, 0.6999999999999998, 0, 0, 0, 0, 0, -1.7180795594188683, 0, 0, 0, 0, 0, 0, 0}, 
+//		 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+//		 {1.202655691593208, 0, 0.48999999999999977, 0, 0, 0, 0, 0, -1.2026556915932072, 0, 0, 0, 0, 0, 0, 0}, 
+//		 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+//someResults sr1111=sr1110.toOrder(ord1111);
+//MyAssert.assertArrayEquals(exp1111,sr1111.getResWeights(),1e-8);
+
+	}
+
+}
