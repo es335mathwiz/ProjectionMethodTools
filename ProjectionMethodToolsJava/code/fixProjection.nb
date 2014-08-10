@@ -1,0 +1,1632 @@
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "SetDirectory", "[", 
+   "\"\<g:/git/ProjectionMethodTools/ProjectionMethodToolsJava/code\>\"", 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Get", "[", "\"\<prepPackages.mth\>\"", "]"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.6165975666199207`*^9, 3.61659756930984*^9}, {
+   3.616597625986143*^9, 3.616597663645014*^9}, {3.616681046897254*^9, 
+   3.616681047997232*^9}, 3.616682110017991*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"temp export of kronProd\"\>"], "Print",
+ CellChangeTimes->{3.6166840265666604`*^9, 3.616684166654866*^9, 
+  3.6166849963162746`*^9}],
+
+Cell[BoxData["\<\"why not numbers?\"\>"], "Print",
+ CellChangeTimes->{3.6166840265666604`*^9, 3.616684166654866*^9, 
+  3.6166849963162746`*^9}],
+
+Cell[BoxData["\<\"why eval of shock t+1?\"\>"], "Print",
+ CellChangeTimes->{3.6166840265666604`*^9, 3.616684166654866*^9, 
+  3.6166849963162746`*^9}],
+
+Cell[BoxData["\<\"done reading ProjectionInterface\"\>"], "Print",
+ CellChangeTimes->{3.6166840265666604`*^9, 3.616684166654866*^9, 
+  3.6166849963262744`*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Judd JET Example", "Section",
+ CellChangeTimes->{{3.6166001428082905`*^9, 3.6166001484978924`*^9}, {
+  3.6166807678078346`*^9, 3.616680775008691*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Deterministic Model", "Subsection",
+ CellChangeTimes->{{3.6166848329945393`*^9, 3.6166848368044634`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Model Equations", "Subsubsection",
+ CellChangeTimes->{{3.6166822073160453`*^9, 3.6166822232757263`*^9}, {
+   3.6166847567560644`*^9, 3.616684759906001*^9}, 3.6166848942033153`*^9}],
+
+Cell[BoxData[
+ RowBox[{"\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"uFunc", "[", "cc_", "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"1", "/", 
+       RowBox[{"(", 
+        RowBox[{"1", "+", "gamma"}], ")"}]}], ")"}], "*", 
+     RowBox[{"cc", "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", "gamma"}], ")"}]}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"uPrimeFunc", "[", "cc_", "]"}], ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{
+        RowBox[{"uFunc", "[", "xx", "]"}], ",", "xx"}], "]"}], "/.", 
+      RowBox[{"xx", "\[Rule]", "cc"}]}], ")"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"fFunc", "[", "kk_", "]"}], ":=", 
+     RowBox[{"AA", "*", 
+      RowBox[{"kk", "^", "alpha"}]}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"fPrimeFunc", "[", "kk_", "]"}], ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{
+        RowBox[{"fFunc", "[", "xx", "]"}], ",", "xx"}], "]"}], "/.", 
+      RowBox[{"xx", "\[Rule]", "kk"}]}], ")"}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"juddDetEqn", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"kk", "[", "t", "]"}], "-", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"fFunc", "[", 
+           RowBox[{"kk", "[", 
+            RowBox[{"t", "-", "1"}], "]"}], "]"}], "-", 
+          RowBox[{"cc", "[", "t", "]"}]}], ")"}]}], ",", 
+       RowBox[{
+        RowBox[{"uPrimeFunc", "[", 
+         RowBox[{"cc", "[", "t", "]"}], "]"}], "-", 
+        RowBox[{"beta", "*", 
+         RowBox[{"uPrimeFunc", "[", 
+          RowBox[{"cc", "[", 
+           RowBox[{"t", "+", "1"}], "]"}], "]"}], "*", 
+         RowBox[{"fPrimeFunc", "[", 
+          RowBox[{"kk", "[", "t", "]"}], "]"}]}]}]}], "}"}]}], ";"}], "\n", 
+   RowBox[{"newWeightedStochasticBasis", "[", 
+    RowBox[{"juddDetMod", ",", "juddDetEqn"}], "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.616597872182767*^9, 3.616597872182767*^9}, 
+   3.6166005679213796`*^9, {3.616610480380272*^9, 3.61661048076023*^9}, {
+   3.6166105368784885`*^9, 3.6166105450880775`*^9}, {3.6166721272359114`*^9, 
+   3.6166721307158413`*^9}, {3.6166791993353486`*^9, 3.616679200115325*^9}, {
+   3.61667928629274*^9, 3.6166792888326635`*^9}, {3.616682135707477*^9, 
+   3.616682181136569*^9}, 3.616682231025571*^9, {3.616682277264646*^9, 
+   3.6166822785546207`*^9}, {3.616682326103669*^9, 3.6166823433533244`*^9}, {
+   3.616684349933201*^9, 3.616684373812723*^9}, {3.6166845108099833`*^9, 
+   3.6166845597100053`*^9}, {3.6166850561890783`*^9, 3.616685056669069*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Projection Method Specification", "Subsubsection",
+ CellChangeTimes->{{3.6166822590850096`*^9, 3.616682266354864*^9}, {
+   3.6166842666748657`*^9, 3.6166842691948156`*^9}, 3.616684897333253*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stateVar", ",", "nonStateVar", ",", "theShock"}], "}"}], ",", 
+     "modEqns"}], "}"}], "=", 
+   RowBox[{"GenerateModelCode", "[", "juddDetMod", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.616597872182767*^9, 3.616597872182767*^9}, 
+   3.6166005679213796`*^9, {3.616676346422569*^9, 3.6166763483525305`*^9}, 
+   3.6166825343015056`*^9, {3.6166845671198573`*^9, 3.6166845675598483`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"\<\"\\\"c:\\\\Program \
+Files\\\\Java\\\\jdk1.7.0_51\\\\bin\\\\javac\\\"\"\>", 
+  " ", "\<\" @S:/tryBenchWindows/projectionJLinkWin/javaSource/theArgs  \
+-target 1.7 ./juddDetMod.java\"\>"}]], "Print",
+ CellChangeTimes->{3.616685061318976*^9, 3.6166850950083017`*^9}]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"modDetParams", "=", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"AA", ",", "alpha", ",", "beta", ",", "gamma"}], "}"}], "//.", 
+    RowBox[{"(", 
+     RowBox[{"jetDetSubs", "=", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"beta", "\[Rule]", ".95"}], ",", 
+        RowBox[{"alpha", "\[Rule]", ".25"}], ",", 
+        RowBox[{"gamma", "\[Rule]", 
+         RowBox[{"-", ".5"}]}], ",", 
+        RowBox[{"AA", "\[Rule]", 
+         RowBox[{"(", 
+          RowBox[{"1", "/", 
+           RowBox[{"(", 
+            RowBox[{"alpha", "*", "beta"}], ")"}]}], ")"}]}]}], "}"}]}], 
+     ")"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"modEqns", "[", 
+   RowBox[{"updateParams", "[", "modDetParams", "]"}], "]"}], 
+  "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{"polyRange", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"kLow", "=", "0.333"}], ",", 
+      RowBox[{"kHigh", "=", "1.667"}]}], "}"}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"initPower", "=", 
+   RowBox[{"{", "0", "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"juddBasis00", "=", 
+   RowBox[{"GenerateBasis", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stateVar", ",", "nonStateVar"}], "}"}], ",", "polyRange", ",", 
+     "initPower"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"simp", "=", 
+   RowBox[{
+   "JavaNew", "[", 
+    "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy\>\"",
+     "]"}]}], ";"}], "\n"}], "Input",
+ CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
+   3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
+   3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
+   3.6166764594813075`*^9, 3.6166765036164265`*^9}, {3.616681129825595*^9, 
+   3.616681130495582*^9}, {3.616682473382724*^9, 3.616682578980612*^9}, {
+   3.6166826331995277`*^9, 3.6166827263086653`*^9}, {3.6166827989172134`*^9, 
+   3.616682842476342*^9}, 3.616682890425383*^9, {3.6166832918083553`*^9, 
+   3.61668329257834*^9}, {3.6166833507171774`*^9, 3.6166833518471546`*^9}, {
+   3.616683701792156*^9, 3.6166837021021495`*^9}, {3.616683733421523*^9, 
+   3.6166837522611465`*^9}, {3.616684201164176*^9, 3.616684217625847*^9}, {
+   3.616684287304454*^9, 3.616684296634267*^9}, {3.616684611178976*^9, 
+   3.616684732906541*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Compute Polynomial Weights", "Subsubsection",
+ CellChangeTimes->{{3.6166830029031334`*^9, 3.6166830107929754`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"try00", "[", 
+   RowBox[{
+    RowBox[{"kkGuess_", "?", "NumberQ"}], ",", 
+    RowBox[{"ccGuess_", "?", "NumberQ"}]}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"resTry", "=", 
+      RowBox[{"ComputeInitialCollocationWeights", "[", 
+       RowBox[{"juddBasis00", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", "kkGuess", "}"}], ",", 
+          RowBox[{"{", "ccGuess", "}"}]}], "}"}], ",", "modEqns", ",", 
+        "simp"}], "]"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"resTry", "[", 
+       RowBox[{"isConvergedQ", "[", "]"}], "]"}], ",", "resTry"}], "}"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.616682990473382*^9, 3.616683119540801*^9}, {
+  3.616683162009951*^9, 3.6166832016991577`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"ig", ",", "theDetRes"}], "}"}], "=", 
+  RowBox[{"try00", "[", 
+   RowBox[{"1", ",", "3.2"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.616683135510481*^9, 3.6166831464602623`*^9}, {
+  3.6166832060490704`*^9, 3.6166832084190235`*^9}, {3.6166832473582444`*^9, 
+  3.6166832582980256`*^9}, {3.6166833746966977`*^9, 3.6166834045561004`*^9}, {
+  3.6166836136339192`*^9, 3.6166836152238874`*^9}, {3.616685081908564*^9, 
+  3.6166850823285556`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"True", ",", 
+   InterpretationBox[
+    RowBox[{"\[LeftGuillemet]", 
+     RowBox[{"JavaObject", "[", 
+      RowBox[{
+      "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+       "ProjectionMethodToolsJava", ".", "ProjectionResults"}], "]"}], 
+     "\[RightGuillemet]"}],
+    JLink`Objects`vm1`JavaObject8553196616155137]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.6166839637679167`*^9, 3.6166840343565044`*^9, 3.6166841713147726`*^9, {
+   3.616684209216015*^9, 3.6166842262956734`*^9}, 3.6166850012061768`*^9, 
+   3.6166850636989284`*^9, 3.6166850970282617`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"theDetRes", "[", 
+  RowBox[{"getResWeights", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.616683264977892*^9, 3.61668327256774*^9}, {
+  3.6166850866884685`*^9, 3.616685087048461*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", "1.`", "}"}], ",", 
+   RowBox[{"{", "3.2105263157894735`", "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.616683963777916*^9, 3.616684034386504*^9, 3.616684171334772*^9, {
+   3.616684209226015*^9, 3.6166842263056736`*^9}, 3.616685001216177*^9, 
+   3.616685063708928*^9, 3.616685097048261*^9}]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Stochastic Projection Method Specification", "Subsection",
+ CellChangeTimes->{{3.6166822590850096`*^9, 3.616682266354864*^9}, {
+  3.616684272084758*^9, 3.616684274334713*^9}}],
+
+Cell[BoxData[
+ RowBox[{"\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"uFunc", "[", "cc_", "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"1", "/", 
+       RowBox[{"(", 
+        RowBox[{"1", "+", "gamma"}], ")"}]}], ")"}], "*", 
+     RowBox[{"cc", "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", "gamma"}], ")"}]}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"uPrimeFunc", "[", "cc_", "]"}], ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{
+        RowBox[{"uFunc", "[", "xx", "]"}], ",", "xx"}], "]"}], "/.", 
+      RowBox[{"xx", "\[Rule]", "cc"}]}], ")"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"fFunc", "[", "kk_", "]"}], ":=", 
+     RowBox[{"AA", "*", 
+      RowBox[{"kk", "^", "alpha"}]}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"fPrimeFunc", "[", "kk_", "]"}], ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{
+        RowBox[{"fFunc", "[", "xx", "]"}], ",", "xx"}], "]"}], "/.", 
+      RowBox[{"xx", "\[Rule]", "kk"}]}], ")"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"juddEqn", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"kk", "[", "t", "]"}], "-", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"eps", "[", "prod", "]"}], "[", "t", "]"}], "*", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"fFunc", "[", 
+            RowBox[{"kk", "[", 
+             RowBox[{"t", "-", "1"}], "]"}], "]"}], "-", 
+           RowBox[{"cc", "[", "t", "]"}]}], ")"}]}]}], ",", 
+       RowBox[{
+        RowBox[{"uPrimeFunc", "[", 
+         RowBox[{"cc", "[", "t", "]"}], "]"}], "-", 
+        RowBox[{"beta", "*", 
+         RowBox[{"uPrimeFunc", "[", 
+          RowBox[{"cc", "[", 
+           RowBox[{"t", "+", "1"}], "]"}], "]"}], "*", 
+         RowBox[{"fPrimeFunc", "[", 
+          RowBox[{"kk", "[", "t", "]"}], "]"}]}]}]}], "}"}]}], ";"}], "\n", 
+   RowBox[{"newWeightedStochasticBasis", "[", 
+    RowBox[{"juddMod", ",", "juddEqn"}], "]"}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.616597872182767*^9, 3.616597872182767*^9}, 
+   3.6166005679213796`*^9, {3.616610480380272*^9, 3.61661048076023*^9}, {
+   3.6166105368784885`*^9, 3.6166105450880775`*^9}, {3.6166721272359114`*^9, 
+   3.6166721307158413`*^9}, {3.6166791993353486`*^9, 3.616679200115325*^9}, {
+   3.61667928629274*^9, 3.6166792888326635`*^9}, {3.616682135707477*^9, 
+   3.616682181136569*^9}, 3.616682231025571*^9, {3.616682277264646*^9, 
+   3.6166822785546207`*^9}, {3.616682326103669*^9, 3.6166823433533244`*^9}, {
+   3.616684349933201*^9, 3.616684373812723*^9}, {3.6166847791156173`*^9, 
+   3.616684779805603*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stateVar", ",", "nonStateVar", ",", "theShock"}], "}"}], ",", 
+     "modEqns"}], "}"}], "=", 
+   RowBox[{"GenerateModelCode", "[", "juddMod", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.616597872182767*^9, 3.616597872182767*^9}, 
+   3.6166005679213796`*^9, {3.616676346422569*^9, 3.6166763483525305`*^9}, 
+   3.6166825343015056`*^9}],
+
+Cell[BoxData[
+ RowBox[{"\<\"\\\"c:\\\\Program \
+Files\\\\Java\\\\jdk1.7.0_51\\\\bin\\\\javac\\\"\"\>", 
+  " ", "\<\" @S:/tryBenchWindows/projectionJLinkWin/javaSource/theArgs  \
+-target 1.7 ./juddMod.java\"\>"}]], "Print",
+ CellChangeTimes->{
+  3.6166839615679607`*^9, 3.6166840311865683`*^9, 3.61668416845483*^9, {
+   3.6166842062740736`*^9, 3.616684224025719*^9}, 3.6166850012861753`*^9, 
+   3.616685063778927*^9, 3.61668509710826*^9}]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"modParams", "=", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"AA", ",", "alpha", ",", "beta", ",", "gamma"}], "}"}], "//.", 
+    RowBox[{"(", 
+     RowBox[{"jetSubs", "=", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"beta", "\[Rule]", ".95"}], ",", 
+        RowBox[{"alpha", "\[Rule]", ".25"}], ",", 
+        RowBox[{"gamma", "\[Rule]", 
+         RowBox[{"-", ".5"}]}], ",", 
+        RowBox[{"AA", "\[Rule]", 
+         RowBox[{"(", 
+          RowBox[{"1", "/", 
+           RowBox[{"(", 
+            RowBox[{"alpha", "*", "beta"}], ")"}]}], ")"}]}]}], "}"}]}], 
+     ")"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"modEqns", "[", 
+   RowBox[{"updateParams", "[", "modParams", "]"}], "]"}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"polyRange", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"kLow", "=", "0.333"}], ",", 
+      RowBox[{"kHigh", "=", "1.667"}]}], "}"}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"initPower", "=", 
+   RowBox[{"{", "0", "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"theMean", "=", 
+   RowBox[{"{", "0", "}"}]}], ";", " ", 
+  RowBox[{"theStdDev", "=", 
+   RowBox[{"{", "0.00000004", "}"}]}], ";", 
+  RowBox[{"integOrder", "=", 
+   RowBox[{"{", "1", "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"shockPower", "=", 
+   RowBox[{"{", "0", "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"juddBasis00", "=", 
+   RowBox[{"GenerateBasis", "[", 
+    RowBox[{
+    "stateVar", ",", "polyRange", ",", "initPower", ",", "theShock", ",", 
+     "theMean", ",", "theStdDev", ",", "integOrder", ",", "shockPower", ",", 
+     "nonStateVar"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"simp", "=", 
+   RowBox[{
+   "JavaNew", "[", 
+    "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy\>\"",
+     "]"}]}], ";"}], "\n"}], "Input",
+ CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
+   3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
+   3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
+   3.6166764594813075`*^9, 3.6166765036164265`*^9}, {3.616681129825595*^9, 
+   3.616681130495582*^9}, {3.616682473382724*^9, 3.616682578980612*^9}, {
+   3.6166826331995277`*^9, 3.6166827263086653`*^9}, {3.6166827989172134`*^9, 
+   3.616682842476342*^9}, 3.616682890425383*^9, {3.6166832918083553`*^9, 
+   3.61668329257834*^9}, {3.6166833507171774`*^9, 3.6166833518471546`*^9}, {
+   3.616683701792156*^9, 3.6166837021021495`*^9}, {3.616683733421523*^9, 
+   3.6166837522611465`*^9}, {3.616684201164176*^9, 3.616684217625847*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"flg", ",", "res"}], "}"}], "=", 
+     RowBox[{"indFunc00", "[", 
+      RowBox[{".2", ",", "1.", ",", "simp"}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"nis", "=", 
+     RowBox[{"res", "[", 
+      RowBox[{"getTheStrategyIters", "[", "]"}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"them", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"nis", "[", 
+        RowBox[{"get", "[", "#", "]"}], "]"}], "&"}], "/@", 
+      RowBox[{"Range", "[", 
+       RowBox[{"0", ",", 
+        RowBox[{
+         RowBox[{"nis", "[", 
+          RowBox[{"size", "[", "]"}], "]"}], "-", "1"}]}], "]"}]}]}], ";"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"ani", "=", 
+     RowBox[{"them", "[", 
+      RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"displayStrategyIterInfo", "[", 
+       RowBox[{"getStrategyInfo", "[", 
+        RowBox[{"ani", ",", "#"}], "]"}], "]"}], "&"}], "/@", 
+     RowBox[{"Range", "[", 
+      RowBox[{"getNumNewtonIters", "[", "ani", "]"}], "]"}]}], ";"}], "\n", 
+   RowBox[{"getNumNewtonIters", "[", "ani", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.616682828536621*^9, 3.6166828463262653`*^9}}],
+
+Cell[BoxData["2"], "Output",
+ CellChangeTimes->{
+  3.6166839638079157`*^9, 3.6166840346364985`*^9, 3.616684171594767*^9, {
+   3.61668420946601*^9, 3.6166842263456726`*^9}, 3.616685004516111*^9, 
+   3.616685065878885*^9, 3.6166850992882166`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"flg", ",", "aRes"}], "}"}], "=", 
+  RowBox[{"indFunc00", "[", 
+   RowBox[{"1", ",", "3.21053", ",", "simp"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.6166011413658113`*^9, 3.616601152309594*^9}, {
+  3.616611436378764*^9, 3.6166114661081696`*^9}, {3.616611532896834*^9, 
+  3.6166115360967703`*^9}, {3.6166771937356243`*^9, 3.6166771984355297`*^9}, {
+  3.616677552008458*^9, 3.616677553488429*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "1"}], ",", 
+   InterpretationBox[
+    RowBox[{"\[LeftGuillemet]", 
+     RowBox[{"JavaObject", "[", 
+      RowBox[{
+      "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+       "ProjectionMethodToolsJava", ".", "ProjectionResults"}], "]"}], 
+     "\[RightGuillemet]"}],
+    JLink`Objects`vm1`JavaObject13160698431406081]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.6166839638379145`*^9, 3.616684034726497*^9, 3.6166841716347666`*^9, {
+   3.6166842095060096`*^9, 3.616684226365672*^9}, 3.616685004616109*^9, 
+   3.6166850658888845`*^9, 3.6166850992982163`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"aRes", "[", 
+  RowBox[{"getResWeights", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{
+  3.6166105137206044`*^9, {3.616611470488082*^9, 3.6166115047073975`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"si", "=", 
+  RowBox[{"aRes", "[", 
+   RowBox[{"getTheStrategyIters", "[", "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.6166116259349732`*^9, 3.6166116373047457`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+     "ProjectionMethodToolsJava", ".", "StrategyIterSequenceInfo"}], "]"}], 
+   "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject14660066145730561]], "Output",
+ CellChangeTimes->{
+  3.6166839638579144`*^9, 3.6166840347564964`*^9, 3.616684171654766*^9, {
+   3.616684209536009*^9, 3.616684226385672*^9}, 3.6166850046361084`*^9, 
+   3.616685065908884*^9, 3.6166850993182163`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"aRes", "[", 
+  RowBox[{"isConvergedQ", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.6166119910286713`*^9, 3.6166119998084955`*^9}}],
+
+Cell[BoxData["False"], "Output",
+ CellChangeTimes->{
+  3.616683963877914*^9, 3.6166840347664967`*^9, 3.6166841716647663`*^9, {
+   3.616684209546009*^9, 3.6166842264056716`*^9}, 3.6166850046461077`*^9, 
+   3.6166850659288836`*^9, 3.616685099338216*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ni", "=", 
+  RowBox[{"si", "[", 
+   RowBox[{"getNewtonIters", "[", "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.616611702403444*^9, 3.6166117122632465`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{"java", ".", "util", ".", "ArrayList"}], "]"}], 
+   "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject16777219]], "Output",
+ CellChangeTimes->{
+  3.6166839638879137`*^9, 3.616684034786496*^9, 3.6166841716747656`*^9, {
+   3.6166842095560083`*^9, 3.6166842264156713`*^9}, 3.616685004656108*^9, 
+   3.616685065938884*^9, 3.616685099348215*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ni", "[", 
+  RowBox[{"toArray", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.6166117405736804`*^9, 3.6166117500834904`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{
+  3.6166839639079137`*^9, 3.6166840347964954`*^9, 3.616684171684766*^9, {
+   3.6166842095660086`*^9, 3.616684226425671*^9}, 3.6166850046661077`*^9, 
+   3.616685065948883*^9, 3.6166850993582153`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"indFunc00", "[", 
+   RowBox[{
+    RowBox[{"xx_", "?", "NumberQ"}], ",", 
+    RowBox[{"yy_", "?", "NumberQ"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"restry", "=", 
+      RowBox[{"ComputeInitialCollocationWeights", "[", 
+       RowBox[{"juddBasis00", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", "xx", "}"}], ",", 
+          RowBox[{"{", "yy", "}"}]}], "}"}], ",", "modEqns", ",", 
+        RowBox[{
+        "JavaNew", "[", 
+         "\"\<gov.frb.ma.msu.ProjectionTools.SimpleFindZeroStrategy\>\"", 
+         "]"}]}], "]"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"MatrixQ", "[", 
+          RowBox[{"restry", "[", 
+           RowBox[{"getResWeights", "[", "]"}], "]"}], "]"}], "\[Equal]", 
+         "True"}], ",", "1", ",", 
+        RowBox[{"-", "1"}]}], "]"}], ",", "restry"}], "}"}]}], 
+   "]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
+  3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
+  3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
+  3.6166764594813075`*^9, 3.6166764965065684`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"indFunc00", "[", 
+    RowBox[{
+     RowBox[{"xx_", "?", "NumberQ"}], ",", 
+     RowBox[{"yy_", "?", "NumberQ"}], ",", 
+     RowBox[{"strat_", "?", "JavaObjectQ"}]}], "]"}], ":=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"restry", "=", 
+       RowBox[{"ComputeInitialCollocationWeights", "[", 
+        RowBox[{"juddBasis00", ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", "xx", "}"}], ",", 
+           RowBox[{"{", "yy", "}"}]}], "}"}], ",", "modEqns", ",", "strat"}], 
+        "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"MatrixQ", "[", 
+           RowBox[{"restry", "[", 
+            RowBox[{"getResWeights", "[", "]"}], "]"}], "]"}], "\[Equal]", 
+          "True"}], ",", "1", ",", 
+         RowBox[{"-", "1"}]}], "]"}], ",", "restry"}], "}"}]}], "]"}]}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"retrieveIters", "[", 
+    RowBox[{"stratInfo_", "?", "JavaObjectQ"}], "]"}], ":=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"nisInfo", "=", 
+       RowBox[{"stratInfo", "[", 
+        RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
+     RowBox[{"nisInfo", "[", 
+      RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"retrieveIters", "[", 
+    RowBox[{"stratInfo_", "?", "JavaObjectQ"}], "]"}], ":=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"nisInfo", "=", 
+       RowBox[{"stratInfo", "[", 
+        RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
+     RowBox[{"nisInfo", "[", 
+      RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"from", " ", "getmathtowork"}], "*)"}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"getStrategyIters", "[", 
+   RowBox[{"res_", "?", "JavaObjectQ"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"res", "[", 
+    RowBox[{"getTheStrategyIters", "[", "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "res", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.someResults\>\""}], 
+    "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"getStrategySeq", "[", 
+   RowBox[{
+    RowBox[{"stratIts_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"stratIts", "[", 
+    RowBox[{"get", "[", 
+     RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "stratIts", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\>\
+\""}], "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"getStrategyInfo", "[", 
+   RowBox[{
+    RowBox[{"nis_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"nis", "[", 
+    RowBox[{"get", "[", 
+     RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\>\
+\""}], "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"getNumStrategyIters", "[", 
+   RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"nis", "[", 
+    RowBox[{"size", "[", "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\>\
+\""}], "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"displayStrategyIterInfo", "[", 
+    RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"del", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"getDelta", "[", "]"}], "]"}]}], ",", 
+      RowBox[{"fVal", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"getfVal", "[", "]"}], "]"}]}], ",", 
+      RowBox[{"xx", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"getXx", "[", "]"}], "]"}]}], ",", 
+      RowBox[{"conv", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"isConvergedQ", "[", "]"}], "]"}]}]}], "}"}], "/;", 
+    RowBox[{"StringMatchQ", "[", 
+     RowBox[{
+      RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+      "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterInfo\>\""}], 
+     "]"}]}]}], "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"getNewtonSeq", "[", 
+   RowBox[{
+    RowBox[{"stratIts_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"stratIts", "[", 
+    RowBox[{"get", "[", 
+     RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "stratIts", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\>\
+\""}], "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"getNewtonInfo", "[", 
+   RowBox[{
+    RowBox[{"nis_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"nis", "[", 
+    RowBox[{"get", "[", 
+     RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo\>\"\
+"}], "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"getNumNewtonIters", "[", 
+   RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"nis", "[", 
+    RowBox[{"size", "[", "]"}], "]"}], "/;", 
+   RowBox[{"StringMatchQ", "[", 
+    RowBox[{
+     RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+     "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo\>\"\
+"}], "]"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"displayNewtonIterInfo", "[", 
+    RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"del", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"getDelta", "[", "]"}], "]"}]}], ",", 
+      RowBox[{"fVal", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"getfVal", "[", "]"}], "]"}]}], ",", 
+      RowBox[{"xx", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"getXx", "[", "]"}], "]"}]}], ",", 
+      RowBox[{"conv", "=", 
+       RowBox[{"nis", "[", 
+        RowBox[{"isConvergedQ", "[", "]"}], "]"}]}]}], "}"}], "/;", 
+    RowBox[{"StringMatchQ", "[", 
+     RowBox[{
+      RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+      "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterInfo\>\""}], 
+     "]"}]}]}], "\n", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"juddSSSys", "=", 
+  RowBox[{"juddEqn", "/.", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"cc", "[", "_", "]"}], "\[Rule]", "css"}], ",", 
+     RowBox[{
+      RowBox[{"kk", "[", "_", "]"}], "\[Rule]", "kss"}], ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"eps", "[", "_", "]"}], "[", "_", "]"}], "\[Rule]", "0"}]}], 
+    "}"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"FindRoot", "[", 
+   RowBox[{
+    RowBox[{"juddSSSys", "//.", "jetSubs"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"kss", ",", "1"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"css", ",", "1"}], "}"}]}], "]"}], "\n", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"simp", "=", 
+   RowBox[{
+   "JavaNew", "[", 
+    "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy\>\"",
+     "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"flg", ",", "res"}], "}"}], "=", 
+    RowBox[{"indFunc00", "[", 
+     RowBox[{".2", ",", "1.", ",", "simp"}], "]"}]}], ";"}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"nis", "=", 
+   RowBox[{"res", "[", 
+    RowBox[{"getTheStrategyIters", "[", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"them", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"nis", "[", 
+      RowBox[{"get", "[", "#", "]"}], "]"}], "&"}], "/@", 
+    RowBox[{"Range", "[", 
+     RowBox[{"0", ",", 
+      RowBox[{
+       RowBox[{"nis", "[", 
+        RowBox[{"size", "[", "]"}], "]"}], "-", "1"}]}], "]"}]}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ani", "=", 
+   RowBox[{"them", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"displayStrategyIterInfo", "[", 
+     RowBox[{"getStrategyInfo", "[", 
+      RowBox[{"ani", ",", "#"}], "]"}], "]"}], "&"}], "/@", 
+   RowBox[{"Range", "[", 
+    RowBox[{"getNumNewtonIters", "[", "ani", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{"getNumNewtonIters", "[", "ani", "]"}], "\n"}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.6166011269860992`*^9, 3.6166011269860992`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"kss", ",", 
+   RowBox[{
+    SuperscriptBox["css", "gamma"], "-", 
+    RowBox[{"AA", " ", "alpha", " ", "beta", " ", 
+     SuperscriptBox["css", "gamma"], " ", 
+     SuperscriptBox["kss", 
+      RowBox[{
+       RowBox[{"-", "1"}], "+", "alpha"}]]}]}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.6166839639579124`*^9, {3.6166840274366426`*^9, 3.6166840348464947`*^9}, {
+   3.616684166994859*^9, 3.616684171724765*^9}, {3.616684209636007*^9, 
+   3.61668422647567*^9}, {3.6166849974262524`*^9, 3.6166850047261066`*^9}, 
+   3.616685065988882*^9, 3.616685099408214*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"FindRoot", "::", "jsing"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Encountered a singular Jacobian at the point \[NoBreak]\\!\
+\\({kss, css}\\)\[NoBreak] = \[NoBreak]\\!\\({1.`, 1.`}\\)\[NoBreak]. Try \
+perturbing the initial point(s). \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/FindRoot/jsing\\\", ButtonNote -> \
+\\\"FindRoot::jsing\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.6166839639979115`*^9, {3.6166840276266394`*^9, 3.6166840349064937`*^9}, {
+   3.6166841673748517`*^9, 3.616684171794763*^9}, {3.6166842097060056`*^9, 
+   3.616684226515669*^9}, {3.6166849974762516`*^9, 3.616685004816105*^9}, 
+   3.6166850660288815`*^9, 3.616685099448213*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"kss", "\[Rule]", "1.`"}], ",", 
+   RowBox[{"css", "\[Rule]", "1.`"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.6166839639579124`*^9, {3.6166840274366426`*^9, 3.6166840348464947`*^9}, {
+   3.616684166994859*^9, 3.616684171724765*^9}, {3.616684209636007*^9, 
+   3.61668422647567*^9}, {3.6166849974262524`*^9, 3.6166850047261066`*^9}, 
+   3.616685065988882*^9, 3.616685099448213*^9}],
+
+Cell[BoxData["2"], "Output",
+ CellChangeTimes->{
+  3.6166839639579124`*^9, {3.6166840274366426`*^9, 3.6166840348464947`*^9}, {
+   3.616684166994859*^9, 3.616684171724765*^9}, {3.616684209636007*^9, 
+   3.61668422647567*^9}, {3.6166849974262524`*^9, 3.6166850047261066`*^9}, 
+   3.616685065988882*^9, 3.616685099478213*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"noShockjuddBasis00", "=", 
+   RowBox[{"GenerateBasis", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stateVar", ",", "nonStateVar"}], "}"}], ",", "polyRange", ",", 
+     "initPower"}], "]"}]}], "\n"}], "\n", 
+ RowBox[{"juddBasis00", "=", 
+  RowBox[{"GenerateBasis", "[", 
+   RowBox[{
+   "stateVar", ",", "polyRange", ",", "initPower", ",", "theShocks", ",", 
+    RowBox[{"{", "0", "}"}], ",", 
+    RowBox[{"{", "0.000001", "}"}], ",", 
+    RowBox[{"{", "10", "}"}], ",", 
+    RowBox[{"{", "0", "}"}], ",", "nonStateVar"}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
+   3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
+   3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
+   3.6166764594813075`*^9, 3.6166765036164265`*^9}, {3.616676659545308*^9, 
+   3.6166766755049887`*^9}, {3.6166767183841314`*^9, 
+   3.6166767734430304`*^9}, {3.6166768380817375`*^9, 
+   3.6166768657511835`*^9}, {3.6166774947696033`*^9, 3.6166774956995845`*^9}, 
+   3.6166790399801292`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+     "ProjectionMethodToolsJava", ".", "WeightedStochasticBasis"}], "]"}], 
+   "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject25391982817837057]], "Output",
+ CellChangeTimes->{
+  3.616683964027911*^9, 3.616684034946493*^9, 3.6166841719147606`*^9, {
+   3.616684209976*^9, 3.6166842265556684`*^9}, 3.616685004856104*^9, 
+   3.616685066068881*^9, 3.6166850994882126`*^9}],
+
+Cell[BoxData[
+ RowBox[{"GenerateBasis", "[", 
+  RowBox[{
+   RowBox[{"{", "\<\"kk\"\>", "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"0.333`", ",", "1.667`"}], "}"}], "}"}], ",", 
+   RowBox[{"{", "0", "}"}], ",", "theShocks", ",", 
+   RowBox[{"{", "0", "}"}], ",", 
+   RowBox[{"{", "1.`*^-6", "}"}], ",", 
+   RowBox[{"{", "10", "}"}], ",", 
+   RowBox[{"{", "0", "}"}], ",", 
+   RowBox[{"{", "\<\"cc\"\>", "}"}]}], "]"}]], "Output",
+ CellChangeTimes->{
+  3.616683964027911*^9, 3.616684034946493*^9, 3.6166841719147606`*^9, {
+   3.616684209976*^9, 3.6166842265556684`*^9}, 3.616685004856104*^9, 
+   3.616685066068881*^9, 3.6166850994882126`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"indFunc00", "[", 
+   RowBox[{
+    RowBox[{"xx_", "?", "NumberQ"}], ",", 
+    RowBox[{"yy_", "?", "NumberQ"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"restry", "=", 
+      RowBox[{"ComputeInitialCollocationWeights", "[", 
+       RowBox[{"juddBasis00", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", "xx", "}"}], ",", 
+          RowBox[{"{", "yy", "}"}]}], "}"}], ",", "modEqns", ",", 
+        RowBox[{
+        "JavaNew", "[", 
+         "\"\<gov.frb.ma.msu.ProjectionTools.SimpleFindZeroStrategy\>\"", 
+         "]"}]}], "]"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"MatrixQ", "[", 
+          RowBox[{"restry", "[", 
+           RowBox[{"getResWeights", "[", "]"}], "]"}], "]"}], "\[Equal]", 
+         "True"}], ",", "1", ",", 
+        RowBox[{"-", "1"}]}], "]"}], ",", "restry"}], "}"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
+  3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
+  3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
+  3.6166764594813075`*^9, 3.6166764965065684`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"retrieveIters", "[", 
+     RowBox[{"stratInfo_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"nisInfo", "=", 
+        RowBox[{"stratInfo", "[", 
+         RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
+      RowBox[{"nisInfo", "[", 
+       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"retrieveIters", "[", 
+     RowBox[{"stratInfo_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"nisInfo", "=", 
+        RowBox[{"stratInfo", "[", 
+         RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
+      RowBox[{"nisInfo", "[", 
+       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{"from", " ", "getmathtowork"}], "*)"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"getStrategyIters", "[", 
+     RowBox[{"res_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"res", "[", 
+      RowBox[{"getTheStrategyIters", "[", "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "res", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.someResults\>\""}], 
+      "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"getStrategySeq", "[", 
+     RowBox[{
+      RowBox[{"stratIts_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], 
+    ":=", 
+    RowBox[{
+     RowBox[{"stratIts", "[", 
+      RowBox[{"get", "[", 
+       RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "stratIts", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\
+\>\""}], "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"getStrategyInfo", "[", 
+     RowBox[{
+      RowBox[{"nis_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"nis", "[", 
+      RowBox[{"get", "[", 
+       RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\
+\>\""}], "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"getNumStrategyIters", "[", 
+     RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"nis", "[", 
+      RowBox[{"size", "[", "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\
+\>\""}], "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"displayStrategyIterInfo", "[", 
+     RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"del", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"getDelta", "[", "]"}], "]"}]}], ",", 
+       RowBox[{"fVal", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"getfVal", "[", "]"}], "]"}]}], ",", 
+       RowBox[{"xx", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"getXx", "[", "]"}], "]"}]}], ",", 
+       RowBox[{"conv", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"isConvergedQ", "[", "]"}], "]"}]}]}], "}"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterInfo\>\""}], 
+      "]"}]}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"getNewtonSeq", "[", 
+     RowBox[{
+      RowBox[{"stratIts_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], 
+    ":=", 
+    RowBox[{
+     RowBox[{"stratIts", "[", 
+      RowBox[{"get", "[", 
+       RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "stratIts", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo\
+\>\""}], "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"getNewtonInfo", "[", 
+     RowBox[{
+      RowBox[{"nis_", "?", "JavaObjectQ"}], ",", "num_Integer"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"nis", "[", 
+      RowBox[{"get", "[", 
+       RowBox[{"num", "-", "1"}], "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo\>\
+\""}], "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"getNumNewtonIters", "[", 
+     RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"nis", "[", 
+      RowBox[{"size", "[", "]"}], "]"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo\>\
+\""}], "]"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"displayNewtonIterInfo", "[", 
+     RowBox[{"nis_", "?", "JavaObjectQ"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"del", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"getDelta", "[", "]"}], "]"}]}], ",", 
+       RowBox[{"fVal", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"getfVal", "[", "]"}], "]"}]}], ",", 
+       RowBox[{"xx", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"getXx", "[", "]"}], "]"}]}], ",", 
+       RowBox[{"conv", "=", 
+        RowBox[{"nis", "[", 
+         RowBox[{"isConvergedQ", "[", "]"}], "]"}]}]}], "}"}], "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
+       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterInfo\>\""}], 
+      "]"}]}]}], "\n", "\n", "\n", "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.6166011269860992`*^9, 3.6166011269860992`*^9}, {
+   3.6166809447152967`*^9, 3.6166809548350945`*^9}, 3.616682941324365*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"noShockjuddBasis00", "=", 
+   RowBox[{"GenerateBasis", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stateVar", ",", "nonStateVar"}], "}"}], ",", "polyRange", ",", 
+     "initPower"}], "]"}]}], "\n"}], "\n", 
+ RowBox[{"juddBasis00", "=", 
+  RowBox[{"GenerateBasis", "[", 
+   RowBox[{
+   "stateVar", ",", "polyRange", ",", "initPower", ",", "theShocks", ",", 
+    RowBox[{"{", "0", "}"}], ",", 
+    RowBox[{"{", "0.000001", "}"}], ",", 
+    RowBox[{"{", "10", "}"}], ",", 
+    RowBox[{"{", "0", "}"}], ",", "nonStateVar"}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
+   3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
+   3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
+   3.6166764594813075`*^9, 3.6166765036164265`*^9}, {3.616676659545308*^9, 
+   3.6166766755049887`*^9}, {3.6166767183841314`*^9, 
+   3.6166767734430304`*^9}, {3.6166768380817375`*^9, 
+   3.6166768657511835`*^9}, {3.6166774947696033`*^9, 3.6166774956995845`*^9}, 
+   3.6166790399801292`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+     "ProjectionMethodToolsJava", ".", "WeightedStochasticBasis"}], "]"}], 
+   "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject1954728485322753]], "Output",
+ CellChangeTimes->{
+  3.61668396407791*^9, 3.6166840350064917`*^9, 3.6166841719747596`*^9, {
+   3.6166842100159993`*^9, 3.6166842266056676`*^9}, 3.616685004916103*^9, 
+   3.6166850661188803`*^9, 3.6166850995282116`*^9}],
+
+Cell[BoxData[
+ RowBox[{"GenerateBasis", "[", 
+  RowBox[{
+   RowBox[{"{", "\<\"kk\"\>", "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"0.333`", ",", "1.667`"}], "}"}], "}"}], ",", 
+   RowBox[{"{", "0", "}"}], ",", "theShocks", ",", 
+   RowBox[{"{", "0", "}"}], ",", 
+   RowBox[{"{", "1.`*^-6", "}"}], ",", 
+   RowBox[{"{", "10", "}"}], ",", 
+   RowBox[{"{", "0", "}"}], ",", 
+   RowBox[{"{", "\<\"cc\"\>", "}"}]}], "]"}]], "Output",
+ CellChangeTimes->{
+  3.61668396407791*^9, 3.6166840350064917`*^9, 3.6166841719747596`*^9, {
+   3.6166842100159993`*^9, 3.6166842266056676`*^9}, 3.616685004916103*^9, 
+   3.6166850661188803`*^9, 3.6166850995282116`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"flg", ",", "aRes"}], "}"}], "=", 
+  RowBox[{"indFunc00", "[", 
+   RowBox[{"1", ",", "2.21053", ",", "simp"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.6166011413658113`*^9, 3.616601152309594*^9}, {
+  3.616611436378764*^9, 3.6166114661081696`*^9}, {3.616611532896834*^9, 
+  3.6166115360967703`*^9}, {3.6166771937356243`*^9, 3.6166771984355297`*^9}, {
+  3.616677552008458*^9, 3.616677553488429*^9}, {3.6166793263416643`*^9, 
+  3.616679336161468*^9}, {3.6166813136719184`*^9, 3.6166813186118193`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "1"}], ",", 
+   RowBox[{"ComputeInitialCollocationWeights", "[", 
+    RowBox[{
+     RowBox[{"GenerateBasis", "[", 
+      RowBox[{
+       RowBox[{"{", "\<\"kk\"\>", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"{", 
+         RowBox[{"0.333`", ",", "1.667`"}], "}"}], "}"}], ",", 
+       RowBox[{"{", "0", "}"}], ",", "theShocks", ",", 
+       RowBox[{"{", "0", "}"}], ",", 
+       RowBox[{"{", "1.`*^-6", "}"}], ",", 
+       RowBox[{"{", "10", "}"}], ",", 
+       RowBox[{"{", "0", "}"}], ",", 
+       RowBox[{"{", "\<\"cc\"\>", "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "1", "}"}], ",", 
+       RowBox[{"{", "2.21053`", "}"}]}], "}"}], ",", 
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", "juddMod", "]"}], "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject34704285996417025], ",", 
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+         "ProjectionMethodToolsJava", ".", "SimpleFindZeroStrategy"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject11073740217516033]}], "]"}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{
+  3.6166839641079097`*^9, 3.616684035026491*^9, 3.616684171994759*^9, {
+   3.616684210035999*^9, 3.6166842266156673`*^9}, 3.6166850049361024`*^9, 
+   3.61668506613888*^9, 3.616685099548211*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"aRes", "[", 
+  RowBox[{"getResWeights", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.6166793450812893`*^9, 3.61667935255114*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ComputeInitialCollocationWeights", "[", 
+   RowBox[{
+    RowBox[{"GenerateBasis", "[", 
+     RowBox[{
+      RowBox[{"{", "\<\"kk\"\>", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{"0.333`", ",", "1.667`"}], "}"}], "}"}], ",", 
+      RowBox[{"{", "0", "}"}], ",", "theShocks", ",", 
+      RowBox[{"{", "0", "}"}], ",", 
+      RowBox[{"{", "1.`*^-6", "}"}], ",", 
+      RowBox[{"{", "10", "}"}], ",", 
+      RowBox[{"{", "0", "}"}], ",", 
+      RowBox[{"{", "\<\"cc\"\>", "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", "1", "}"}], ",", 
+      RowBox[{"{", "2.21053`", "}"}]}], "}"}], ",", 
+    InterpretationBox[
+     RowBox[{"\[LeftGuillemet]", 
+      RowBox[{"JavaObject", "[", "juddMod", "]"}], "\[RightGuillemet]"}],
+     JLink`Objects`vm1`JavaObject34704285996417025], ",", 
+    InterpretationBox[
+     RowBox[{"\[LeftGuillemet]", 
+      RowBox[{"JavaObject", "[", 
+       RowBox[{
+       "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
+        "ProjectionMethodToolsJava", ".", "SimpleFindZeroStrategy"}], "]"}], 
+      "\[RightGuillemet]"}],
+     JLink`Objects`vm1`JavaObject11073740217516033]}], "]"}], "[", 
+  RowBox[{"getResWeights", "[", "]"}], "]"}]], "Output",
+ CellChangeTimes->{
+  3.6166839641179094`*^9, 3.6166840350464907`*^9, 3.616684172014759*^9, {
+   3.6166842100459986`*^9, 3.616684226635667*^9}, 3.616685004946102*^9, 
+   3.616685066148879*^9, 3.6166850995582113`*^9}]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Burnside Model", "Section",
+ CellChangeTimes->{{3.616678540179332*^9, 3.6166785429591646`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"burnsideEqns", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "1"}], "*", 
+        RowBox[{"y", "[", "t", "]"}]}], "+", 
+       RowBox[{"beta", "*", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"E", "^", 
+           RowBox[{"(", 
+            RowBox[{"theta", "*", 
+             RowBox[{"(", 
+              RowBox[{"x", "[", 
+               RowBox[{"t", "+", "1"}], "]"}], ")"}]}], ")"}]}], "*", 
+          RowBox[{"(", 
+           RowBox[{"1", "+", 
+            RowBox[{"y", "[", 
+             RowBox[{"t", "+", "1"}], "]"}]}], ")"}]}], ")"}]}]}], ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"eps", "[", "xx", "]"}], "[", "t", "]"}], "*", "eta"}], "+", 
+       RowBox[{"rho", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"x", "[", 
+           RowBox[{
+            RowBox[{"-", "1"}], "+", "t"}], "]"}], "-", "xbar"}], ")"}]}], 
+       "-", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"x", "[", "t", "]"}], "-", "xbar"}], ")"}]}]}], "}"}]}], 
+   ";"}], "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"ericMoms", "=", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"stdev", "=", 
+        RowBox[{"0348", "/", "10000"}]}], "}"}], ",", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"mom", "[", 
+          RowBox[{"xx", ",", "ii"}], "]"}], "\[Rule]", 
+         RowBox[{"Moment", "[", 
+          RowBox[{
+           RowBox[{"NormalDistribution", "[", 
+            RowBox[{"0", ",", "stdev"}], "]"}], ",", "ii"}], "]"}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{"ii", ",", "10"}], "}"}]}], "]"}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"zapMoms", "=", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"stdev", "=", 
+        RowBox[{"0348", "/", "10000"}]}], "}"}], ",", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"mom$eps$xx", "[", "ii", "]"}], "=", 
+         RowBox[{"Moment", "[", 
+          RowBox[{
+           RowBox[{"NormalDistribution", "[", 
+            RowBox[{"0", ",", "stdev"}], "]"}], ",", "ii"}], "]"}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{"ii", ",", "10"}], "}"}]}], "]"}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"burnsideSubs", "=", 
+    RowBox[{"Join", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"beta", "\[Rule]", 
+        RowBox[{"95", "/", "100"}]}], ",", 
+       RowBox[{"rho", "\[Rule]", 
+        RowBox[{
+         RowBox[{"-", "139"}], "/", "1000"}]}], ",", 
+       RowBox[{"theta", "\[Rule]", 
+        RowBox[{
+         RowBox[{"-", "15"}], "/", "10"}]}], ",", 
+       RowBox[{"xbar", "\[Rule]", 
+        RowBox[{"0179", "/", "10000"}]}], ",", 
+       RowBox[{"sigVal", "\[Rule]", 
+        RowBox[{"0348", "/", "10000"}]}], ",", 
+       RowBox[{"eta", "\[Rule]", "1"}]}], "}"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\n"}], "Input",
+ CellChangeTimes->{{3.6166788512157927`*^9, 3.616678851225792*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"newWeightedStochasticBasis", "[", 
+    RowBox[{"burnsideModProj", ",", 
+     RowBox[{
+      RowBox[{"(", "burnsideEqns", ")"}], "//.", "burnsideSubs"}]}], "]"}], 
+   ";"}], "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"stateVars", ",", "nonStateVars", ",", "shocks"}], "}"}], ",", 
+      "modEqns"}], "}"}], "=", 
+    RowBox[{"GenerateModelCode", "[", "burnsideModProj", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"polyRanges", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"xLow", "=", "0.01"}], ",", 
+        RowBox[{"xHigh", "=", "1."}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"zLow", "=", 
+         RowBox[{"-", ".1"}]}], ",", 
+        RowBox[{"zHigh", "=", ".1"}]}], "}"}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"initial", " ", "power", " ", "of", " ", "polynomial"}], "*)"}], 
+  "\[IndentingNewLine]", "\n", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"initPowers", "=", 
+   RowBox[{"{", "0", "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"shockPowers", "=", 
+   RowBox[{"{", "0", "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"shockMeans", "=", 
+   RowBox[{"{", "0", "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"shockStDevs", "=", 
+   RowBox[{"{", 
+    RowBox[{"0348", "/", "10000."}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"intOrders", "=", 
+    RowBox[{"{", "10", "}"}]}], ";"}], "\n", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"burnsideBasis", "=", 
+   RowBox[{"GenerateBasis", "[", 
+    RowBox[{
+    "stateVars", ",", "polyRanges", ",", "initPowers", ",", "shocks", ",", 
+     "shockMeans", ",", "shockStDevs", ",", "intOrders", ",", "shockPowers", 
+     ",", "nonStateVars"}], "]"}]}], "\n", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"guessWts", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", "0.202639", "}"}], ",", 
+     RowBox[{"{", "0.360247", "}"}]}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"res00", "=", 
+   RowBox[{"ComputeInitialCollocationWeights", "[", 
+    RowBox[{"burnsideBasis", ",", "guessWts", ",", "modEqns"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"projPoly00", "=", 
+   RowBox[{"genPolys", "[", 
+    RowBox[{
+     RowBox[{"res00", "[", 
+      RowBox[{"getResWeights", "[", "]"}], "]"}], ",", "stateVars", ",", 
+     "polyRanges", ",", "initPowers"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ss00", "=", 
+   RowBox[{"FindRoot", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"x", ",", "y"}], "}"}], "-", "projPoly00"}], "/.", 
+      RowBox[{"xx$Shock", "\[Rule]", "0"}]}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"x", ",", ".1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"y", ",", "5."}], "}"}]}], "}"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\n"}], "Input",
+ CellChangeTimes->{{3.6166786460829773`*^9, 3.6166786460829773`*^9}, 
+   3.6166799306205783`*^9, {3.6166800058590736`*^9, 3.6166800644779015`*^9}, {
+   3.616680097377243*^9, 3.616680134336504*^9}}],
+
+Cell[BoxData[
+ RowBox[{"res00", "[", 
+  RowBox[{"isConvergedQ", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.616678886864723*^9, 3.616678904334199*^9}}],
+
+Cell[BoxData[
+ RowBox[{"res00", "[", 
+  RowBox[{"getResWeights", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.616680448234226*^9, 3.6166804584840217`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"genPolys", "[", "res00", "]"}]], "Input",
+ CellChangeTimes->{{3.616680223858714*^9, 3.61668022505869*^9}, {
+  3.6166805469822516`*^9, 3.616680552622139*^9}}],
+
+Cell[BoxData["projPoly00"], "Input",
+ CellChangeTimes->{{3.6166802543781033`*^9, 3.616680257998031*^9}}],
+
+Cell[BoxData[
+ RowBox[{"??", "phiFunc"}]], "Input",
+ CellChangeTimes->{{3.6166802876974373`*^9, 3.6166802940373106`*^9}}]
+}, Open  ]]
+},
+WindowSize->{783, 866},
+WindowMargins->{{Automatic, 91}, {32, Automatic}},
+FrontEndVersion->"10.0 for Microsoft Windows (64-bit) (July 1, 2014)",
+StyleDefinitions->"Default.nb"
+]
+

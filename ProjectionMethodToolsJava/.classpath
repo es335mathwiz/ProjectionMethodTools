@@ -22,5 +22,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="R:/Software/mavenRepositories/tryRep/com/grepcode/mtj/0.9.14/mtj-0.9.14.jar"/>
+	<classpathentry kind="lib" path="R:/Software/mavenRepositories/tryRep/ooNumMethods/OONumericalMethods/1.0/OONumericalMethods-1.0.jar"/>
+	<classpathentry kind="lib" path="R:/Software/mavenRepositories/tryRep/net/sourceforge/ujmp/0.2.5/ujmp-0.2.5.jar"/>
+	<classpathentry kind="lib" path="R:/Software/mavenRepositories/tryRep/org/apache/commons/commons-math/2.0/commons-math-2.0.jar"/>
+	<classpathentry kind="lib" path="R:/Software/mavenRepositories/tryRep/math/nist/gov/Jama/1.0.3/Jama-1.0.3.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
