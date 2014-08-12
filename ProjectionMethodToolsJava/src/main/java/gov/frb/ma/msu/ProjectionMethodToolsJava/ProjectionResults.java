@@ -48,9 +48,9 @@ throws Exception{
 	double [][] aRes = fZero.findCollocationWeights(thePM,initWts,theSys,1.);
 	 theStrategyIters.addAll(fZero.getStrategyItersSeq());
 	setResWeights(new double[aRes.length][aRes[0].length]);
-	for(ii=0;ii<aRes.length;ii++){System.arraycopy(aRes[ii], 0, getResWeights()[ii], 0, aRes[0].length);
+	for(ii=0;ii<aRes.length;ii++){System.arraycopy(aRes[ii], 0, getResWeights()[ii], 0, aRes[0].length);}
 
-	setConvergedQ(true);}
+	setConvergedQ(true);
 		} catch(Exception ee) {
 			 theStrategyIters.addAll(fZero.getStrategyItersSeq());
 			theWeightedStochasticBasis=thePM;

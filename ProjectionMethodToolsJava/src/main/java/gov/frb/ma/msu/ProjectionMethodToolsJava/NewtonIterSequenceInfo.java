@@ -9,7 +9,7 @@ public class NewtonIterSequenceInfo extends ArrayList<NewtonIterInfo>{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	List<NewtonIterInfo> newtonIters = new ArrayList<NewtonIterInfo>();
+
 
 	boolean newtonConvergedQ=false;
 
@@ -21,13 +21,7 @@ public class NewtonIterSequenceInfo extends ArrayList<NewtonIterInfo>{
 		this.newtonConvergedQ = newtonConvergedQ;
 	}
 
-	public List<NewtonIterInfo> getNewtonIters() {
-		return newtonIters;
-	}
 
-	public void setNewtonIters(List<NewtonIterInfo> newtonIters) {
-		this.newtonIters = newtonIters;
-	}
 	
 	private double shrinkFactor;
 	private double minShrink;

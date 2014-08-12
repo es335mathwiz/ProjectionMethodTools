@@ -5,6 +5,7 @@ public class NewtonIterInfo {
 	double [][] delta;
 	double lambda;
 	double [][] fVal;
+	double [][]dfVal;
 	boolean convergedQ=false;
 	double shrinkFactorNow;
 	public double getShrinkFactorNow() {
@@ -23,7 +24,7 @@ public class NewtonIterInfo {
 		this.convergedQ = convergedQ;
 	}
 	
-	NewtonIterInfo(double [][]xval,double [][] dVal, double lamVal,double [][] fNow, boolean hasConverged){
+	NewtonIterInfo(double [][]xval,double [][] dVal, double lamVal,double [][] fNow,double [][] dfNow, boolean hasConverged){
 		xx=new double[xval.length][xval[0].length];
 		twoDimArrayCopy(xval,xx);
 		delta=new double[dVal.length][dVal[0].length];
@@ -31,9 +32,19 @@ public class NewtonIterInfo {
 		lambda=lamVal;
 		fVal=new double[fNow.length][fNow[0].length];
 		twoDimArrayCopy(fNow, fVal);
+		dfVal=new double[dfNow.length][dfNow[0].length];
+		twoDimArrayCopy(dfNow, dfVal);
 		setConvergedQ(hasConverged);
 	}
 	
+	public double[][] getDfVal() {
+		return dfVal;
+	}
+
+	public void setDfVal(double[][] dfVal) {
+		this.dfVal = dfVal;
+	}
+
 	void twoDimArrayCopy(double [][] source,double [][] copy){
 		int ii,cols=source[0].length;
 		for(ii=0;ii<source.length;ii++){

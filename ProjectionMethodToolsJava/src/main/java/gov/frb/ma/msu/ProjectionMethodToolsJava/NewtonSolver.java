@@ -211,9 +211,9 @@ return(	this.solveWSB(rEqns.getValuesToEquateModel(), xx, rEqns));
 		Utilities.chkNan(theEqValDrv.theVal.getArray(),"theVal");
 		try{
 		modelEquations.noNans(solution,xx,delta.getArray());
-		newtonItersAdd(new NewtonIterInfo(xx,delta.getArray(),getShrinkNow(),theEqValDrv.getTheVal().getArray(), true),shrinkNow);}
+		newtonItersAdd(new NewtonIterInfo(xx,delta.getArray(),getShrinkNow(),theEqValDrv.getTheVal().getArray(),theEqValDrv.getTheJac().getArray(), true),shrinkNow);}
 	 catch (ProjectionRuntimeException ee) {
-			newtonItersAdd(new NewtonIterInfo(xx,delta.getArray(),getShrinkNow(),theEqValDrv.getTheVal().getArray(), false),shrinkNow);
+			newtonItersAdd(new NewtonIterInfo(xx,delta.getArray(),getShrinkNow(),theEqValDrv.getTheVal().getArray(),theEqValDrv.getTheJac().getArray(), false),shrinkNow);
 		if(getShrinkNow()<getMinShrink()){
     	throw new ProjectionRuntimeException("from NewtonSolver shrinker:"+ee.getMessage());} 
      else {
