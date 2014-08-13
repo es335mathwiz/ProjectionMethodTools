@@ -4782,13 +4782,11 @@ Cell[BoxData[
    3.6168657466632996`*^9, 3.6168661057493*^9, 3.6168675065133*^9, 
    3.6168685724403*^9, 3.6168686420852995`*^9}]
 }, Open  ]]
-}, Open  ]]
-}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["choose wts ", "Section",
+Cell["choose wts ", "Subsubsection",
  CellChangeTimes->{{3.6168663322012997`*^9, 3.6168663578522997`*^9}, {
   3.6168674643043*^9, 3.6168674709033*^9}}],
 
@@ -4798,7 +4796,8 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{"{", 
      RowBox[{"1", ",", "1", ",", "0"}], "}"}], "}"}]}], ";"}]], "Input",
- CellChangeTimes->{{3.6168639541573*^9, 3.6168639582862997`*^9}}],
+ CellChangeTimes->{{3.6168639541573*^9, 3.6168639582862997`*^9}}]
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -5104,6 +5103,7 @@ Cell[BoxData[
    3.6168657461393*^9, 3.6168661055782995`*^9, 3.6168675070952997`*^9, 
    3.6168676981013*^9, 3.6168695529383*^9}]
 }, Open  ]]
+}, Closed]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -5689,6 +5689,179 @@ gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
  CellChangeTimes->{3.6168583950323*^9, 3.6168607956523*^9, 3.6168653457443*^9,
    3.6168656984163*^9, 3.6168657470052996`*^9, 3.6168661059713*^9, 
   3.6168675072393*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Methods", "[", "simpleBasisSto00", "]"}]], "Input",
+ CellChangeTimes->{{3.6168720214923*^9, 3.6168720254593*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {"\<\"static int[][] allPowers(int[])\"\>"},
+     {"\<\"static int[] dropEnd(int[])\"\>"},
+     {"\<\"boolean equals(Object)\"\>"},
+     {"\<\"static int[] expand(int[], int, int)\"\>"},
+     {"\<\"Class getClass()\"\>"},
+     {"\<\"Jama.Matrix getDrvPolyNowDrvMatrix(int, int, int)\"\>"},
+     {"\<\"Jama.Matrix getDrvPolyNowValMatrix(int, int, int)\"\>"},
+     {"\<\"double[] getGaussHermiteMean()\"\>"},
+     {"\<\"double[] getGaussHermiteStDev()\"\>"},
+     {"\<\"int getMaxShrink()\"\>"},
+     {"\<\"java.util.List getNewtonIters()\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo \
+getNewtonItersSeq()\"\>"},
+     {"\<\"int getNewtonSteps()\"\>"},
+     {"\<\"int getNumberOfShocks()\"\>"},
+     {"\<\"double[][] getRanges()\"\>"},
+     {"\<\"int[] getShockVarLocs()\"\>"},
+     {"\<\"double getShrinkFactor()\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.GaussHermite \
+getTheGaussHermite()\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.\
+NonStateVariablePolynomials getTheNonState()\"\>"},
+     {"\<\"double[] getTheShockVals()\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.StateVariablePolynomials \
+getTheState()\"\>"},
+     {"\<\"int getVarIndex(gov.frb.ma.msu.ProjectionMethodToolsJava.VarTime) \
+throws gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>\
+"},
+     {"\<\"int hashCode()\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.Basis \
+incPowers(gov.frb.ma.msu.ProjectionMethodToolsJava.StateVariablePolynomials, \
+int[]) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis \
+incPowers(int[]) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"static int indexPower(int[], int, int[])\"\>"},
+     {"\<\"boolean isInNeedOfShockUpdatesQ()\"\>"},
+     {"\<\"boolean isPerfectForesightQ()\"\>"},
+     {"\<\"void multiArrayCopy(double[][], double[][])\"\>"},
+     {"\<\"void notify()\"\>"},
+     {"\<\"void notifyAll()\"\>"},
+     {"\<\"int numNodesNow()\"\>"},
+     {"\<\"int numVarsNow()\"\>"},
+     {"\<\"static int[] rawPows(int)\"\>"},
+     {"\<\"void setAllWeights(double[][])\"\>"},
+     {"\<\"void setAllWeights(int)\"\>"},
+     {"\<\"void setGaussHermiteMean(double[])\"\>"},
+     {"\<\"void setGaussHermiteStDev(double[])\"\>"},
+     {"\<\"void setInNeedOfShockUpdatesQ(boolean)\"\>"},
+     {"\<\"void setMaxShrink(int)\"\>"},
+     {"\<\"void setNewtonIters(java.util.List)\"\>"},
+     {"\<\"void \
+setNewtonItersSeq(gov.frb.ma.msu.ProjectionMethodToolsJava.\
+StrategyIterSequenceInfo)\"\>"},
+     {"\<\"void setNewtonSteps(int)\"\>"},
+     {"\<\"void setNumberOfShocks(int)\"\>"},
+     {"\<\"void setPerfectForesightQ(boolean)\"\>"},
+     {"\<\"void setShockVarLocs()\"\>"},
+     {"\<\"void setShockVarLocs(int[])\"\>"},
+     {"\<\"void setShrinkFactor(double)\"\>"},
+     {"\<\"void \
+setTheGaussHermite(gov.frb.ma.msu.ProjectionMethodToolsJava.GaussHermite)\"\>\
+"},
+     {"\<\"void \
+setTheNonState(gov.frb.ma.msu.ProjectionMethodToolsJava.\
+NonStateVariablePolynomials)\"\>"},
+     {"\<\"void setTheNonStateWeights(double[][]) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"void setTheShockVals(double[])\"\>"},
+     {"\<\"void \
+setTheState(gov.frb.ma.msu.ProjectionMethodToolsJava.StateVariablePolynomials)\
+\"\>"},
+     {"\<\"void setTheStateWeights(double[][]) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"double[][][] solveParamsRange(double[][], \
+gov.frb.ma.msu.ProjectionMethodToolsJava.DoEqns, double[], double[], int) \
+throws gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>\
+"},
+     {"\<\"String toString()\"\>"},
+     {"\<\"void \
+updateForShocks(gov.frb.ma.msu.ProjectionMethodToolsJava.DoEqns, int[], \
+double[]) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"double[] updateParams(double[], double[], int, int)\"\>"},
+     {"\<\"void wait(long, int) throws InterruptedException\"\>"},
+     {"\<\"void wait(long) throws InterruptedException\"\>"},
+     {"\<\"void wait() throws InterruptedException\"\>"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.6168720260373*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Methods", "[", "modEqns", "]"}]], "Input",
+ CellChangeTimes->{{3.6168720673122997`*^9, 3.6168720740513*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {"\<\"boolean equals(Object)\"\>"},
+     {"\<\"Class getClass()\"\>"},
+     {"\<\"double[] getParams()\"\>"},
+     {"\<\"int hashCode()\"\>"},
+     {"\<\"void \
+noNans(gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis, \
+double[][], double[][]) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"void notify()\"\>"},
+     {"\<\"void notifyAll()\"\>"},
+     {"\<\"String toString()\"\>"},
+     {"\<\"void updateParams(double[])\"\>"},
+     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.EquationValDrv \
+updateValDrv(gov.frb.ma.msu.ProjectionMethodToolsJava.StochasticBasis) throws \
+gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
+     {"\<\"void wait(long, int) throws InterruptedException\"\>"},
+     {"\<\"void wait(long) throws InterruptedException\"\>"},
+     {"\<\"void wait() throws InterruptedException\"\>"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.6168720744733*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Class", "[", "modEqns", "]"}]], "Input",
+ CellChangeTimes->{{3.6168720951182995`*^9, 3.6168720996723*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Class", "[", 
+  InterpretationBox[
+   RowBox[{"\[LeftGuillemet]", 
+    RowBox[{"JavaObject", "[", "simpleStoMod", "]"}], "\[RightGuillemet]"}],
+   JLink`Objects`vm1`JavaObject31997985176944641], "]"}]], "Output",
+ CellChangeTimes->{3.6168720999602995`*^9}]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]],
@@ -8326,7 +8499,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{783, 866},
-WindowMargins->{{Automatic, 257}, {Automatic, 44}},
+WindowMargins->{{Automatic, 140}, {33, Automatic}},
 PrintingCopies->1,
 PrintingPageRange->{32000, 32000},
 PrintingOptions->{"Magnification"->1.,
