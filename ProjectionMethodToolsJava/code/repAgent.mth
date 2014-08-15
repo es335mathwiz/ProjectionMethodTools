@@ -1,0 +1,85 @@
+Get["prepPackages.mth"]
+(*define judd jet paper model equations*)
+(*names for variables*)
+(*
+jetSubs={beta->.95,alpha->.25,gamma->-.9,AA->4.157894737};
+jetSubs={beta->.95,alpha->.25,gamma->-.9,AA->(1/(alpha*beta))};
+*)
+
+Print["defining ufunc"]
+uFunc[cc_]:=(1/(1+gamma))*cc^(1+gamma)
+uPrimeFunc[cc_]:=(D[uFunc[xx],xx]/.xx->cc)
+
+fFunc[kk_]:=AA*kk^alpha;
+fPrimeFunc[kk_]:=(D[fFunc[xx],xx]/.xx->kk)
+
+juddEqn={
+kk[t]-(fFunc[kk[t-1]]-cc[t])+eps[try][t],
+uPrimeFunc[cc[t]]- beta*uPrimeFunc[cc[t+1]]*fPrimeFunc[kk[t]]
+};
+
+juddSSSys=juddEqn/.{cc[_]->css,kk[_]->kss,eps[_][_]->0}
+
+(*create a projection model and generate java code *)
+newWeightedStochasticBasis[juddMod,(juddEqn)];
+(*no worries*)
+{{stateVar,nonStateVar,noShocks},modEqns}=GenerateModelCode[juddMod];
+
+upParams00={AA,alpha,beta,gamma}//.(jetSubs={beta->.95,alpha->.25,gamma->-.5,AA->(1/(alpha*beta))});
+modEqns[updateParams[upParams00]]
+(*create chebyshev polynomials for projection*)
+(*define the range for capital*)
+polyRange={{kLow=0.333,kHigh=1.667}};
+(*initial power of polynomial*)
+initPower={0};
+juddBasis00=GenerateBasis[{stateVar,nonStateVar},polyRange,initPower]
+indFunc00[xx_?NumberQ,yy_?NumberQ]:=
+With[{restry = ComputeInitialCollocationWeights[juddBasis00,{{xx},{yy}},modEqns,JavaNew["gov.frb.ma.msu.ProjectionTools.SimpleFindZeroStrategy"]]},{If[MatrixQ[restry[getResWeights[]]]==True,1,-1],restry}]
+
+
+indFunc00[xx_?NumberQ,yy_?NumberQ,strat_?JavaObjectQ]:=
+With[{restry = ComputeInitialCollocationWeights[juddBasis00,{{xx},{yy}},modEqns,strat]},{If[MatrixQ[restry[getResWeights[]]]==True,1,-1],restry}]
+
+retrieveIters[stratInfo_?JavaObjectQ]:=With[{nisInfo=stratInfo[getStrategyIters[]]},nisInfo[get[0]]]
+
+retrieveIters[stratInfo_?JavaObjectQ]:=With[{nisInfo=stratInfo[getStrategyIters[]]},nisInfo[get[0]]]
+
+(*from getmathtowork*)
+
+getStrategyIters[res_?JavaObjectQ]:=res[getTheStrategyIters[]]/;
+StringMatchQ[ClassName[res],"gov.frb.ma.msu.ProjectionMethodToolsJava.someResults"]
+getStrategySeq[stratIts_?JavaObjectQ,num_Integer]:=stratIts[get[num-1]]/;
+StringMatchQ[ClassName[stratIts],"gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"]
+getStrategyInfo[nis_?JavaObjectQ,num_Integer]:=nis[get[num-1]]/;
+StringMatchQ[ClassName[nis],"gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"]
+getNumStrategyIters[nis_?JavaObjectQ]:=nis[size[]]/;
+StringMatchQ[ClassName[nis],"gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"]
+displayStrategyIterInfo[nis_?JavaObjectQ]:={del=nis[getDelta[]],fVal=nis[getfVal[]],xx=nis[getXx[]],conv=nis[isConvergedQ[]]}/;
+StringMatchQ[ClassName[nis],"gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterInfo"]
+
+getNewtonSeq[stratIts_?JavaObjectQ,num_Integer]:=stratIts[get[num-1]]/;
+StringMatchQ[ClassName[stratIts],"gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"]
+getNewtonInfo[nis_?JavaObjectQ,num_Integer]:=nis[get[num-1]]/;
+StringMatchQ[ClassName[nis],"gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo"]
+getNumNewtonIters[nis_?JavaObjectQ]:=nis[size[]]/;
+StringMatchQ[ClassName[nis],"gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterSequenceInfo"]
+displayNewtonIterInfo[nis_?JavaObjectQ]:={del=nis[getDelta[]],fVal=nis[getfVal[]],xx=nis[getXx[]],conv=nis[isConvergedQ[]]}/;
+StringMatchQ[ClassName[nis],"gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterInfo"]
+
+
+juddSSSys=juddEqn/.{cc[_]->css,kk[_]->kss,eps[_][_]->0}
+FindRoot[juddSSSys//.jetSubs,{kss,1},{css,1}]
+
+
+simp = JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+{flg, res} = indFunc00[.2, 1., simp];
+
+nis = res[getTheStrategyIters[]];
+them = nis[get[#]] & /@ Range[0, nis[size[]] - 1];
+ani = them[[1]];
+displayStrategyIterInfo[getStrategyInfo[ani, #]] & /@ 
+  Range[getNumNewtonIters[ani]];
+getNumNewtonIters[ani]
+
+(*
+*)
