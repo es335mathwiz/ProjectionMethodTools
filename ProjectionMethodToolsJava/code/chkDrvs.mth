@@ -1,0 +1,164 @@
+Get["prepPackages.mth"]
+
+
+Print["this simple linear  matches val and drv"]
+(*
+simpleStoEqn = {xxx[
+     t] - (.5 xxx[t - 1] + xxx[t]+ 0.1 xxx[t + 1] + eps[simpVar][t])};
+
+newWeightedStochasticBasis[simpleStoMod, simpleStoEqn];
+
+{{stateVar, nonStateVar, theShock}, modEqns} = 
+  GenerateModelCode[simpleStoMod];
+
+
+debugEqCode[
+  "simpleStoMod", {-0.5` xxx[-1 + t] - 0.1 xxx[t + 1] + xxx[t] - 
+    eps[simpVar][t]}, {{xxx}, {simpVar$Shock}}];
+
+
+modStoParams = {} //. (simpStoSubs = {xLow -> 0, xHigh -> 1, 
+      rho -> .95, stdDev -> 0.000000004, theMean -> {0}, 
+      integOrders -> {10}});
+modEqns[updateParams[modStoParams]];
+
+polyRange = {{xLow, xHigh}} //. simpStoSubs;
+initPower = {2};
+shockPower = {0};
+simpleBasisSto00 = 
+ GenerateBasis[stateVar, polyRange //. simpStoSubs, initPower, 
+  theShock, theMean //. simpStoSubs, {stdDev} //. simpStoSubs, 
+  integOrders //. simpStoSubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+
+(*eval model*)
+tryMatSymb = {{a11, a12, a13}};
+tryMat=tryMatSymb/.(matSub={a11 -> 1, a12 -> 1, a13 -> 1});
+{emVal,emDrv} = evalMod[modEqns, simpleBasisSto00, tryMat];
+
+simpSubs = {xxx[t - 1] -> 
+   gtXFormedChebNodes[simpleBasisSto00][[All, {1}]], 
+  xxx[t] -> 
+   mmaStateVarsTimeTAtNodes[simpleBasisSto00, tryMatSymb][[All, {1}]], xxx[t + 1] -> 
+ mmaStateVarsTimeTP1AtNodes[simpleBasisSto00, tryMatSymb]};
+
+lookey = Flatten[simpleStoEqn /. simpSubs // Simplify];
+
+
+dlookey = Transpose[D[lookey, #] & /@ Flatten[tryMatSymb] // Expand];
+
+
+{mthVal,mthDrv}={lookey, dlookey} /. matSub/.eps[_][_]->0;
+*)
+
+Print["square lagged derivs  val match"]
+
+
+
+
+(*
+simpleStoEqn = {xxx[
+     t] - (.5 xxx[t - 1]^2 + xxx[t]+0.1 xxx[t + 1] + eps[simpVar][t])};
+
+newWeightedStochasticBasis[simpleStoMod, simpleStoEqn];
+
+{{stateVar, nonStateVar, theShock}, modEqns} = 
+  GenerateModelCode[simpleStoMod];
+
+
+debugEqCode[
+  "simpleStoMod", {-0.5` xxx[-1 + t] - 0.1 xxx[t + 1] + xxx[t] - 
+    eps[simpVar][t]}, {{xxx}, {simpVar$Shock}}];
+
+
+modStoParams = {} //. (simpStoSubs = {xLow -> 0, xHigh -> 1, 
+      rho -> .95, stdDev -> 0.000000004, theMean -> {0}, 
+      integOrders -> {10}});
+modEqns[updateParams[modStoParams]]
+
+polyRange = {{xLow, xHigh}} //. simpStoSubs;
+initPower = {2};
+shockPower = {0};
+simpleBasisSto00 = 
+ GenerateBasis[stateVar, polyRange //. simpStoSubs, initPower, 
+  theShock, theMean //. simpStoSubs, {stdDev} //. simpStoSubs, 
+  integOrders //. simpStoSubs, shockPower, nonStateVar]
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+
+(*eval model*)
+tryMatSymb = {{a11, a12, a13}};
+tryMat=tryMatSymb/.(matSub={a11 -> 1, a12 -> 1, a13 -> 1});
+{emVal,emDrv} = evalMod[modEqns, simpleBasisSto00, tryMat];
+
+simpSubs = {xxx[t - 1] -> 
+   gtXFormedChebNodes[simpleBasisSto00][[All, {1}]], 
+  xxx[t] -> 
+   mmaStateVarsTimeTAtNodes[simpleBasisSto00, tryMatSymb][[All, {1}]], xxx[t + 1] -> 
+ mmaStateVarsTimeTP1AtNodes[simpleBasisSto00, tryMatSymb]}
+
+lookey = Flatten[simpleStoEqn /. simpSubs // Simplify];
+
+
+dlookey = Transpose[D[lookey, #] & /@ Flatten[tryMatSymb] // Expand]
+
+
+{mthVal,mthDrv}={lookey, dlookey} /. matSub/.eps[_][_]->0;
+
+
+*)
+
+
+simpleStoEqn = {xxx[
+     t] - (.5 xxx[t - 1] + xxx[t]+0.1 xxx[t + 1]^2 + eps[simpVar][t])};
+
+newWeightedStochasticBasis[simpleStoMod, simpleStoEqn];
+
+{{stateVar, nonStateVar, theShock}, modEqns} = 
+  GenerateModelCode[simpleStoMod];
+
+
+debugEqCode[
+  "simpleStoMod", {-0.5` xxx[-1 + t] - 0.1 xxx[t + 1] + xxx[t] - 
+    eps[simpVar][t]}, {{xxx}, {simpVar$Shock}}];
+
+
+modStoParams = {} //. (simpStoSubs = {xLow -> 0, xHigh -> 1, 
+      rho -> .95, stdDev -> 0.000000004, theMean -> {0}, 
+      integOrders -> {10}});
+modEqns[updateParams[modStoParams]]
+
+polyRange = {{xLow, xHigh}} //. simpStoSubs;
+initPower = {2};
+shockPower = {0};
+simpleBasisSto00 = 
+ GenerateBasis[stateVar, polyRange //. simpStoSubs, initPower, 
+  theShock, theMean //. simpStoSubs, {stdDev} //. simpStoSubs, 
+  integOrders //. simpStoSubs, shockPower, nonStateVar]
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+
+(*eval model*)
+tryMatSymb = {{a11, a12, a13}};
+tryMat=tryMatSymb/.(matSub={a11 -> 1, a12 -> 1, a13 -> 1});
+{emVal,emDrv} = evalMod[modEqns, simpleBasisSto00, tryMat];
+
+simpSubs = {xxx[t - 1] -> 
+   gtXFormedChebNodes[simpleBasisSto00][[All, {1}]], 
+  xxx[t] -> 
+   mmaStateVarsTimeTAtNodes[simpleBasisSto00, tryMatSymb][[All, {1}]], xxx[t + 1] -> 
+ mmaStateVarsTimeTP1AtNodes[simpleBasisSto00, tryMatSymb]}
+
+lookey = Flatten[simpleStoEqn /. simpSubs // Simplify];
+
+
+dlookey = Transpose[D[lookey, #] & /@ Flatten[tryMatSymb] // Expand]
+
+
+{mthVal,mthDrv}={lookey, dlookey} /. matSub/.eps[_][_]->0;
+(*
+*)

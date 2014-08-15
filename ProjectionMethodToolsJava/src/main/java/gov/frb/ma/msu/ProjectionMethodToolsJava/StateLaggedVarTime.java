@@ -9,7 +9,7 @@ public class StateLaggedVarTime extends VarTimeType {
 	}
 
 
-	EquationValDrv doValSwitch(StochasticBasis model,int varNum){
+public	EquationValDrv doValSwitch(StochasticBasis model,int varNum){
 
 		  Matrix val;Matrix JJ;
 

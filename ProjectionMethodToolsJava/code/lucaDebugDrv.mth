@@ -1,0 +1,99 @@
+Get["prepPackages.mth"]
+
+lucaEqn={qq[t]- (beta*(1-rho)*qq[t+1] + rho*qq[t-1] - sigma * rr[t] + eps[uu][t]),rr[t]- phi*qq[t]}
+
+
+newWeightedStochasticBasis[lucaMod, lucaEqn]
+
+
+
+
+{{stateVar, nonStateVar, theShock}, modEqns} = 
+  GenerateModelCode[lucaMod];
+
+lucaSubs={beta->99/100,phi->1,rho->1/2,sigma->1,rUnderBar->2/100,qLow->-.5,qHigh->.9,uLow->-.1,uHigh->1};
+
+modParams={beta,phi,rho,sigma}/.{beta->99/100,phi->1,rho->1/2,sigma->1,rUnderBar->2/100}//N;
+modEqns[updateParams[modParams]]
+
+polyRange = {{qLow, qHigh},{uLow,uHigh} /. lucaSubs;
+initPower = {2,0};
+lucaBasis00 = 
+  GenerateBasis[{stateVar, nonStateVar}, polyRange, initPower];
+lucaBasisSto = 
+  GenerateBasis[stateVar, polyRange //. lucaSubs, nxtPow, theShock, 
+   theMean //. jetStoSubs, {stdDev} //. jetStoSubs, 
+   integOrders //. jetStoSubs, shockPower, nonStateVar];
+
+
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+tryMatSymb = {{a11, a12, a13},{a21, a22, a23},{a31,a32,a33}};
+tryMat=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51,a31->.2,a32->.4,a33->.6});
+stratIters=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"];
+
+
+
+doExportState[vName_String,vTime_?NumberQ]:=
+Module[{xxX,xxXVals,xxXDrvs},
+With[{vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,vTime]},
+xxX=vt[evalVar[lucaBasis00]];
+xxXVals=xxX[getTheVal[]][getArray[]];
+xxXDrvs=xxX[getTheJac[]][getArray[]];
+Export[varFName=vName<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
+Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
+{varFName,dvarFName}]]
+
+doExportNonState[vName_String,vTime_?NumberQ]:=
+Module[{xxX,xxXVals,xxXDrvs},
+With[{vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vName,vTime]},
+xxX=vt[evalVar[lucaBasis00]];
+xxXVals=xxX[getTheVal[]][getArray[]];
+xxXDrvs=xxX[getTheJac[]][getArray[]];
+Export[varFName=vName<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
+Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
+{varFName,dvarFName}]]
+
+(*needs expanding*)
+lucaBasis00[setAllWeights[tryMat]]
+
+(*needs expanding*)
+(*qqtm1*)
+vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime","qq",-1];
+qq$tm1=vt[evalVar[lucaBasis00]];
+qq$tm1Vals=qq$tm1[getTheVal[]][getArray[]];
+qq$tm1Drvs=qq$tm1[getTheJac[]][getArray[]];
+(*private method for lagged vartime doValSwitch*)
+
+
+
+
+(*qq$t*)
+vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime","qq",0];
+qq$t=vt[evalVar[lucaBasis00]];
+qq$tVals=qq$t[getTheVal[]][getArray[]];
+qq$tDrvs=qq$t[getTheJac[]][getArray[]];
+
+(*needs expanding*)
+nvt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime","rr",0];
+rr$t=nvt[evalVar[lucaBasis00]];
+rr$tVals=rr$t[getTheVal[]][getArray[]];
+rr$tDrvs=rr$t[getTheJac[]][getArray[]];
+
+eqn3=qq$t[plus[qq$tm1[times[-1]]]]
+eqn4=rr$t[times[-1]][plus[qq$tm1]]
+sys=eqn3[augSys[eqn4]]
+
+
+Splice["modelDoEqnsCalcs.mtex","luca.tex"]
+
+
+(*
+
+genPolys[theWts_?MatrixQ,
+theStateVars_List,
+theRanges_?MatrixQ,
+theOrds_?VectorQ]:=
+
+*)

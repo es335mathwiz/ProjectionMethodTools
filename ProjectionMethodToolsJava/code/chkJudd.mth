@@ -1,0 +1,111 @@
+Get["prepPackages.mth"]
+uFunc[cc_] := (1/(1 + gamma))*cc^(1 + gamma)
+uPrimeFunc[cc_] := (D[uFunc[xx], xx] /. xx -> cc)
+
+fFunc[kk_] := AA*kk^alpha;
+fPrimeFunc[kk_] := (D[fFunc[xx], xx] /. xx -> kk)
+
+juddDetEqn = {kk[t] - (fFunc[kk[t - 1]] - cc[t]), 
+   uPrimeFunc[cc[t]] - beta*uPrimeFunc[cc[t + 1]]*fPrimeFunc[kk[t]]};
+
+juddDetEqn= {kk[t]  - kk[t-1] ,  kk[t-1] - cc[t]}
+newWeightedStochasticBasis[juddDetMod, juddDetEqn]
+
+Print["kt=ktm1,ctp1=kt  first three rows correct last three wrong"]
+Print["kt=ktm1,ctp1=ktm1  first three rows correct last three wrong"]
+Print["kt=ktm1,ct=ktm1  first three rows correct last three wrong"]
+
+{{stateVar, nonStateVar, theShock}, modEqns} = 
+  GenerateModelCode[juddDetMod];
+
+
+
+modDetParams = {AA, alpha, beta, 
+    gamma} //. (jetDetSubs = {alpha->1,gamma->1,beta -> .95, alpha -> .25, gamma -> -.5,
+       AA -> (1/(alpha*beta)), kLow -> 0.333, kHigh -> 1.667});
+
+modEqns[updateParams[modDetParams]]
+
+polyRange = {{kLow, kHigh}} /. jetDetSubs;
+initPower = {2};
+juddBasisDet00 = 
+  GenerateBasis[{stateVar, nonStateVar}, polyRange, initPower];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+tryMatSymb = {{a11, a12, a13},{a21, a22, a23}};
+tryMat=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51});
+
+
+{emVal, emJac} = evalMod[modEqns, juddBasisDet00, tryMat] // Chop;
+
+tryMatSymb = {{a11, a12, a13}, {a11, a12, a13}};
+juddkkSubs = {kk[t - 1] -> 
+    gtXFormedChebNodes[juddBasisDet00][[All, {1}]], 
+   kk[t] -> 
+    mmaStateVarsTimeTAtNodes[juddBasisDet00, tryMatSymb][[All, {1}]], 
+   kk[t + 1] -> 
+    mmaStateVarsTimeTP1AtNodes[juddBasisDet00, tryMatSymb[[{1}]]]};
+juddccSubs = {cc[t - 1] -> 
+    gtXFormedChebNodes[juddBasisDet00][[All, {1}]], 
+   cc[t] -> 
+    mmaStateVarsTimeTAtNodes[juddBasisDet00, tryMatSymb][[All, {2}]], 
+   cc[t + 1] -> 
+    mmaStateVarsTimeTP1AtNodes[juddBasisDet00, tryMatSymb[[{2}]]]};
+lookey = Flatten[
+   juddDetEqn /. Join[juddccSubs, juddkkSubs] // Simplify];
+
+
+dlookey = Transpose[D[lookey, #] & /@ Flatten[tryMatSymb] // Expand];
+
+{slookey,sdlookey}=({lookey, dlookey} )//. jetDetSubs/.matSub
+
+
+
+
+numDrv[delt_?NumberQ]:=
+Module[{jetDetSubs ={beta -> .95, alpha -> .25, gamma -> -.5,
+AA -> (1/(alpha*beta)), kLow -> 0.333, kHigh -> 1.667},
+modDetParams,
+polyRange,initPower,
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"],
+tryMatSymb = {{a11, a12, a13},{a21, a22, a23}},
+juddBasisDet00
+},
+modDetParams = {AA, alpha, beta,gamma} //.jetDetSubs;
+modEqns[updateParams[modDetParams]];
+polyRange = {{kLow, kHigh}} /. jetDetSubs;
+initPower = {2};
+juddBasisDet00 = 
+  GenerateBasis[{stateVar, nonStateVar}, polyRange, initPower];
+tryMat=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51});
+tryMatDiffa11=tryMatSymb/.(matSub={a11 -> .3+delt, a12 -> .2, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51});
+tryMatDiffa12=tryMatSymb/.(matSub={a11 -> .3+delt, a12 -> .2+delt, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51});
+tryMatDiffa13=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1+delt,a21 -> .73, a22 -> .32, a23 -> .51});
+tryMatDiffa21=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1,a21 -> .73+delt, a22 -> .32, a23 -> .51});
+tryMatDiffa22=tryMatSymb/.(matSub={a11 -> .3+delt, a12 -> .2, a13 -> .1,a21 -> .73, a22 ->+delt .32, a23 -> .51});
+tryMatDiffa23=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51+delt});
+{emVal, emJac} = evalMod[modEqns, juddBasisDet00, tryMat]//Chop;
+doFunc=Chop[evalMod[modEqns, juddBasisDet00,#]]&;
+{emValDiffa11, emJacDiffa11} = doFunc[tryMatDiffa11];
+{emValDiffa12, emJacDiffa12} = doFunc[tryMatDiffa12];
+{emValDiffa13, emJacDiffa13} = doFunc[tryMatDiffa13];
+{emValDiffa21, emJacDiffa21} = doFunc[tryMatDiffa21];
+{emValDiffa22, emJacDiffa22} = doFunc[tryMatDiffa22];
+{emValDiffa23, emJacDiffa23} = doFunc[tryMatDiffa23];
+{
+Flatten[(emValDiffa11-emVal)/delt,1],
+Flatten[(emValDiffa12-emVal)/delt,1],
+Flatten[(emValDiffa13-emVal)/delt,1],
+Flatten[(emValDiffa21-emVal)/delt,1],
+Flatten[(emValDiffa22-emVal)/delt,1],
+Flatten[(emValDiffa23-emVal)/delt,1],
+Transpose[emJac]}]
+
+
+(*
+{emValDiffa12, emJacDiffa12} = evalMod[modEqns, juddBasisDet00, tryMatDiffa12]//Chop;
+{emValDiffa13, emJacDiffa13} = evalMod[modEqns, juddBasisDet00, tryMatDiffa13]//Chop;
+
+*)

@@ -1,0 +1,101 @@
+%
+\newcommand{\aVar}[4]{\item[$#1(#4)$] \ 
+  \begin{itemize}
+  \item    \includegraphics{#2}
+  \item    \includegraphics{#3}
+  \end{itemize}
+}
+
+%<*theStatePoly=juddBasisDet00[getTheState[]];*>
+%<*theNonStatePoly=juddBasisDet00[getTheNonState[]];*>
+The state variables
+
+\begin{gather*}
+  <*Chop[theStatePoly[getStateVariableNames[]]]*>
+\end{gather*}
+
+
+The non-state variables
+
+\begin{gather*}
+  <*theNonStatePoly[getNonStateVariableNames[]]*>
+\end{gather*}
+
+
+
+
+The state variable ranges
+
+\begin{gather*}
+<*theStatePoly[getRanges[]]*>  
+\end{gather*}
+
+
+The polynomial orders
+
+\begin{gather*}
+  <*Chop[theStatePoly[getOrders[]]]*>
+\end{gather*}
+
+Orders for outer product
+
+\begin{gather*}
+<*theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]*>
+\end{gather*}
+
+
+The transformed Chebyshev nodes 
+
+\begin{gather*}
+<*Chop[theStatePoly[getXformedChebNodePts[]]]*>  
+\end{gather*}
+
+
+Untransformed Chebyshev polynomials
+
+
+
+
+The basis at the Chebyshev nodes
+
+\begin{gather*}
+  <*Chop[juddBasisDet00[getTheState[][getBasisAtChebNodes[]]]]*>
+\end{gather*}
+
+The state variable polynomial weights
+
+\begin{gather*}
+  <*Chop[juddBasisDet00[getTheState[]][getStateVariablePolynomialWeights[]][getArray[]]]*>
+\end{gather*}
+
+The non-state variable polynomial weights
+
+\begin{gather*}
+  <*Chop[theNonStatePoly[getRelevantWeightsNSP[]]][getArray[]]*>
+\end{gather*}
+
+
+
+
+State variable values and derivatives
+
+
+\begin{description}
+%<*{vFName,dFName}=doExportState[varName="kk",vTime=-1];*>
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+%<*{vFName,dFName}=doExportState[varName="kk",vTime=0];*>
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+%<*{vFName,dFName}=doExportState[varName="kk",vTime=1];*>
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+\end{description}
+
+
+Non-state variable values and derivatives
+
+
+\begin{description}
+%<*{vFName,dFName}=doExportNonState[varName="cc",vTime=0];*>
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+%<*{vFName,dFName}=doExportNonState[varName="cc",vTime=1];*>
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+\end{description}
