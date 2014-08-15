@@ -1142,7 +1142,7 @@ nonStateDouble[varName_String] :=
 windowsQ[] := Not[StringFreeQ[$Version, "Windows"]]
 doJavac[aFile_String] :=
     With[ {cmdStr = If[ windowsQ[],
-    	"\"c:\\Program Files\\Java\\jdk1.7.0_51\\bin\\javac\"" " @S:/tryBenchWindows/projectionJLinkWin/javaSource/theArgs  -target 1.7 "<>"./"<>aFile<>".java",
+    	"\"c:\\Program Files\\Java\\jdk1.7.0_51\\bin\\javac\"" <>" -cp ./;ProjectionMethodToolsJava-0.0.1-SNAPSHOT.jar;Jama-1.0.2-1.0-SNAPSHOT.jar  -target 1.7 "<>"./"<>aFile<>".java",
     	             "/msu/scratch/m1gsa00/jdk1.6.0_02/bin/javac -cp ./:"<>
 (Global`$JamaJar)<>":"<>(Global`$ProjJar)<>":"<>Directory[]<>":/msu/scratch/m1gsa00/learnProjection/proto:/msu/scratch/m1gsa00/tryRep/gov/frb/ma/msu/projection/1.0-SNAPSHOT/projection-1.0-SNAPSHOT.jar:/msu/scratch/m1gsa00/tryRep/gov/frb/ma/msu/Jama-1.0.2/1.0-SNAPSHOT/Jama-1.0.2-1.0-SNAPSHOT.jar -target 1.5 "<>aFile<>".java"
                     ]},Print[cmdStr];
