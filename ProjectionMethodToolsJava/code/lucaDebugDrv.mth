@@ -3,6 +3,8 @@ Get["prepPackages.mth"]
 lucaEqn={qq[t]- (beta*(1-rho)*qq[t+1] + rho*qq[t-1] - sigma * rr[t] + eps[uu][t]),rr[t]- phi*qq[t]}
 
 
+Export["lucaEqn.pdf",lucaEqn]
+
 newWeightedStochasticBasis[lucaMod, lucaEqn]
 
 
@@ -11,89 +13,124 @@ newWeightedStochasticBasis[lucaMod, lucaEqn]
 {{stateVar, nonStateVar, theShock}, modEqns} = 
   GenerateModelCode[lucaMod];
 
-lucaSubs={beta->99/100,phi->1,rho->1/2,sigma->1,rUnderBar->2/100,qLow->-.5,qHigh->.9,uLow->-.1,uHigh->1};
+lucaSubs={beta->99/100,phi->1,rho->1/2,sigma->1,rUnderBar->2/100,qLow->-.5,qHigh->.9,integOrder->{5},stdDev->0.02,theMean->{0}};
 
 modParams={beta,phi,rho,sigma}/.{beta->99/100,phi->1,rho->1/2,sigma->1,rUnderBar->2/100}//N;
 modEqns[updateParams[modParams]]
 
-polyRange = {{qLow, qHigh},{uLow,uHigh} /. lucaSubs;
-initPower = {2,0};
-lucaBasis00 = 
-  GenerateBasis[{stateVar, nonStateVar}, polyRange, initPower];
-lucaBasisSto = 
-  GenerateBasis[stateVar, polyRange //. lucaSubs, nxtPow, theShock, 
-   theMean //. jetStoSubs, {stdDev} //. jetStoSubs, 
-   integOrders //. jetStoSubs, shockPower, nonStateVar];
+polyRange = {{qLow, qHigh}} /. lucaSubs;
+initPower = {2};shockPower={1};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. lucaSubs, initPower, theShock, 
+   theMean //. lucaSubs, {stdDev} //. lucaSubs, 
+   integOrder //. lucaSubs, shockPower, nonStateVar];
 
 
-simp = JavaNew[
-   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
-
-tryMatSymb = {{a11, a12, a13},{a21, a22, a23},{a31,a32,a33}};
-tryMat=tryMatSymb/.(matSub={a11 -> .3, a12 -> .2, a13 -> .1,a21 -> .73, a22 -> .32, a23 -> .51,a31->.2,a32->.4,a33->.6});
-stratIters=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterSequenceInfo"];
-
-
-
-doExportState[vName_String,vTime_?NumberQ]:=
-Module[{xxX,xxXVals,xxXDrvs},
-With[{vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,vTime]},
-xxX=vt[evalVar[lucaBasis00]];
-xxXVals=xxX[getTheVal[]][getArray[]];
-xxXDrvs=xxX[getTheJac[]][getArray[]];
-Export[varFName=vName<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
-Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
-{varFName,dvarFName}]]
-
-doExportNonState[vName_String,vTime_?NumberQ]:=
-Module[{xxX,xxXVals,xxXDrvs},
-With[{vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vName,vTime]},
-xxX=vt[evalVar[lucaBasis00]];
-xxXVals=xxX[getTheVal[]][getArray[]];
-xxXDrvs=xxX[getTheJac[]][getArray[]];
-Export[varFName=vName<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
-Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
-{varFName,dvarFName}]]
 
 (*needs expanding*)
-lucaBasis00[setAllWeights[tryMat]]
-
-(*needs expanding*)
-(*qqtm1*)
-vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime","qq",-1];
-qq$tm1=vt[evalVar[lucaBasis00]];
-qq$tm1Vals=qq$tm1[getTheVal[]][getArray[]];
-qq$tm1Drvs=qq$tm1[getTheJac[]][getArray[]];
-(*private method for lagged vartime doValSwitch*)
+numRowsCols=(initPower[[1]]+1)*(shockPower[[1]]+1);
+tryMat=ArrayFlatten[{{ConstantArray[.1,{1,numRowsCols}]},{ConstantArray[.2,{1,numRowsCols}]}}];
+lucaBasis[setAllWeights[tryMat]]
 
 
 
-
-(*qq$t*)
-vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime","qq",0];
-qq$t=vt[evalVar[lucaBasis00]];
-qq$tVals=qq$t[getTheVal[]][getArray[]];
-qq$tDrvs=qq$t[getTheJac[]][getArray[]];
-
-(*needs expanding*)
-nvt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime","rr",0];
-rr$t=nvt[evalVar[lucaBasis00]];
-rr$tVals=rr$t[getTheVal[]][getArray[]];
-rr$tDrvs=rr$t[getTheJac[]][getArray[]];
-
-eqn3=qq$t[plus[qq$tm1[times[-1]]]]
-eqn4=rr$t[times[-1]][plus[qq$tm1]]
-sys=eqn3[augSys[eqn4]]
+theMod=modEqns
+theBasis=lucaBasis;
+Splice["modelDoEqnsCalcs.mtex","luca.tex",PageWidth->Infinity]
+  
 
 
-Splice["modelDoEqnsCalcs.mtex","luca.tex"]
 
 
+
+doNVal[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
+theMat_?MatrixQ]:=
+Module[{vt,xxX,xxXVals},
+theBasis[setAllWeights[theMat]];
+vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vName,vTime];
+xxX=vt[evalVar[aBasis]];
+xxXVals=xxX[getTheVal[]][getArray[]]]
+
+stateVarQ[vName_String,aBasis_?JavaObjectQ]:=
+With[{theRow=Position[gtStateVars[aBasis],vName]},
+If[theRow==={},False,True]]
+nonStateVarQ[vName_String,aBasis_?JavaObjectQ]:=
+With[{theRow=Position[gtNonStateVars[aBasis],vName]},
+If[theRow==={},False,True]]
+
+
+doVal[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
+theMat_?MatrixQ]:=
+Module[{vt,xxX,xxXVals},
+theBasis[setAllWeights[theMat]];
+vt=
+Which[stateVarQ[vName,aBasis],
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,vTime],
+nonStateVarQ[vName,aBasis],
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vName,vTime],
+True,Throw[vName,"-doVal:not in state or non-state-"]];
+xxX=vt[evalVar[aBasis]];
+xxXVals=xxX[getTheVal[]][getArray[]]]
+
+doDrv[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
+theMat_?MatrixQ]:=
+Module[{vt,xxX,xxXVals},
+theBasis[setAllWeights[theMat]];
+vt=
+Which[stateVarQ[vName,aBasis],
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,vTime],
+nonStateVarQ[vName,aBasis],
+JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vName,vTime],
+True,Throw[vName,"-doDrv:not in state or non-state-"]];xxX=vt[evalVar[aBasis]];
+xxXDrvs=xxX[getTheJac[]][getArray[]]]
+
+
+doVal[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
+theMat_?MatrixQ,{ii_Integer,jj_Integer},val_?NumberQ]:=
+doVal[vName,vTime,aBasis,ReplacePart[theMat,{ii,jj}->theMat[[ii,jj]]+val]]
 (*
 
-genPolys[theWts_?MatrixQ,
-theStateVars_List,
-theRanges_?MatrixQ,
-theOrds_?VectorQ]:=
+theDelta=0.01;
+bigRes=MapIndexed[doVal["qq",1,theBasis,tryMat,#2,theDelta]&,tryMat,{2}]
+
+
+
+diffs=Map[#-orig&,bigRes,{2}]/theDelta
 
 *)
+doNumDrv[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
+theMat_?MatrixQ,{ii_Integer,jj_Integer},val_?NumberQ]:=
+(doVal[vName,vTime,aBasis,theMat,{ii,jj},val]-doVal[vName,vTime,aBasis,theMat])/val
+
+varNumberState[vName_String,aBasis_?JavaObjectQ]:=
+Position[
+Which[
+stateVarQ[vName,aBasis],gtStateVars[aBasis],
+True,Throw[vName,"-varNumber:variable not found in state-"]],vName][[1,1]]
+
+
+
+cmpDrvs[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,theMat_?MatrixQ,val_?NumberQ]:=
+With[{theRow=Position[
+Which[
+stateVarQ[vName,aBasis],gtStateVars[aBasis],
+nonStateVarQ[vName,aBasis],gtNonStateVars[aBasis],
+True,Throw[vName,"-cmpDrvs:variable not found-"]],vName],cols=Length[tryMat[[1]]]},
+If[Not[Or[stateVarQ[vName,aBasis],nonStateVarQ[vName,aBasis]]],
+Throw[vName,"-variable not found-"],
+doDrv[vName,vTime,aBasis,theMat][[All,Range[cols]]]-
+ArrayFlatten[{doNumDrv[vName,vTime,aBasis,theMat,{theRow[[1,1]],#},0.01]&/@Range[cols]}]]]
+
+
+getPhiFunc[vName_String,theBasis_?JavaObjectQ]:=
+Module[{theStatePoly=theBasis[getTheState[]],
+vNumber=varNumberState[vName,theBasis]},
+With[{rng=theStatePoly[getRanges[]][[vNumber]],
+ord=theStatePoly[getOrders[]][[vNumber]]},
+phiFunc[vName,ord,rng[[1]],rng[[2]]]//Expand//Chop]]
+
+getRawPhiFunc[vName_String,theBasis_?JavaObjectQ]:=
+Module[{theStatePoly=theBasis[getTheState[]],
+vNumber=varNumberState[vName,theBasis]},
+With[{ord=theStatePoly[getOrders[]][[vNumber]]},
+phiFunc[vName,ord,-1,1]]//Expand//Chop]

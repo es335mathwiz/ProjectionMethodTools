@@ -14,6 +14,8 @@ ReplaceVariables::usage="ReplaceVariables[theMod_,thePolys_List,{state_List,nonS
 CreatePolynomials::usage="CreatePolynomials[results_?JavaObjectQ]\n Pure mathematica function that uses ProjectionMethodResults to generate a list of the tensor product of the chebyshev polynomials in 'ProjectionMethodToolsJava order"
 PlotPolynomials::usage="PlotPolynomials[polys_List,varVals_List]"
 GenerateModelCode::usage="GenerateModelCode[theModel_Symbol]"
+chebyshevExtrema::usage="chebyshevExtrema[nn_Integer]";
+
 chebyshevNodes::usage = "chebyshevNodes[nn_Integer]\n pure mathematica functions that computes the chebyshev nodes (to infinite precision)"
 genPolys::usage = "genPolys[theWts_?MatrixQ,theStateVars_List,theRanges_?MatrixQ,theOrds_?VectorQ]\n Pure mathematica function that generates a list of the tensor product of the chebyshev polynomials in 'ProjectionMethodToolsJava order"
 nearestLQ::usage="nearestLQ[theSolnSubs_List,thePhi_?NumberQ,thePoly_,theSubs_List]"
@@ -76,6 +78,12 @@ ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBa
 
 gtStateVars[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
 theGr[getVariableNames[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+gtNonStateVars[aWSB_?JavaObjectQ]:=With[
+{theNS=aWSB[getTheNonState[]]},
+theNS[getNonStateVariableNames[]]]/;
 ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
 
 

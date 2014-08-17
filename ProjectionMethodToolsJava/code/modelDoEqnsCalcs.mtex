@@ -5,37 +5,139 @@
   \item    \includegraphics{#3}
   \end{itemize}
 }
+\newcommand{\theSys}[2]{
+  \begin{itemize}
+  \item    \includegraphics{#1}
+  \item    \includegraphics{#2}
+  \end{itemize}
+}
+\newcommand{\mma}{{\bf Mathematica}}
+\newcommand{\mmaF}[1]{{\bf #1}}
+\newcommand{\javaF}[1]{{\bf #1}}
+A list of equations constitutes the model definition\footnote{Shocks are of the
+form eps[name][t]. State and non-state variables are of the form 
+symbName[t-1], symbName[t], symbName[t+1].  The shocks and the variables with
+a t-1 index become the model state variables.\footnote{Although given a time t index, the shocks are treated as known and completely determined as are all the
+t-1 regular state variables. }
+ The remaining symbols become
+the model parameters.}
 
-%<*theStatePoly=juddBasisDet00[getTheState[]];*>
-%<*theNonStatePoly=juddBasisDet00[getTheNonState[]];*>
-The state variables
+\includegraphics{lucaEqn.pdf}
+
+
+the \mma\  function \mmaF{GenerateModelCode} uses these equations
+to 
+
+\begin{itemize}
+\item generate and compile java code implementing the \javaF{EqValDrv } class version of the model and returns a symbol providing access to the object
+\item create  \mma\ lists: \mmaF{stateVars}, \mmaF{nonStateVars}, \mma{shockVars} 
+\end{itemize}
+
+
+
+The \mma\  function \mmaF{newWeightedStochasticBasis}
+
+
+
+%<*theStatePoly=theBasis[getTheState[]];*>
+%<*theNonStatePoly=theBasis[getTheNonState[]];*>
+The state variables\footnote{replacing \$ with X so that \LaTeX is happy.}
 
 \begin{gather*}
-  <*Chop[theStatePoly[getStateVariableNames[]]]*>
+  <*ridDollar/@theStatePoly[getStateVariableNames[]]*>
 \end{gather*}
 
+The next steps require first providing values for any parameters in the model:
 
-The non-state variables
+The \mma command will look something like:
 
-\begin{gather*}
-  <*theNonStatePoly[getNonStateVariableNames[]]*>
-\end{gather*}
+modEqns[updateParams[modParams]]
 
+Next we will augment the information
+obtained from parsing the model and setting the parameters
+with information specifying the projection method basis:
 
+The state variable ranges, the state variable and polynomial orders,
 
-
-The state variable ranges
+If the model is stochastic we will specify, in addition to the shock polynomial order, the means, standard deviations and
+the integration order for the gauss hermite integration routines.\footnote{The program infers the range for the shocks from the values needed for the
+integration routine.}
 
 \begin{gather*}
 <*theStatePoly[getRanges[]]*>  
 \end{gather*}
 
-
 The polynomial orders
+
+The polynomials for the state variables are:
+
+%<*doExportXFormedCheb[theBasis];*>
+
+\includegraphics{xFormedChebPolys.pdf}
+
+
+
+The untransformed polynomials would be
+
+
+%<*doExportRawCheb[theBasis];*>
+
+
+\includegraphics{rawChebPolys.pdf}
 
 \begin{gather*}
   <*Chop[theStatePoly[getOrders[]]]*>
 \end{gather*}
+
+
+\mmaF{WeightedStochasticBasis} extends \mmaF{Stochastic Basis} which handles 
+much of the initialization.\footnote{right now it sets perfectforesightQ true and and WeightedStochasticBasis sets this flag false.  Not sure why this is the case. Probably should be changed. At most two shocks.  But, even two shocks needs more testing.}
+
+For a stochastic model, the shock augmented information goes into the
+information  producing the {\bf GridVars } object.  The creation of
+the \javaF{GridPointsSpec} object adds the augmented  state powers.  The weighted stochastic basis has the information describing the parameters for
+the integration routine.
+
+The \javaF{GridPointSpec} resides in an \javaF{StateVariablePolynomials} object.
+
+The locations of the shock variables are  recorded in the \javaF{WeightedStochasticBasis.}
+
+
+Given a \javaF{WeightedStochasticBasis} describing a projection method 
+grid and a matrix of polynomial weights, we can
+evaluate the basis polynomials model at the collocation grid points.
+and iterate these polynomials one period ahead.  We 
+can also compute the derivative with respect to 
+the polynomial weights for the iterated polynomials.
+
+This is done with the \javaF{setAllWeights}:
+
+In \mma one could enter something like
+
+theBasis[setAllWeights[theMat]]
+
+This matrix must include weights for all the unaugmented state variables (not
+including the shocks), $n_s$ as well as the non-state variables $n_{ns}$. 
+
+The \javaF{setAllWeights} method also causes the \javaF{StateVariablePolynomials} to invoke its \javaF{setTheWeights} method.  This populates the matrix with
+the chebyshev node basis polynomial values at the basis point and iterates
+these polynomials forward coputing the values and derivatives of the polynomials at time t.
+
+
+
+The order for shocks are always 1. The weight for the shocks are always (0,1)
+
+
+Given and \javaF{eqValDrv} object describing a model and a
+\javaF{WeightedStochasticBasis} describing a projection method grid and a matrix
+of polynomial weights, we can
+evaluate the model and the derivative with respect to the weights at the
+collocation grid points.
+
+
+
+
+
 
 Orders for outer product
 
@@ -59,33 +161,51 @@ Untransformed Chebyshev polynomials
 The basis at the Chebyshev nodes
 
 \begin{gather*}
-  <*Chop[juddBasisDet00[getTheState[][getBasisAtChebNodes[]]]]*>
+  <*Chop[theStatePoly[getBasisAtChebNodes[]]]*>
 \end{gather*}
 
 The state variable polynomial weights
 
 \begin{gather*}
-  <*Chop[juddBasisDet00[getTheState[]][getStateVariablePolynomialWeights[]][getArray[]]]*>
+  <*Chop[theStatePoly[getStateVariablePolynomialWeights[]][getArray[]]]*>
 \end{gather*}
 
+
+The non-state variables
+
+\begin{gather*}
+  <*ridDollar/@theNonStatePoly[getNonStateVariableNames[]]*>
+\end{gather*}
+
+
+
+
+
 The non-state variable polynomial weights
+
 
 \begin{gather*}
   <*Chop[theNonStatePoly[getRelevantWeightsNSP[]]][getArray[]]*>
 \end{gather*}
 
 
+The shock variable values and derivatives
+
+\begin{description}
+%<*{vFName,dFName}=doExportState[varName="uu$Shock",vTime=-1,theBasis];*>
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+\end{description}
 
 
 State variable values and derivatives
 
 
 \begin{description}
-%<*{vFName,dFName}=doExportState[varName="kk",vTime=-1];*>
+%<*{vFName,dFName}=doExportState[varName="qq",vTime=-1,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
-%<*{vFName,dFName}=doExportState[varName="kk",vTime=0];*>
+%<*{vFName,dFName}=doExportState[varName="qq",vTime=0,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
-%<*{vFName,dFName}=doExportState[varName="kk",vTime=1];*>
+%<*{vFName,dFName}=doExportState[varName="qq",vTime=1,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
 \end{description}
 
@@ -94,8 +214,14 @@ Non-state variable values and derivatives
 
 
 \begin{description}
-%<*{vFName,dFName}=doExportNonState[varName="cc",vTime=0];*>
+%<*{vFName,dFName}=doExportNonState[varName="rr",vTime=0,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
-%<*{vFName,dFName}=doExportNonState[varName="cc",vTime=1];*>
+%<*{vFName,dFName}=doExportNonState[varName="rr",vTime=1,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
 \end{description}
+
+
+System equation values
+
+%<*{sysVals,sysDrvs}=doExportSys[theMod,theBasis];*>
+\theSys{<*sysVals*>}{<*sysDrvs*>}
