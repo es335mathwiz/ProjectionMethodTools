@@ -51,6 +51,7 @@ The next steps require first providing values for any parameters in the model:
 
 The \mma command will look something like:
 
+
 modEqns[updateParams[modParams]]
 
 Next we will augment the information
@@ -74,6 +75,41 @@ The polynomials for the state variables are:
 %<*doExportXFormedCheb[theBasis];*>
 
 \includegraphics{xFormedChebPolys.pdf}
+
+
+
+
+Orders for outer product
+
+\begin{gather*}
+<*theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]*>
+\end{gather*}
+
+
+
+
+The ordered outer product of these polynomials is:
+
+
+%<*doExportOrderedOuter[theBasis]*>
+\includegraphics{xFormedOrderedOuter.pdf}
+
+
+
+The transformed Chebyshev nodes 
+
+\begin{gather*}
+<*Chop[theStatePoly[getXformedChebNodePts[]]]*>  
+\end{gather*}
+
+
+
+
+The ordered outerproducts evaluated at the eval points
+
+%<*doExportOuterEval[theBasis];*>
+
+\includegraphics{outerXformedEval.pdf}
 
 
 
@@ -139,20 +175,6 @@ collocation grid points.
 
 
 
-Orders for outer product
-
-\begin{gather*}
-<*theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]*>
-\end{gather*}
-
-
-The transformed Chebyshev nodes 
-
-\begin{gather*}
-<*Chop[theStatePoly[getXformedChebNodePts[]]]*>  
-\end{gather*}
-
-
 Untransformed Chebyshev polynomials
 
 
@@ -189,6 +211,98 @@ The non-state variable polynomial weights
 \end{gather*}
 
 
+Applying the weights to get state and nonstate for time 0 produces
+
+
+\begin{gather*}
+  <*Chop[tryMat . theStatePoly[getBasisAtChebNodes[]]]*>
+\end{gather*}
+
+
+
+In \javaF{StateVariablePolynomials} iterated at cheb nodes
+
+
+t variables
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesAtChebyshevNodesTimeT[]][getArray[]]]*>  
+\end{gather*}
+
+time t derivatives
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesAtChebNodesTimeTDerivWRTWtsNSP[]][getArray[]]]*>  
+\end{gather*}
+
+
+
+
+non state time t
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesAtChebyshevNodesTimeTNSP[]][getArray[]]]*>
+\end{gather*}
+
+
+
+
+t+1
+
+\begin{gather*}
+  <*Chop[theStatePoly[getVariablesIteratedFromChebNodesTimeTP1[]][getArray[]]]*>
+\end{gather*}
+
+iterated $t+1$ derivatives
+
+\begin{gather*}
+  <*Chop[theStatePoly[getVariablesIteratedFromChebNodesTimeTP1DerivWRTWts[]][getArray[]]]*>
+\end{gather*}
+
+
+non state time tp1
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesIteratedFromChebNodesTimeTP1[]][getArray[]]]*>
+\end{gather*}
+
+
+state tp1 derivatives
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesIteratedFromChebNodesTimeTP1DerivWRTWts[]][getArray[]]]*>  
+\end{gather*}
+
+non state tp1 derivatives 
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesIteratedFromChebNodesTimeTP1DerivWRTWtsNSP[]][getArray[]]]*>  
+\end{gather*}
+
+
+non state tp1 variables
+
+\begin{gather*}
+<*Chop[theStatePoly[getVariablesIteratedFromChebNodesTimeTP1NSP[]][getArray[]]]*>
+\end{gather*}
+
+
+
+
+
+To iterate forward we need to evaluate the basis at the time 0 state variable
+values
+
+
+The time t derivatives wrt weights are just the corresponding rows in the
+orderered outer product.
+
+They are recorded in \javaF{StateVariablePolynomials}
+
+\begin{gather*}
+  <*Chop[theStatePoly[getVariablesAtChebNodesTimeTDerivWRTWts[]][getArray[]]]*>
+\end{gather*}
+
 The shock variable values and derivatives
 
 \begin{description}
@@ -220,6 +334,7 @@ Non-state variable values and derivatives
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
 \end{description}
 
+\includegraphics{rrX1DrvsX.pdf}
 
 System equation values
 

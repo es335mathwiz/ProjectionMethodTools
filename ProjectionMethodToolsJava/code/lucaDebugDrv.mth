@@ -1,9 +1,9 @@
 Get["prepPackages.mth"]
 
-lucaEqn={qq[t]- (beta*(1-rho)*qq[t+1] + rho*qq[t-1] - sigma * rr[t] + eps[uu][t]),rr[t]- phi*qq[t]}
+lucaEqn={qq[t]- (beta*(1-rho)*qq[t+1] + rho*qq[t-1] - sigma * rr[t] + (eps[uu][t])),rr[t]- phi*qq[t]}
 
 
-Export["lucaEqn.pdf",lucaEqn]
+Export["lucaEqn.pdf",TableForm[Transpose[{lucaEqn}]]]
 
 newWeightedStochasticBasis[lucaMod, lucaEqn]
 
@@ -36,7 +36,7 @@ lucaBasis[setAllWeights[tryMat]]
 
 theMod=modEqns
 theBasis=lucaBasis;
-Splice["modelDoEqnsCalcs.mtex","luca.tex",PageWidth->Infinity]
+
   
 
 
@@ -134,3 +134,31 @@ Module[{theStatePoly=theBasis[getTheState[]],
 vNumber=varNumberState[vName,theBasis]},
 With[{ord=theStatePoly[getOrders[]][[vNumber]]},
 phiFunc[vName,ord,-1,1]]//Expand//Chop]
+
+
+
+forIterate[wts_List]:=
+With[{state0=wts. ooPolys//Chop},
+With[{someSubs=qq->#&/@state0[[1]]},
+wts . (preEvalPolys/.#)&/@someSubs]]
+
+
+Splice["modelDoEqnsCalcs.mtex","luca.tex",PageWidth->Infinity]
+
+
+
+
+(*
+daGr=theStatePoly[getTheGrid[]]
+
+ePoints=daGr[getXformedChebNodePts[#]]&/@theStatePoly[getStateVariableNames[]]
+eSubs={qq->#[[1]],uu$Shock->#[[2]]}& /@Transpose[ePoints]
+
+ooPolys=Transpose[(preEvalPolys=doExportOrderedOuter[theBasis]/.toSymbSubs[theBasis])/.eSubs]
+{state0,nstate0}=tryMat . ooPolys//Chop;
+
+nxtStep=forIterate[coeffs=Array[aa,{2,6}]];
+theDrv=D[nxtStep,#] &/@ Flatten[coeffs]//Expand
+
+nowSubs=Thread[Flatten[coeffs]->Flatten[tryMat]];
+*)

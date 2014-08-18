@@ -40,8 +40,12 @@ With[{vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vNam
 xxX=vt[evalVar[aBasis]];
 xxXVals=xxX[getTheVal[]][getArray[]];
 xxXDrvs=xxX[getTheJac[]][getArray[]];
+xxXDrvsLft=xxXDrvs[[All,Range[6]]];
+xxXDrvsRght=xxXDrvs[[All,6+Range[6]]];
 Export[varFName=vName<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
 Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
+Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsXLft.pdf",TableForm[xxXDrvs]];
+Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsXRght.pdf",TableForm[xxXDrvs]];
 {varFName,dvarFName}]]
 
 doExportSys[theModEqns_?JavaObjectQ,theBasisVal_?JavaObjectQ]:=
@@ -69,6 +73,18 @@ TableForm[getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]]];
 ]]
 
 
+doExportOrderedOuter[theBasis_?JavaObjectQ]:=
+With[{theStatePoly=theBasis[getTheState[]]},
+Module[{vNames=theStatePoly[getStateVariableNames[]],
+thePows=theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]},
+With[{thePolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]},
+Export["xFormedOrderedOuter.pdf",
+TableForm[theRes=Expand[prodHelper01[thePolys,#]&/@ thePows]]
+];theRes]]]
+
+prodHelper01[polys_List,ords_List]:=
+With[{prep=MapIndexed[polys[[#2[[1]],#1+1]]&,ords]},Times @@ prep]
+
 
 doExportRawCheb[theBasis_?JavaObjectQ]:=
 With[{theStatePoly=theBasis[getTheState[]]},
@@ -77,11 +93,43 @@ Export["rawChebPolys.pdf",
 TableForm[getRawPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]]];
 ]]
 
+toSymbSubs[aWSB_?JavaObjectQ]:=
+With[{theStatePoly=theBasis[getTheState[]]},
+With[{vNames=theStatePoly[getStateVariableNames[]]},
+#->ToExpression[#]&/@vNames]]
+
+
+doExportOuterEval[aWSB_?JavaObjectQ]:=
+With[{ePoints=
+theStatePoly[getTheGrid[]][getXformedChebNodePts[#]]&/@
+theStatePoly[getStateVariableNames[]]},
+With[{eSubs=
+{qq->#[[1]],uu$Shock->#[[2]]}& /@Transpose[ePoints]},
+With[{ooPolys=TableForm[theRes=Identity[
+(doExportOrderedOuter[theBasis]/.toSymbSubs[theBasis])/.eSubs//Chop]]},
+Export["outerXformedEval.pdf",ooPolys];theRes]]]
+
 
 (*
 doExportRawEvalPts[aWSB?JavaObjectQ]:=
 Module[{theGr=gtGrid[aWSB]},
 With[{thGr[]},
 Export["rawEvalPts.pdf"]]]
+
+stPolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]
+daGr=theStatePoly[getTheGrid[]]
+daOrds=daGr[generatePolyOrdersForOuterProduct[]]
+cp=daGr[getTheChebPoly[]]
+
+ePoints=daGr[getXformedChebNodePts[#]]&/@theStatePoly[getStateVariableNames[]]
+eSubs={qq->#[[1]],uu$Shock->#[[2]]}& /@Transpose[ePoints]
+
+
+(*time 0 state and non state*)
+
+ooPolys=(doExportOrderedOuter[theBasis]/.toSymbSubs[theBasis])/.eSubs
+{state0,nstate0}=tryMat . ooPolys//Chop;
+
+
 *)
 
