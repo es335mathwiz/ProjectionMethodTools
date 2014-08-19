@@ -30,8 +30,12 @@ With[{vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,v
 xxX=vt[evalVar[aBasis]];
 xxXVals=xxX[getTheVal[]][getArray[]];
 xxXDrvs=xxX[getTheJac[]][getArray[]];
+xxXDrvsLft=xxXDrvs[[All,Range[6]]];
+xxXDrvsRght=xxXDrvs[[All,6+Range[6]]];
 Export[varFName=ridDollar[vName<>"X"<>ToString[vTime]<>"ValsX.pdf"],TableForm[xxXVals]];
 Export[dvarFName=ridDollar[vName<>"X"<>ToString[vTime]<>"DrvsX.pdf"],TableForm[xxXDrvs]];
+Export[dvarFName=ridDollar[vName<>"X"<>ToString[vTime]<>"DrvsXLft.pdf"],TableForm[xxXDrvsLft]];
+Export[dvarFName=ridDollar[vName<>"X"<>ToString[vTime]<>"DrvsXRght.pdf"],TableForm[xxXDrvsRght]];
 {varFName,dvarFName}]]
 
 doExportNonState[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ]:=
@@ -44,16 +48,20 @@ xxXDrvsLft=xxXDrvs[[All,Range[6]]];
 xxXDrvsRght=xxXDrvs[[All,6+Range[6]]];
 Export[varFName=vName<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
 Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
-Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsXLft.pdf",TableForm[xxXDrvs]];
-Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsXRght.pdf",TableForm[xxXDrvs]];
+Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsXLft.pdf",TableForm[xxXDrvsLft]];
+Export[dvarFName=vName<>"X"<>ToString[vTime]<>"DrvsXRght.pdf",TableForm[xxXDrvsRght]];
 {varFName,dvarFName}]]
 
 doExportSys[theModEqns_?JavaObjectQ,theBasisVal_?JavaObjectQ]:=
 Module[{sysVal=theModEqns[updateValDrv[theBasisVal]],xxXVals,xxXDrvs},
 xxXVals=sysVal[getTheVal[]][getArray[]];
 xxXDrvs=sysVal[getTheJac[]][getArray[]];
+xxXDrvsLft=xxXDrvs[[All,Range[6]]];
+xxXDrvsRght=xxXDrvs[[All,6+Range[6]]];
 Export[sysFName=ClassName[theModEqns]<>"X"<>ToString[vTime]<>"ValsX.pdf",TableForm[xxXVals]];
 Export[dsysFName=ClassName[theModEqns]<>"X"<>ToString[vTime]<>"DrvsX.pdf",TableForm[xxXDrvs]];
+Export[dsysFName=ClassName[theModEqns]<>"X"<>ToString[vTime]<>"DrvsXLft.pdf",TableForm[xxXDrvsLft]];
+Export[dsysFName=ClassName[theModEqns]<>"X"<>ToString[vTime]<>"DrvsXRght.pdf",TableForm[xxXDrvsRght]];
 {sysFName,dsysFName}]
 
 

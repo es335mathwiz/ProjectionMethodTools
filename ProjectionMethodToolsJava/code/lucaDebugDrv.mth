@@ -119,7 +119,7 @@ True,Throw[vName,"-cmpDrvs:variable not found-"]],vName],cols=Length[tryMat[[1]]
 If[Not[Or[stateVarQ[vName,aBasis],nonStateVarQ[vName,aBasis]]],
 Throw[vName,"-variable not found-"],
 doDrv[vName,vTime,aBasis,theMat][[All,Range[cols]]]-
-ArrayFlatten[{doNumDrv[vName,vTime,aBasis,theMat,{theRow[[1,1]],#},0.01]&/@Range[cols]}]]]
+ArrayFlatten[{doNumDrv[vName,vTime,aBasis,theMat,{theRow[[1,1]],#},val]&/@Range[cols]}]]]
 
 
 getPhiFunc[vName_String,theBasis_?JavaObjectQ]:=

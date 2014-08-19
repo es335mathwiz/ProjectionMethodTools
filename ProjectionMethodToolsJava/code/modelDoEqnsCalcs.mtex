@@ -91,7 +91,7 @@ Orders for outer product
 The ordered outer product of these polynomials is:
 
 
-%<*doExportOrderedOuter[theBasis]*>
+%<*doExportOrderedOuter[theBasis];*>
 \includegraphics{xFormedOrderedOuter.pdf}
 
 
@@ -311,17 +311,50 @@ The shock variable values and derivatives
 \end{description}
 
 
+
+\includegraphics{uuXShockX-1DrvsXLft.pdf}
+
+\includegraphics{uuXShockX-1DrvsXRght.pdf}
+
+
+
+
+
 State variable values and derivatives
 
 
 \begin{description}
 %<*{vFName,dFName}=doExportState[varName="qq",vTime=-1,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+
+
+\includegraphics{qqX-1DrvsXLft.pdf}
+
+\includegraphics{qqX-1DrvsXRght.pdf}
+
+
+
+
+
 %<*{vFName,dFName}=doExportState[varName="qq",vTime=0,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+
+
+\includegraphics{qqX0DrvsXLft.pdf}
+
+\includegraphics{qqX0DrvsXRght.pdf}
+
+
+
+
 %<*{vFName,dFName}=doExportState[varName="qq",vTime=1,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
 \end{description}
+
+\includegraphics{qqX1DrvsXLft.pdf}
+
+\includegraphics{qqX1DrvsXRght.pdf}
+
 
 
 Non-state variable values and derivatives
@@ -330,13 +363,124 @@ Non-state variable values and derivatives
 \begin{description}
 %<*{vFName,dFName}=doExportNonState[varName="rr",vTime=0,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+
+\includegraphics{rrX0DrvsXLft.pdf}
+
+\includegraphics{rrX0DrvsXRght.pdf}
+
+
 %<*{vFName,dFName}=doExportNonState[varName="rr",vTime=1,theBasis];*>
 \aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
 \end{description}
 
-\includegraphics{rrX1DrvsX.pdf}
+\includegraphics{rrX1DrvsXLft.pdf}
+
+\includegraphics{rrX1DrvsXRght.pdf}
 
 System equation values
 
 %<*{sysVals,sysDrvs}=doExportSys[theMod,theBasis];*>
 \theSys{<*sysVals*>}{<*sysDrvs*>}
+
+
+\includegraphics{lucaModX1DrvsXLft.pdf}
+
+\includegraphics{lucaModX1DrvsXRght.pdf}
+
+
+
+%<*daGr=theStatePoly[getTheGrid[]];*>
+
+%<*ePoints=daGr[getXformedChebNodePts[#]]&/@theStatePoly[getStateVariableNames[]];*>
+
+The evaluation transformed evaluation points for the state variables are:
+
+
+\begin{gather*}
+<*TableForm[Chop[ePoints]]*>  
+\end{gather*}
+
+
+
+%<*eSubs={qq->#[[1]],uu$Shock->#[[2]]}& /@Transpose[ePoints];*>
+
+
+%<*ooPolys=Transpose[(preEvalPolys=doExportOrderedOuter[theBasis]/.toSymbSubs[theBasis])/.eSubs];*>
+
+
+
+
+Before evaluation, the polynomials have the form
+
+\begin{gather*}
+<*TableForm[Transpose[{preEvalPolys/.uu$Shock->uuXShock}]]*> 
+\end{gather*}
+
+Evaluating the polynomials at each of the evaluation points produces:\footnote{This is by construction.  The untransformed polynomials can provide these
+values with one computation once the grid dimensions have been specified. I 
+don't think the code takes advantage of this fact.} These values are also
+the derivatives of the state and non state variables
+ with respect to the weights.
+
+\begin{gather*}
+<*TableForm[ooPolys//Chop]*>
+\end{gather*}
+
+
+
+%<*both={state0,nstate0}=tryMat . ooPolys//Chop;*>
+
+Applying the state and non-state weights produces their time 0 values:
+
+
+\begin{gather*}
+<*TableForm[both//Chop]*>
+\end{gather*}
+
+%<*nowSubs=Thread[Flatten[coeffs]->Flatten[tryMat]];*>
+
+
+%<*nxtStep=forIterate[coeffs=Array[aa,{2,6}]];*>
+%<*nxtStepEvaled=nxtStep//.nowSubs;*>
+
+\begin{gather*}
+<*TableForm[nxtStepEvaled//Chop]*>
+\end{gather*}
+
+
+
+Applying the polynomials and their weights to the time 0 
+state values produces the time t+1 state and non-state values:
+
+
+The variables depend in a somewhat complicated way on the polynomial weights,
+symbolic algebra programs can compute the polynomials and take their derivatives.\footnote{ The program uses operator overloading to accomplish this task.}
+
+%\begin{gather*}
+%<*TableForm[nxtStep[[1,1]]/.uu$Shock->uuXShock//Expand//Chop]*>
+%\end{gather*}
+
+
+
+
+%<*theDrv=D[nxtStep,#] &/@ Flatten[coeffs]//Expand;*>
+
+
+Symbolic function composition and differentiation produces:
+
+%<*drvsToShow=theDrv/.nowSubs/.uu$Shock->0//Chop;*>
+%<*drvsToShowLeft=#[[All,1]]&/@drvsToShow;*>
+%<*drvsToShowRight=#[[All,2]]&/@drvsToShow;*>
+
+\begin{gather*}
+<*TableForm[drvsToShowLeft]*>  
+\end{gather*}
+
+
+
+\begin{gather*}
+<*TableForm[drvsToShowRight]*>
+\end{gather*}
+
+
+Numerical derivatives are not very good.
