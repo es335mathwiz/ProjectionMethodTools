@@ -1,0 +1,480 @@
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["A Simple Example", "Title"],
+
+Cell["Gary S. Anderson", "Author",
+ CellChangeTimes->{{3.6172005766837215`*^9, 3.617200602415076*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Luca\[CloseCurlyQuote]s Simplest Financial Market Model\
+\>", "Section"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"$OperatingSystem", "===", "\"\<Windows\>\""}], ",", 
+    RowBox[{
+    "SetDirectory", "[", 
+     "\"\<g:/git/ProjectionMethodTools/ProjectionMethodToolsJava/code\>\"", 
+     "]"}]}], "]"}], ";"}]], "Code",
+ CellChangeTimes->{{3.6172006616585565`*^9, 3.617200760638857*^9}, 
+   3.6172193427493825`*^9}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Model and Initial Polynomial Basis Definition\
+\>", "Subsection"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Provide Model Equations and Generate an instance of the Model\
+\[CloseCurlyQuote]s Class ( a Subclass of DoEqns )\
+\>", "Subsubsection"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lucaEqn", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"qq", "[", "t", "]"}], "-", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"betap", "*", 
+         RowBox[{"(", 
+          RowBox[{"1", "-", "rhop"}], ")"}], "*", 
+         RowBox[{"qq", "[", 
+          RowBox[{"t", "+", "1"}], "]"}]}], "+", 
+        RowBox[{"rhop", "*", 
+         RowBox[{"qq", "[", 
+          RowBox[{"t", "-", "1"}], "]"}]}], "-", 
+        RowBox[{"sigmap", "*", 
+         RowBox[{"rr", "[", "t", "]"}]}], "+", 
+        RowBox[{"ru", "[", "t", "]"}]}], ")"}]}], ",", 
+     RowBox[{
+      RowBox[{"rr", "[", "t", "]"}], "-", 
+      RowBox[{"phip", "*", 
+       RowBox[{"qq", "[", "t", "]"}]}]}], ",", 
+     RowBox[{
+      RowBox[{"ru", "[", "t", "]"}], "-", 
+      RowBox[{"rho$ru", "*", 
+       RowBox[{"ru", "[", 
+        RowBox[{"t", "-", "1"}], "]"}]}], "-", 
+      RowBox[{
+       RowBox[{"eps", "[", "uu", "]"}], "[", "t", "]"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"newWeightedStochasticBasis", "[", 
+  RowBox[{"lucaMod", ",", "lucaEqn"}], "]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stateVar", ",", "nonStateVar", ",", "theShock"}], "}"}], ",", 
+     "modEqns"}], "}"}], "=", 
+   RowBox[{"GenerateModelCode", "[", "lucaMod", "]"}]}], ";"}]}], "Input"],
+
+Cell[BoxData["\<\"/msu/scratch/m1gsa00/jdk1.6.0_02/bin/javac -cp \
+./:/msu/res1/Software/mavenRepositories/tryRep//math/nist/gov/Jama/1.0.3/Jama-\
+1.0.3.jar:/msu/res1/Software/mavenRepositories/tryRep//gov/frb/ma/msu/\
+ProjectionMethodToolsJava/0.0.1-SNAPSHOT/ProjectionMethodToolsJava-0.0.1-\
+SNAPSHOT.jar:/a/msulx1/lcl/msu/home/m1gsa00/git/ProjectionMethodTools/\
+ProjectionMethodToolsJava/code:/msu/scratch/m1gsa00/learnProjection/proto:/\
+msu/scratch/m1gsa00/tryRep/gov/frb/ma/msu/projection/1.0-SNAPSHOT/projection-\
+1.0-SNAPSHOT.jar:/msu/scratch/m1gsa00/tryRep/gov/frb/ma/msu/Jama-1.0.2/1.0-\
+SNAPSHOT/Jama-1.0.2-1.0-SNAPSHOT.jar -target 1.5 lucaMod.java\"\>"], "Print"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Provide the Model Instance With Values for its Parameters\
+\>", "Subsubsection"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lucaSubs", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"betap", "\[Rule]", 
+      RowBox[{"99", "/", "100"}]}], ",", 
+     RowBox[{"phip", "\[Rule]", "1"}], ",", 
+     RowBox[{"rhop", "\[Rule]", 
+      RowBox[{"1", "/", "2"}]}], ",", 
+     RowBox[{"sigmap", "\[Rule]", "1"}], ",", 
+     RowBox[{"rUnderBar", "\[Rule]", 
+      RowBox[{"2", "/", "100"}]}], ",", 
+     RowBox[{"qLow", "\[Rule]", 
+      RowBox[{"-", ".5"}]}], ",", 
+     RowBox[{"qHigh", "\[Rule]", ".5"}], ",", 
+     RowBox[{"ruLow", "\[Rule]", " ", 
+      RowBox[{
+       RowBox[{"-", "4"}], "*", 
+       RowBox[{"sigma$u", "/", 
+        RowBox[{"(", 
+         RowBox[{"1", "-", "rho$ru"}], ")"}]}]}]}], ",", 
+     RowBox[{"ruHigh", "\[Rule]", "  ", 
+      RowBox[{"4", "*", 
+       RowBox[{"sigma$u", "/", 
+        RowBox[{"(", 
+         RowBox[{"1", "-", "rho$ru"}], ")"}]}]}]}], ",", 
+     RowBox[{"integOrder", "\[Rule]", 
+      RowBox[{"{", "5", "}"}]}], ",", 
+     RowBox[{"sigma$u", "\[Rule]", "0.02"}], ",", 
+     RowBox[{"theMean", "\[Rule]", 
+      RowBox[{"{", "0", "}"}]}], ",", 
+     RowBox[{"rho$ru", "\[Rule]", " ", "0.5"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"modParams", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "betap", ",", "phip", ",", "rhop", ",", "sigmap", ",", " ", "rho$ru"}], 
+      "}"}], "//.", "lucaSubs"}], "//", "N"}]}], ";"}], "\n", 
+ RowBox[{"modEqns", "[", 
+  RowBox[{"updateParams", "[", "modParams", "]"}], "]"}]}], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Provide Parameters for the Initial Polynomial Basis and Generate an Instance \
+of  the WeightedStochasticBasis Class\
+\>", "Subsubsection"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"polyRange", "=", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"ruLow", ",", "ruHigh"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"qLow", ",", "qHigh"}], "}"}]}], "}"}], "/.", "lucaSubs"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"initPower", "=", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2"}], "}"}]}], ";", 
+  RowBox[{"shockPower", "=", 
+   RowBox[{"{", "1", "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"lucaBasis", "=", 
+   RowBox[{"GenerateBasis", "[", 
+    RowBox[{"stateVar", ",", 
+     RowBox[{"polyRange", "//.", "lucaSubs"}], ",", "initPower", ",", 
+     "theShock", ",", 
+     RowBox[{"theMean", "//.", "lucaSubs"}], ",", 
+     RowBox[{
+      RowBox[{"{", "sigma$u", "}"}], "//.", "lucaSubs"}], ",", 
+     RowBox[{"integOrder", "//.", "lucaSubs"}], ",", "shockPower", ",", 
+     "nonStateVar"}], "]"}]}], ";"}]}], "Input"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Compute Collocation Solutions", "Subsection"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Compute Initial Solution, Check for Convergence and Display the Polynomial \
+Approximation\
+\>", "Subsubsection"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "matrix", " ", "should", " ", "have", " ", "a", " ", "row", 
+    " ", "for", " ", "each", " ", "state", " ", "variable", " ", "and", " ", 
+    "each", " ", "shock"}], "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "matrix", " ", "should", " ", "have", " ", "a", " ", "column", 
+    " ", "for", " ", "each", " ", "basis", " ", "polynomial"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"tryMat", "=", 
+     RowBox[{
+      RowBox[{"ArrayFlatten", "[", 
+       RowBox[{"{", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"ConstantArray", "[", 
+           RowBox[{"0", ",", 
+            RowBox[{"{", 
+             RowBox[{"3", ",", "9"}], "}"}]}], "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+             "0.000000000000001", ",", "0.292289373557350", ",", 
+              "0.000000000000001", ",", "0.000000000000000", ",", 
+              "0.000000278748869", ",", "0.000000000000000", ",", 
+              "0.000000000000000", ",", "0.000000000000001", ",", 
+              "0.000000000000000"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+             "0", ",", "0", ",", "0", ",", "0", ",", "rho$ru", ",", "0", ",", 
+              "0", ",", "0", ",", "0"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+             "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+              ",", "0", ",", "0"}], "}"}]}], "}"}]}], "}"}], "}"}], "]"}], "//.",
+       "lucaSubs"}]}], ";"}], "\n", 
+   RowBox[{"lucaBasis", "[", 
+    RowBox[{"setAllWeights", "[", "tryMat", "]"}], "]"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"simp", "=", 
+     RowBox[{
+     "JavaNew", "[", 
+      "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy\>\"\
+", "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"res2$2$1", "=", 
+     RowBox[{"ComputeInitialCollocationWeights", "[", 
+      RowBox[{"lucaBasis", ",", "tryMat", ",", "modEqns", ",", "simp"}], 
+      "]"}]}], ";", 
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"res2$2$1", "[", 
+       RowBox[{"isConvergedQ", "[", "]"}], "]"}], ",", "\n", 
+      RowBox[{"polys2$2$1", "=", 
+       RowBox[{
+        RowBox[{"genPolys", "[", 
+         RowBox[{
+          RowBox[{"res2$2$1", "[", 
+           RowBox[{"getResWeights", "[", "]"}], "]"}], ",", 
+          RowBox[{"Join", "[", 
+           RowBox[{"stateVar", ",", "theShock"}], "]"}], ",", 
+          RowBox[{"lucaBasis", "[", 
+           RowBox[{"getRanges", "[", "]"}], "]"}], ",", 
+          RowBox[{"res2$2$1", "[", 
+           RowBox[{"getOrders", "[", "]"}], "]"}]}], "]"}], "//", "Chop"}]}], 
+      
+      RowBox[{"(*", 
+       RowBox[{
+       "Chop", " ", "drops", " ", "very", " ", "small", " ", "terms"}], 
+       "*)"}], ",", 
+      "\"\<ComputeInitialCollocationWeights did not converge\>\""}], 
+     "]"}]}]}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.042451785186995904`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.0677492351683888`", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "21.440843581731826`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    
+    RowBox[{
+    "15.313961796286305`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}]}], ",", 
+   RowBox[{
+    RowBox[{
+    "17.50105872907703`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "12.499999999999998`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}]}], ",", 
+   RowBox[{"0.04245178518699587`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.0677492351683884`", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "21.44084358173183`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "15.313961796286298`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}]}]}], "}"}]], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Compute Higher Order Approximations, Check for Convergence and Display the \
+Polynomial\
+\>", "Subsubsection"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"res2$2$2", "=", 
+   RowBox[{"res2$2$1", "[", 
+    RowBox[{"incOrder", "[", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "1"}], "}"}], "]"}], "]"}]}], ";", 
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"res2$2$1", "[", 
+     RowBox[{"isConvergedQ", "[", "]"}], "]"}], ",", "\n", 
+    RowBox[{"polys2$2$2", "=", 
+     RowBox[{
+      RowBox[{"genPolys", "[", 
+       RowBox[{
+        RowBox[{"res2$2$2", "[", 
+         RowBox[{"getResWeights", "[", "]"}], "]"}], ",", 
+        RowBox[{"Join", "[", 
+         RowBox[{"stateVar", ",", "theShock"}], "]"}], ",", 
+        RowBox[{"lucaBasis", "[", 
+         RowBox[{"getRanges", "[", "]"}], "]"}], ",", 
+        RowBox[{"res2$2$2", "[", 
+         RowBox[{"getOrders", "[", "]"}], "]"}]}], "]"}], "//", "Chop"}]}], 
+    RowBox[{"(*", 
+     RowBox[{"Chop", " ", "drops", " ", "very", " ", "small", " ", "terms"}], 
+     "*)"}], ",", 
+    "\"\<ComputeInitialCollocationWeights did not converge\>\""}], 
+   "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.04245178630699534`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.43751529647577775`", " ", "\<\"qq\"\>"}], "+", 
+    RowBox[{"1.2251169437587424`", " ", "\<\"ru\"\>"}], "+", 
+    RowBox[{"1.0677492351694318`", " ", "\<\"uu$Shock\"\>"}]}], ",", 
+   RowBox[{
+    RowBox[{"0.3571212517341008`", " ", "\<\"qq\"\>"}], "+", 
+    RowBox[{"0.9999999999999999`", " ", "\<\"ru\"\>"}]}], ",", 
+   RowBox[{"0.042451786306995344`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.4375152964757778`", " ", "\<\"qq\"\>"}], "+", 
+    RowBox[{"1.2251169437587424`", " ", "\<\"ru\"\>"}], "+", 
+    RowBox[{"1.0677492351694313`", " ", "\<\"uu$Shock\"\>"}]}]}], 
+  "}"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"res3$3$2", "=", 
+   RowBox[{"res2$2$1", "[", 
+    RowBox[{"toOrder", "[", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "3", ",", "2"}], "}"}], "]"}], "]"}]}], ";", 
+  RowBox[{
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"res2$2$1", "[", 
+      RowBox[{"isConvergedQ", "[", "]"}], "]"}], ",", "\n", 
+     RowBox[{"polys3$3$2", "=", 
+      RowBox[{
+       RowBox[{"genPolys", "[", 
+        RowBox[{
+         RowBox[{"res3$3$2", "[", 
+          RowBox[{"getResWeights", "[", "]"}], "]"}], ",", 
+         RowBox[{"Join", "[", 
+          RowBox[{"stateVar", ",", "theShock"}], "]"}], ",", 
+         RowBox[{"lucaBasis", "[", 
+          RowBox[{"getRanges", "[", "]"}], "]"}], ",", 
+         RowBox[{"res3$3$2", "[", 
+          RowBox[{"getOrders", "[", "]"}], "]"}]}], "]"}], "//", "Chop"}]}], 
+     RowBox[{"(*", 
+      RowBox[{"Chop", " ", "drops", " ", "very", " ", "small", " ", "terms"}],
+       "*)"}], ",", 
+     "\"\<ComputeInitialCollocationWeights did not converge\>\""}], "]"}], "//",
+    "Chop"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.04245178630699559`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.067749235169428`", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "21.44084358270984`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "15.31396179698512`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}], "-", 
+    RowBox[{"2.067208218521182`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.3973928151871022`*^-10", " ", "\<\"qq\"\>", " ", 
+     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"2.0197687131597921`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "2"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.539017732542319`*^-9", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"3.178094242000435`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "3"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}]}], ",", 
+   RowBox[{
+    RowBox[{
+    "17.50105872907703`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "12.50000000000002`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}]}], ",", 
+   RowBox[{"0.042451786306995865`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.0677492351694282`", " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{
+    "21.440843582709842`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    
+    RowBox[{
+    "15.313961796985117`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}], "-", 
+    RowBox[{"1.9672873518571236`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.0054714004433256`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", "\<\"ru\"\>", " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.4061354690846045`*^-10", " ", "\<\"qq\"\>", " ", 
+     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.9768467007203317`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "2"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.5106361215438037`*^-9", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "-", 
+    RowBox[{"1.1174443169081366`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "3"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}]}]}], "}"}]], "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Initialization", "Section"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", "\"\<prepPackages.mth\>\"", "]"}]], "Input",
+ InitializationCell->True]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{783, 878},
+WindowMargins->{{101, Automatic}, {Automatic, 21}},
+PrintingCopies->1,
+PrintingPageRange->{Automatic, Automatic},
+PrintingOptions->{"PaperOrientation"->"Portrait",
+"PaperSize"->{Automatic, Automatic},
+"PostScriptOutputFile"->""},
+FrontEndVersion->"8.0 for Linux x86 (64-bit) (February 23, 2011)",
+StyleDefinitions->FrontEnd`FileName[{"Report"}, "StandardReport.nb", 
+  CharacterEncoding -> "UTF-8"]
+]

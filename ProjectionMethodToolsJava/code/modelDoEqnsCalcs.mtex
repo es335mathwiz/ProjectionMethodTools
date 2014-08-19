@@ -307,7 +307,7 @@ The shock variable values and derivatives
 
 \begin{description}
 %<*{vFName,dFName}=doExportState[varName="uu$Shock",vTime=-1,theBasis];*>
-\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
+\aVar{<*ridDollar[varName]*>}{<*vFName*>}{<*dFName*>}{<*vTime*>}
 \end{description}
 
 
@@ -428,19 +428,23 @@ the derivatives of the state and non state variables
 
 
 
-%<*both={state0,nstate0}=tryMat . ooPolys//Chop;*>
+%<*both=tryMat . ooPolys//Chop;*>
 
 Applying the state and non-state weights produces their time 0 values:
 
+commenting out mma
+
 
 \begin{gather*}
-<*TableForm[both//Chop]*>
+<*(*TableForm[both//Chop]*)*>
 \end{gather*}
 
+%<*{numRows,numCols}=Dimensions[tryMat];*>
+%<*coeffs=Array[aa,{numRows,numCols}];*>
 %<*nowSubs=Thread[Flatten[coeffs]->Flatten[tryMat]];*>
 
 
-%<*nxtStep=forIterate[coeffs=Array[aa,{2,6}]];*>
+%<*nxtStep=forIterate[coeffs=Array[aa,{numRows,numCols}]];*>
 %<*nxtStepEvaled=nxtStep//.nowSubs;*>
 
 \begin{gather*}
