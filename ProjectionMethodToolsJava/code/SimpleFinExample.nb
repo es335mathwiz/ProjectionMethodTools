@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    126896,       2924]
-NotebookOptionsPosition[    121331,       2738]
-NotebookOutlinePosition[    121949,       2760]
-CellTagsIndexPosition[    121906,       2757]
+NotebookDataLength[    124727,       2866]
+NotebookOptionsPosition[    119280,       2684]
+NotebookOutlinePosition[    119898,       2706]
+CellTagsIndexPosition[    119855,       2703]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2678,62 +2678,8 @@ Cell[BoxData[
      "\"\<g:/git/ProjectionMethodTools/ProjectionMethodToolsJava/code\>\"", 
      "]"}]}], "]"}], ";", 
   RowBox[{"Get", "[", "\"\<prepPackages.mth\>\"", "]"}]}]], "Input",
- InitializationCell->True],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"Methods", "[", "modEqns", "]"}]], "Input"],
-
-Cell[BoxData[
- TagBox[
-  TagBox[GridBox[{
-     {"\<\"boolean equals(Object)\"\>"},
-     {"\<\"Class getClass()\"\>"},
-     {"\<\"double[] getParams()\"\>"},
-     {"\<\"double get$betap()\"\>"},
-     {"\<\"double get$phip()\"\>"},
-     {"\<\"double get$rhop()\"\>"},
-     {"\<\"double get$rho$ru()\"\>"},
-     {"\<\"double get$sigmap()\"\>"},
-     {"\<\"int hashCode()\"\>"},
-     {"\<\"void \
-noNans(gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis, \
-double[][], double[][]) throws \
-gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
-     {"\<\"void notify()\"\>"},
-     {"\<\"void notifyAll()\"\>"},
-     {"\<\"void set$betap(double)\"\>"},
-     {"\<\"void set$phip(double)\"\>"},
-     {"\<\"void set$rhop(double)\"\>"},
-     {"\<\"void set$rho$ru(double)\"\>"},
-     {"\<\"void set$sigmap(double)\"\>"},
-     {"\<\"String toString()\"\>"},
-     {"\<\"void updateParams(double[])\"\>"},
-     {"\<\"gov.frb.ma.msu.ProjectionMethodToolsJava.EquationValDrv \
-updateValDrv(gov.frb.ma.msu.ProjectionMethodToolsJava.StochasticBasis) throws \
-gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionRuntimeException\"\>"},
-     {"\<\"void wait(long, int) throws InterruptedException\"\>"},
-     {"\<\"void wait(long) throws InterruptedException\"\>"},
-     {"\<\"void wait() throws InterruptedException\"\>"}
-    },
-    GridBoxAlignment->{
-     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
-      "RowsIndexed" -> {}},
-    GridBoxSpacings->{"Columns" -> {
-        Offset[0.27999999999999997`], {
-         Offset[0.5599999999999999]}, 
-        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
-        Offset[0.2], {
-         Offset[0.4]}, 
-        Offset[0.2]}, "RowsIndexed" -> {}}],
-   Column],
-  Function[BoxForm`e$, 
-   TableForm[BoxForm`e$]]]], "Output",
- CellChangeTimes->{3.61753159703133*^9, 3.617535660111356*^9, 
-  3.6175370482304363`*^9, 3.617539500866923*^9}]
-}, Open  ]]
-}, Open  ]]
+ InitializationCell->True]
+}, Closed]]
 }, Open  ]]
 },
 WindowSize->{788, 878},
@@ -2919,12 +2865,8 @@ Cell[60682, 1591, 58099, 1069, 845, "Output"]
 Cell[CellGroupData[{
 Cell[118854, 2668, 33, 0, 72, "Section"],
 Cell[118890, 2670, 362, 10, 81, "Input",
- InitializationCell->True],
-Cell[CellGroupData[{
-Cell[119277, 2684, 66, 1, 40, "Input"],
-Cell[119346, 2687, 1945, 46, 390, "Output"]
-}, Open  ]]
-}, Open  ]]
+ InitializationCell->True]
+}, Closed]]
 }, Open  ]]
 }
 ]
