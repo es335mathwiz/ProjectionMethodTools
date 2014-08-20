@@ -12,18 +12,6 @@ Cell["\<\
 Luca\[CloseCurlyQuote]s Simplest Financial Market Model\
 \>", "Section"],
 
-Cell[BoxData[
- RowBox[{
-  RowBox[{"If", "[", 
-   RowBox[{
-    RowBox[{"$OperatingSystem", "===", "\"\<Windows\>\""}], ",", 
-    RowBox[{
-    "SetDirectory", "[", 
-     "\"\<g:/git/ProjectionMethodTools/ProjectionMethodToolsJava/code\>\"", 
-     "]"}]}], "]"}], ";"}]], "Code",
- CellChangeTimes->{{3.6172006616585565`*^9, 3.617200760638857*^9}, 
-   3.6172193427493825`*^9}],
-
 Cell[CellGroupData[{
 
 Cell["\<\
@@ -182,11 +170,13 @@ Cell[BoxData[{
      RowBox[{"integOrder", "//.", "lucaSubs"}], ",", "shockPower", ",", 
      "nonStateVar"}], "]"}]}], ";"}]}], "Input"]
 }, Open  ]]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
-Cell["Compute Collocation Solutions", "Subsection"],
+Cell["\<\
+Collocation Solution Computations\
+\>", "Subsection"],
 
 Cell[CellGroupData[{
 
@@ -278,29 +268,30 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"0.042451785186995904`", "\[VeryThinSpace]", "+", 
-    RowBox[{"1.0677492351683888`", " ", "\<\"uu$Shock\"\>"}], "+", 
+   RowBox[{"0.042451784192582886`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.067749235170036`", " ", "\<\"uu$Shock\"\>"}], "+", 
     RowBox[{
-    "21.440843581731826`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    "21.440843583351974`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
     
     RowBox[{
-    "15.313961796286305`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+    "15.313961797443453`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
      " ", "\<\"uu$Shock\"\>"}]}], ",", 
    RowBox[{
     RowBox[{
     "17.50105872907703`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
     RowBox[{
-    "12.499999999999998`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+    "12.499999999999996`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
      " ", "\<\"uu$Shock\"\>"}]}], ",", 
-   RowBox[{"0.04245178518699587`", "\[VeryThinSpace]", "+", 
-    RowBox[{"1.0677492351683884`", " ", "\<\"uu$Shock\"\>"}], "+", 
+   RowBox[{"0.04245178419258292`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.0677492351700337`", " ", "\<\"uu$Shock\"\>"}], "+", 
     RowBox[{
-    "21.44084358173183`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    "21.440843583351974`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    
     RowBox[{
-    "15.313961796286298`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+    "15.313961797443447`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
      " ", "\<\"uu$Shock\"\>"}]}]}], "}"}]], "Output"]
 }, Open  ]]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
@@ -343,17 +334,17 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"0.04245178630699534`", "\[VeryThinSpace]", "+", 
-    RowBox[{"0.43751529647577775`", " ", "\<\"qq\"\>"}], "+", 
-    RowBox[{"1.2251169437587424`", " ", "\<\"ru\"\>"}], "+", 
-    RowBox[{"1.0677492351694318`", " ", "\<\"uu$Shock\"\>"}]}], ",", 
+   RowBox[{"0.04245178630699536`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.4375152964757775`", " ", "\<\"qq\"\>"}], "+", 
+    RowBox[{"1.225116943758742`", " ", "\<\"ru\"\>"}], "+", 
+    RowBox[{"1.067749235169431`", " ", "\<\"uu$Shock\"\>"}]}], ",", 
    RowBox[{
     RowBox[{"0.3571212517341008`", " ", "\<\"qq\"\>"}], "+", 
-    RowBox[{"0.9999999999999999`", " ", "\<\"ru\"\>"}]}], ",", 
-   RowBox[{"0.042451786306995344`", "\[VeryThinSpace]", "+", 
-    RowBox[{"0.4375152964757778`", " ", "\<\"qq\"\>"}], "+", 
-    RowBox[{"1.2251169437587424`", " ", "\<\"ru\"\>"}], "+", 
-    RowBox[{"1.0677492351694313`", " ", "\<\"uu$Shock\"\>"}]}]}], 
+    RowBox[{"1.`", " ", "\<\"ru\"\>"}]}], ",", 
+   RowBox[{"0.04245178630699536`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.43751529647577747`", " ", "\<\"qq\"\>"}], "+", 
+    RowBox[{"1.225116943758742`", " ", "\<\"ru\"\>"}], "+", 
+    RowBox[{"1.0677492351694315`", " ", "\<\"uu$Shock\"\>"}]}]}], 
   "}"}]], "Output"]
 }, Open  ]],
 
@@ -392,28 +383,31 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"0.04245178630699559`", "\[VeryThinSpace]", "+", 
-    RowBox[{"1.067749235169428`", " ", "\<\"uu$Shock\"\>"}], "+", 
+   RowBox[{"0.04245178630699514`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.0677492351694777`", " ", "\<\"uu$Shock\"\>"}], "+", 
     RowBox[{
-    "21.44084358270984`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    "21.440843582710418`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    
     RowBox[{
-    "15.31396179698512`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+    "15.313961796986828`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
      " ", "\<\"uu$Shock\"\>"}], "-", 
-    RowBox[{"2.067208218521182`*^-10", " ", 
+    RowBox[{"3.3107723965897966`*^-10", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"1.3973928151871022`*^-10", " ", "\<\"qq\"\>", " ", 
+    RowBox[{"1.333783851337032`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "2"], " ", "\<\"ru\"\>", " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.2006832776102372`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", "\<\"ru\"\>", " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.0408658544845023`*^-10", " ", "\<\"qq\"\>", " ", 
      SuperscriptBox["\<\"ru\"\>", "2"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"2.0197687131597921`*^-10", " ", 
-     SuperscriptBox["\<\"qq\"\>", "2"], " ", 
-     SuperscriptBox["\<\"ru\"\>", "2"], " ", 
-     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"1.539017732542319`*^-9", " ", 
+    RowBox[{"3.0413656385324693`*^-9", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", 
      SuperscriptBox["\<\"ru\"\>", "2"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"3.178094242000435`*^-10", " ", 
+    RowBox[{"7.51908842972437`*^-10", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", 
      SuperscriptBox["\<\"ru\"\>", "3"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}]}], ",", 
@@ -421,54 +415,87 @@ Cell[BoxData[
     RowBox[{
     "17.50105872907703`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
     RowBox[{
-    "12.50000000000002`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
-     " ", "\<\"uu$Shock\"\>"}]}], ",", 
-   RowBox[{"0.042451786306995865`", "\[VeryThinSpace]", "+", 
-    RowBox[{"1.0677492351694282`", " ", "\<\"uu$Shock\"\>"}], "+", 
+    "12.500000000000048`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+     " ", "\<\"uu$Shock\"\>"}], "+", 
+    RowBox[{"1.9463984494424`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "3"], " ", 
+     SuperscriptBox["\<\"ru\"\>", "3"], " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}]}], ",", 
+   RowBox[{"0.04245178630699529`", "\[VeryThinSpace]", "+", 
+    RowBox[{"1.0677492351694773`", " ", "\<\"uu$Shock\"\>"}], "+", 
     RowBox[{
-    "21.440843582709842`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
+    "21.440843582710414`", " ", "\<\"ru\"\>", " ", "\<\"uu$Shock\"\>"}], "+", 
     
     RowBox[{
-    "15.313961796985117`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
+    "15.31396179698681`", " ", "\<\"qq\"\>", " ", "\<\"ru\"\>", 
      " ", "\<\"uu$Shock\"\>"}], "-", 
-    RowBox[{"1.9672873518571236`*^-10", " ", 
+    RowBox[{"3.5453889697240456`*^-10", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"1.0054714004433256`*^-10", " ", 
+    RowBox[{"1.3580509557181534`*^-10", " ", 
+     SuperscriptBox["\<\"qq\"\>", "2"], " ", "\<\"ru\"\>", " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"1.6141071620661365`*^-10", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", "\<\"ru\"\>", " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"1.4061354690846045`*^-10", " ", "\<\"qq\"\>", " ", 
+    RowBox[{"1.0397369229757612`*^-10", " ", "\<\"qq\"\>", " ", 
      SuperscriptBox["\<\"ru\"\>", "2"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"1.9768467007203317`*^-10", " ", 
+    RowBox[{"1.0346893723378163`*^-10", " ", 
      SuperscriptBox["\<\"qq\"\>", "2"], " ", 
      SuperscriptBox["\<\"ru\"\>", "2"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
-    RowBox[{"1.5106361215438037`*^-9", " ", 
+    RowBox[{"3.1378102972744337`*^-9", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", 
      SuperscriptBox["\<\"ru\"\>", "2"], " ", 
-     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "-", 
-    RowBox[{"1.1174443169081366`*^-10", " ", 
+     SuperscriptBox["\<\"uu$Shock\"\>", "2"]}], "+", 
+    RowBox[{"4.091627274415022`*^-10", " ", 
      SuperscriptBox["\<\"qq\"\>", "3"], " ", 
      SuperscriptBox["\<\"ru\"\>", "3"], " ", 
      SuperscriptBox["\<\"uu$Shock\"\>", "2"]}]}]}], "}"}]], "Output"]
 }, Open  ]]
-}, Open  ]]
-}, Open  ]]
+}, Closed]]
+}, Closed]]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell["Initialization", "Section"],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
- RowBox[{"Get", "[", "\"\<prepPackages.mth\>\"", "]"}]], "Input",
- InitializationCell->True]
+ RowBox[{
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"$OperatingSystem", "===", "\"\<Windows\>\""}], ",", 
+    RowBox[{
+    "SetDirectory", "[", 
+     "\"\<g:/git/ProjectionMethodTools/ProjectionMethodToolsJava/code\>\"", 
+     "]"}]}], "]"}], ";", 
+  RowBox[{"Get", "[", "\"\<prepPackages.mth\>\"", "]"}]}]], "Input",
+ InitializationCell->True],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"making xx global\"\>"], "Print"],
+
+Cell[BoxData["\<\"temp export of kronProd\"\>"], "Print"],
+
+Cell[BoxData["\<\"beginning private defs\"\>"], "Print"],
+
+Cell[BoxData["\<\"why not numbers?\"\>"], "Print"],
+
+Cell[BoxData["\<\"why eval of shock t+1?\"\>"], "Print"],
+
+Cell[BoxData["\<\"done reading ProjectionInterface\"\>"], "Print"]
 }, Open  ]]
+}, Closed]]
+}, Closed]]
 }, Open  ]]
 },
-WindowSize->{783, 878},
-WindowMargins->{{101, Automatic}, {Automatic, 21}},
+WindowSize->{788, 878},
+WindowMargins->{{61, Automatic}, {Automatic, 28}},
 PrintingCopies->1,
 PrintingPageRange->{Automatic, Automatic},
 PrintingOptions->{"PaperOrientation"->"Portrait",
