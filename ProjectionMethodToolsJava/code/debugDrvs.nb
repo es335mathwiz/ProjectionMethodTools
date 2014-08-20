@@ -221,11 +221,30 @@ Cell[BoxData[
  CellChangeTimes->{3.6172252686466975`*^9, 3.617225331707328*^9}]
 }, Open  ]],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{
   RowBox[{"lucaBasis", "[", 
    RowBox[{"setAllWeights", "[", "tryMat", "]"}], "]"}], "\n"}]], "Input",
  CellChangeTimes->{{3.6172253483674946`*^9, 3.6172253483674946`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Unable to communicate with closed link \
+\[NoBreak]\\!\\(LinkObject[\\(\\(\\\"JLink-Launch556\\\", 118, 7\\)\\)]\\)\
+\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/LinkObject/linkd\\\", ButtonNote -> \
+\\\"LinkObject::linkd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6174397969053326`*^9}],
+
+Cell[BoxData["$Failed"], "Output",
+ CellChangeTimes->{3.617439797154934*^9}]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -636,7 +655,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{783, 878},
-WindowMargins->{{Automatic, 245}, {Automatic, 25}},
+WindowMargins->{{358, Automatic}, {Automatic, 0}},
 FrontEndVersion->"10.0 for Microsoft Windows (64-bit) (July 1, 2014)",
 StyleDefinitions->"Default.nb"
 ]

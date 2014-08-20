@@ -82,13 +82,14 @@ TableForm[getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]]];
 
 
 doExportOrderedOuter[theBasis_?JavaObjectQ]:=
+Module[{theStatePoly},
 With[{theStatePoly=theBasis[getTheState[]]},
 Module[{vNames=theStatePoly[getStateVariableNames[]],
 thePows=theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]},
 With[{thePolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]},
 Export["xFormedOrderedOuter.pdf",
 TableForm[theRes=Expand[prodHelper01[thePolys,#]&/@ thePows]]
-];theRes]]]
+];theRes]]]]
 
 prodHelper01[polys_List,ords_List]:=
 With[{prep=MapIndexed[polys[[#2[[1]],#1+1]]&,ords]},Times @@ prep]
@@ -102,22 +103,39 @@ TableForm[getRawPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]]];
 ]]
 
 toSymbSubs[aWSB_?JavaObjectQ]:=
-With[{theStatePoly=theBasis[getTheState[]]},
+With[{theStatePoly=aWSB[getTheState[]]},
 With[{vNames=theStatePoly[getStateVariableNames[]]},
 #->ToExpression[#]&/@vNames]]
 
 
 doExportOuterEval[aWSB_?JavaObjectQ]:=
+With[{aStatePoly=aWSB[getTheState[]]},
+With[{ePoints=
+aStatePoly[getTheGrid[]][getXformedChebNodePts[#]]&/@
+aStatePoly[getStateVariableNames[]]},
+With[{eSubs=
+{qq->#[[1]],ru->#[[2]],uu$Shock->#[[3]]}& /@Transpose[ePoints]},
+With[{ooPolys=TableForm[theRes=Identity[
+(doExportOrderedOuter[aWSB]/.toSymbSubs[aWSB])/.eSubs//Chop]]},
+Export["outerXformedEval.pdf",ooPolys];theRes]]]]
+
+
+
+
+
+
+doExportOuterEvalTB[aBasis_?JavaObjectQ]:=
+Module[{theStatePoly},
+With[{theStatePoly=aBasis[getTheState[]]},
+Print["huh",Methods[theStatePoly]];
 With[{ePoints=
 theStatePoly[getTheGrid[]][getXformedChebNodePts[#]]&/@
 theStatePoly[getStateVariableNames[]]},
 With[{eSubs=
 {qq->#[[1]],uu$Shock->#[[2]]}& /@Transpose[ePoints]},
 With[{ooPolys=TableForm[theRes=Identity[
-(doExportOrderedOuter[theBasis]/.toSymbSubs[theBasis])/.eSubs//Chop]]},
-Export["outerXformedEval.pdf",ooPolys];theRes]]]
-
-
+(doExportOrderedOuter[aBasis]/.toSymbSubs[aBasis])/.eSubs//Chop]]},
+Export["outerXformedEval.pdf",ooPolys];theRes]]]]]
 
 
 
@@ -125,7 +143,7 @@ Export["outerXformedEval.pdf",ooPolys];theRes]]]
 doNVal[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
 theMat_?MatrixQ]:=
 Module[{vt,xxX,xxXVals},
-theBasis[setAllWeights[theMat]];
+aBasis[setAllWeights[theMat]];
 vt=JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.NonStateVarTime",vName,vTime];
 xxX=vt[evalVar[aBasis]];
 xxXVals=xxX[getTheVal[]][getArray[]]]
@@ -141,7 +159,7 @@ If[theRow==={},False,True]]
 doVal[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
 theMat_?MatrixQ]:=
 Module[{vt,xxX,xxXVals},
-theBasis[setAllWeights[theMat]];
+aBasis[setAllWeights[theMat]];
 vt=
 Which[stateVarQ[vName,aBasis],
 JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,vTime],
@@ -154,7 +172,7 @@ xxXVals=xxX[getTheVal[]][getArray[]]]
 doDrv[vName_String,vTime_?NumberQ,aBasis_?JavaObjectQ,
 theMat_?MatrixQ]:=
 Module[{vt,xxX,xxXVals},
-theBasis[setAllWeights[theMat]];
+aBasis[setAllWeights[theMat]];
 vt=
 Which[stateVarQ[vName,aBasis],
 JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.StateVarTime",vName,vTime],

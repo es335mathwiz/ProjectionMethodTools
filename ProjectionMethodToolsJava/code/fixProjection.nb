@@ -13,26 +13,139 @@ Cell[BoxData[{
    3.616597625986143*^9, 3.616597663645014*^9}, {3.616681046897254*^9, 
    3.616681047997232*^9}, 3.616682110017991*^9}],
 
-Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\(\\(\\\"\\\\\\\
+\"C:\\\\\\\\Program Files\\\\\\\\Wolfram \
+Research\\\\\\\\Mathematica\\\\\\\\10.0\\\\\\\\SystemFiles\\\\\\\\Java\\\\\\\\\
+Windows-x86-64\\\\\\\\bin\\\\\\\\javaw\\\\\\\" -classpath \
+\\\\\\\"C:\\\\\\\\Program Files\\\\\\\\Wolfram Research\\\\\\\\\\\" \
+\[Ellipsis] \\\"fram.jlink.JLinkSystemClassLoader com.wolfram.jlink.Install \
+-init \\\\\\\"C:\\\\\\\\Users\\\\\\\\m1gsa00\\\\\\\\AppData\\\\\\\\Local\\\\\\\
+\\Temp\\\\\\\\m-faba8861-c38b-4efb-b802-ee2ec45c9a2a\\\\\\\"\\\"\\)\\), 506, \
+4\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkReadyQ[\\(\\(LinkObject[\\(\\(\\(\\(\\\"\\\\\\\"C:\\\\\\\\\
+Program Files\\\\\\\\Wolfram \
+Research\\\\\\\\Mathematica\\\\\\\\10.0\\\\\\\\SystemFiles\\\\\\\\Java\\\\\\\\\
+Windows-x86-64\\\\\\\\bin\\\\\\\\javaw\\\\\\\" -classpath \
+\\\\\\\"C:\\\\\\\\Program Files\\\\\\\\Wolfram Res\\\" \[Ellipsis] \
+\\\"link.JLinkSystemClassLoader com.wolfram.jlink.Install -init \
+\\\\\\\"C:\\\\\\\\Users\\\\\\\\m1gsa00\\\\\\\\AppData\\\\\\\\Local\\\\\\\\\
+Temp\\\\\\\\m-faba8861-c38b-4efb-b802-ee2ec45c9a2a\\\\\\\"\\\"\\)\\), 506, \
+4\\)\\)]\\)\\)]\\)\[NoBreak] has an invalid LinkObject number; the link may \
+be closed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\
+\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
+\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.617467412796794*^9}],
 
-Cell[BoxData["\<\"making xx global\"\>"], "Print",
- CellChangeTimes->{3.6171181629817023`*^9, 3.6171182590317025`*^9}],
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\(\\(\\\"\\\\\\\
+\"C:\\\\\\\\Program Files\\\\\\\\Wolfram \
+Research\\\\\\\\Mathematica\\\\\\\\10.0\\\\\\\\SystemFiles\\\\\\\\Java\\\\\\\\\
+Windows-x86-64\\\\\\\\bin\\\\\\\\javaw\\\\\\\" -classpath \
+\\\\\\\"C:\\\\\\\\Program Files\\\\\\\\Wolfram Research\\\\\\\\\\\" \
+\[Ellipsis] \\\"fram.jlink.JLinkSystemClassLoader com.wolfram.jlink.Install \
+-init \\\\\\\"C:\\\\\\\\Users\\\\\\\\m1gsa00\\\\\\\\AppData\\\\\\\\Local\\\\\\\
+\\Temp\\\\\\\\m-faba8861-c38b-4efb-b802-ee2ec45c9a2a\\\\\\\"\\\"\\)\\), 506, \
+4\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkConnectedQ[\\(\\(LinkObject[\\(\\(\\(\\(\\\"\\\\\\\"C:\\\\\
+\\\\Program Files\\\\\\\\Wolfram \
+Research\\\\\\\\Mathematica\\\\\\\\10.0\\\\\\\\SystemFiles\\\\\\\\Java\\\\\\\\\
+Windows-x86-64\\\\\\\\bin\\\\\\\\javaw\\\\\\\" -classpath \
+\\\\\\\"C:\\\\\\\\Program Files\\\\\\\\Wolfram R\\\" \[Ellipsis] \
+\\\"nk.JLinkSystemClassLoader com.wolfram.jlink.Install -init \
+\\\\\\\"C:\\\\\\\\Users\\\\\\\\m1gsa00\\\\\\\\AppData\\\\\\\\Local\\\\\\\\\
+Temp\\\\\\\\m-faba8861-c38b-4efb-b802-ee2ec45c9a2a\\\\\\\"\\\"\\)\\), 506, \
+4\\)\\)]\\)\\)]\\)\[NoBreak] has an invalid LinkObject number; the link may \
+be closed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\
+\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
+\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6174674130667963`*^9}],
 
-Cell[BoxData["\<\"temp export of kronProd\"\>"], "Print",
- CellChangeTimes->{3.6171181629817023`*^9, 3.6171182590417023`*^9}],
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[\\(LinkObject :: linkn\\), \
+\\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this calculation. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/stop\\\", \
+ButtonNote -> \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6174674134768004`*^9}],
 
-Cell[BoxData["\<\"beginning private defs\"\>"], "Print",
- CellChangeTimes->{3.6171181629817023`*^9, 3.6171182590417023`*^9}],
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"InstallJava", "::", "fail"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A link to the Java runtime could not be established. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:JLink/ref/InstallJava\\\", \
+ButtonNote -> \\\"JLink`InstallJava::fail\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.617467413826804*^9}],
 
-Cell[BoxData["\<\"why not numbers?\"\>"], "Print",
- CellChangeTimes->{3.6171181629817023`*^9, 3.6171182590517025`*^9}],
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"JVM", "::", "uninst"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"The Java runtime specified by \
+\[NoBreak]\\!\\(JVM[\\\"vm3\\\"]\\)\[NoBreak] is no longer valid. It was \
+previously shut down by a call to UninstallJava[]. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:JLink/ref/JVM\\\", ButtonNote -> \\\"JLink`JVM::uninst\
+\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6174674143868093`*^9}],
 
-Cell[BoxData["\<\"why eval of shock t+1?\"\>"], "Print",
- CellChangeTimes->{3.6171181629817023`*^9, 3.6171182590617027`*^9}],
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"JVM", "::", "uninst"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"The Java runtime specified by \
+\[NoBreak]\\!\\(JVM[\\\"vm4\\\"]\\)\[NoBreak] is no longer valid. It was \
+previously shut down by a call to UninstallJava[]. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:JLink/ref/JVM\\\", ButtonNote -> \\\"JLink`JVM::uninst\
+\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.617467434727013*^9}],
 
-Cell[BoxData["\<\"done reading ProjectionInterface\"\>"], "Print",
- CellChangeTimes->{3.6171181629817023`*^9, 3.6171182590717025`*^9}]
-}, Open  ]]
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"JVM", "::", "uninst"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"The Java runtime specified by \
+\[NoBreak]\\!\\(JVM[\\\"vm5\\\"]\\)\[NoBreak] is no longer valid. It was \
+previously shut down by a call to UninstallJava[]. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:JLink/ref/JVM\\\", ButtonNote -> \\\"JLink`JVM::uninst\
+\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6174674552072177`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(JVM :: \
+uninst\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6174674552572184`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -74,7 +187,7 @@ Cell[BoxData[
       RowBox[{"D", "[", 
        RowBox[{
         RowBox[{"uFunc", "[", "xx", "]"}], ",", "xx"}], "]"}], "/.", 
-      RowBox[{"xx", "\[Rule]", "cc"}]}], ")"}]}], "\[IndentingNewLine]", "\n", 
+      RowBox[{"xx", "\[Rule]", "cc"}]}], ")"}]}], "\n", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"fFunc", "[", "kk_", "]"}], ":=", 
@@ -87,7 +200,7 @@ Cell[BoxData[
       RowBox[{"D", "[", 
        RowBox[{
         RowBox[{"fFunc", "[", "xx", "]"}], ",", "xx"}], "]"}], "/.", 
-      RowBox[{"xx", "\[Rule]", "kk"}]}], ")"}]}], "\[IndentingNewLine]", "\n", 
+      RowBox[{"xx", "\[Rule]", "kk"}]}], ")"}]}], "\n", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"juddDetEqn", "=", 
      RowBox[{"{", 
@@ -108,8 +221,8 @@ Cell[BoxData[
           RowBox[{"cc", "[", 
            RowBox[{"t", "+", "1"}], "]"}], "]"}], "*", 
          RowBox[{"fPrimeFunc", "[", 
-          RowBox[{"kk", "[", "t", "]"}], "]"}]}]}]}], "}"}]}], ";"}], "\n", 
-   "\[IndentingNewLine]", 
+          RowBox[{"kk", "[", "t", "]"}], "]"}]}]}]}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
    RowBox[{
     RowBox[{"Print", "[", "\"\<simplify to debug\>\"", "]"}], ";"}], 
    "\[IndentingNewLine]", 
@@ -125,8 +238,8 @@ Cell[BoxData[
         RowBox[{"t", "-", "1"}], "]"}], "-", 
        RowBox[{"cc", "[", "t", "]"}]}]}], "}"}]}], "\n", 
    RowBox[{"newWeightedStochasticBasis", "[", 
-    RowBox[{"juddDetMod", ",", "juddDetEqn"}], "]"}], "\[IndentingNewLine]", 
-   "\n", 
+    RowBox[{"juddDetMod", ",", "juddDetEqn"}], "]"}], "\n", 
+   "\[IndentingNewLine]", 
    RowBox[{"newWeightedStochasticBasis", "[", 
     RowBox[{"juddDetMod", ",", "juddDetEqn"}], "]"}], "\n"}]}]], "Input",
  CellChangeTimes->{{3.616597872182767*^9, 3.616597872182767*^9}, 
@@ -223,7 +336,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"modEqns", "[", 
    RowBox[{"updateParams", "[", "modDetParams", "]"}], "]"}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"polyRange", "=", 
    RowBox[{
@@ -535,10 +648,9 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Java", "::", "nometh"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"No method named \[NoBreak]\\!\\(\\\"getTheStat\\\"\\)\
-\[NoBreak] defined in class \
+   RowBox[{"Java", "::", "nometh"}], "MessageName"], ":", 
+  " ", "\<\"No method named \[NoBreak]\\!\\(\\\"getTheStat\\\"\\)\[NoBreak] \
+defined in class \
 \[NoBreak]\\!\\(\\\"gov.frb.ma.msu.ProjectionMethodToolsJava.\
 WeightedStochasticBasis\\\"\\)\[NoBreak].\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.617008868826273*^9, 3.617099544399702*^9, 
@@ -1045,9 +1157,8 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"A Java exception occurred: \
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], ":", 
+  " ", "\<\"A Java exception occurred: \
 \[NoBreak]\\!\\(\\\"gov.frb.ma.msu.ProjectionMethodToolsJava.\
 ProjectionRuntimeException: xx length=2 different length than thePolyOrders \
 length=1\\\\n\\\\tat \
@@ -1157,9 +1268,8 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"The first two levels of \
+   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], ":", 
+  " ", "\<\"The first two levels of \
 \[NoBreak]\\!\\({\\(\\({\\\"kk\\\"}\\)\\), \\(\\({0.5232050807568879`, \
 1.2621281292110207`}\\)\\)}\\)\[NoBreak] cannot be transposed. \
 \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
@@ -1171,9 +1281,8 @@ ButtonNote -> \\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"The first two levels of \
+   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], ":", 
+  " ", "\<\"The first two levels of \
 \[NoBreak]\\!\\({\\(\\({\\\"kk\\\"}\\)\\), \\(\\({0.19999999999999998`, \
 0.21999999999999997`}\\)\\)}\\)\[NoBreak] cannot be transposed. \
 \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
@@ -1185,9 +1294,8 @@ ButtonNote -> \\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"The first two levels of \
+   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], ":", 
+  " ", "\<\"The first two levels of \
 \[NoBreak]\\!\\({\\(\\({\\\"kk\\\"}\\)\\), \\(\\({0.17679491924311225`, \
 0.7078718707889797`}\\)\\)}\\)\[NoBreak] cannot be transposed. \
 \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
@@ -1199,10 +1307,9 @@ ButtonNote -> \\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"General", "::", "stop"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Transpose \
-:: nmtx\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+   RowBox[{"General", "::", "stop"}], "MessageName"], ":", 
+  " ", "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Transpose :: \
+nmtx\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
 calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
 ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
@@ -1213,10 +1320,9 @@ ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"ReplaceAll", "::", "reps"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"\[NoBreak]\\!\\({\\(\\(Transpose[\\(\\({\\(\\({\\\"kk\\\"}\
-\\)\\), \\(\\({0.5232050807568879`, 1.2621281292110207`}\\)\\)}\\)\\)]\\)\\), \
+   RowBox[{"ReplaceAll", "::", "reps"}], "MessageName"], ":", 
+  " ", "\<\"\[NoBreak]\\!\\({\\(\\(Transpose[\\(\\({\\(\\({\\\"kk\\\"}\\)\\), \
+\\(\\({0.5232050807568879`, 1.2621281292110207`}\\)\\)}\\)\\)]\\)\\), \
 \\(\\(Transpose[\\(\\({\\(\\({\\\"kk\\\"}\\)\\), \\(\\({0.19999999999999998`, \
 0.21999999999999997`}\\)\\)}\\)\\)]\\)\\), \
 \\(\\(Transpose[\\(\\({\\(\\({\\\"kk\\\"}\\)\\), \\(\\({0.17679491924311225`, \
@@ -1823,9 +1929,8 @@ Cell[BoxData[{
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \
+   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
+  " ", "\<\"Part specification \
 \[NoBreak]\\!\\(\\(\\(mmaNStateVarsTimeTAtNodes[\\(\\(\\*InterpretationBox[\\(\
 \[LeftGuillemet] \
 \\(\\(JavaObject[gov.frb.ma.msu.ProjectionMethodToolsJava.\
@@ -1845,9 +1950,8 @@ ButtonNote -> \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \
+   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
+  " ", "\<\"Part specification \
 \[NoBreak]\\!\\(\\(\\(mmaNStateVarsTimeTAtNodes[\\(\\(\\*InterpretationBox[\\(\
 \[LeftGuillemet] \
 \\(\\(JavaObject[gov.frb.ma.msu.ProjectionMethodToolsJava.\
@@ -1883,10 +1987,9 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"ReplaceAll", "::", "reps"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"\[NoBreak]\\!\\({juddSubs}\\)\[NoBreak] is neither a list \
-of replacement rules nor a valid dispatch table, and so cannot be used for \
+   RowBox[{"ReplaceAll", "::", "reps"}], "MessageName"], ":", 
+  " ", "\<\"\[NoBreak]\\!\\({juddSubs}\\)\[NoBreak] is neither a list of \
+replacement rules nor a valid dispatch table, and so cannot be used for \
 replacing. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\
 \\\", ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/ReplaceAll/reps\\\
 \", ButtonNote -> \\\"ReplaceAll::reps\\\"]\\)\"\>"}]], "Message", "MSG",
@@ -1916,11 +2019,10 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"The first two levels of \[NoBreak]\\!\\({0, 0, 0, 0, 0, 0}\
-\\)\[NoBreak] cannot be transposed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\
-\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], ":", 
+  " ", "\<\"The first two levels of \[NoBreak]\\!\\({0, 0, 0, 0, 0, 0}\\)\
+\[NoBreak] cannot be transposed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", ButtonNote -> \
 \\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.616946967971781*^9, 3.616947055112652*^9, 
@@ -2429,6 +2531,20 @@ Cell[BoxData[
    3.616947055502656*^9, 3.6169477164872904`*^9, 3.6169478849489746`*^9, 
    3.6169543140674295`*^9, 3.6169544834184294`*^9, 3.616954626609587*^9, 
    3.6171181776917024`*^9, 3.6171182680917025`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"$ContextPath", "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.6174673612462783`*^9, 3.6174673682863483`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"ProjectionInterface`\"\>", ",", "\<\"JLink`\"\>", 
+   ",", "\<\"TemplatingLoader`\"\>", ",", "\<\"PacletManager`\"\>", 
+   ",", "\<\"System`\"\>", ",", "\<\"Global`\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.61746746145728*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3009,8 +3125,8 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"{", "stdDev", "}"}], "//.", "jetStoSubs"}], ",", 
        RowBox[{"integOrders", "//.", "jetStoSubs"}], ",", "shockPower", ",", 
-       "nonStateVar"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
-   "\n"}]}]], "Input",
+       "nonStateVar"}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]"}]}]], "Input",
  CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
    3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
    3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
@@ -3096,14 +3212,12 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(sillly \
-\[LeftDoubleBracket] 2 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
-depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
-\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
-\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
+  " ", "\<\"Part specification \[NoBreak]\\!\\(sillly \[LeftDoubleBracket] 2 \
+\[RightDoubleBracket]\\)\[NoBreak] is longer than depth of object. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/partd\\\", \
+ButtonNote -> \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6171182722617025`*^9}],
 
 Cell[BoxData[
@@ -3142,22 +3256,19 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(sillly \
-\[LeftDoubleBracket] 2 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
-depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
-\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
-\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
+  " ", "\<\"Part specification \[NoBreak]\\!\\(sillly \[LeftDoubleBracket] 2 \
+\[RightDoubleBracket]\\)\[NoBreak] is longer than depth of object. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/partd\\\", \
+ButtonNote -> \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6171182723617024`*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \
+   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
+  " ", "\<\"Part specification \
 \[NoBreak]\\!\\(\\(\\(Transpose[\\(\\(\\(\\(sillly \[LeftDoubleBracket] 2 \
 \[RightDoubleBracket]\\)\\), \\(\\({3, 2, 1}\\)\\)\\)\\)]\\)\\) \
 \[LeftDoubleBracket] \\(\\(1, All, \\(\\({1, 2}\\)\\)\\)\\) \
@@ -3244,14 +3355,12 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Transpose", "::", "tperm"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Permutation \[NoBreak]\\!\\({3, 2, 1}\\)\[NoBreak] is \
-longer than the dimensions \[NoBreak]\\!\\({0}\\)\[NoBreak] of the \
-expression. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/Transpose/tperm\\\", ButtonNote -> \
-\\\"Transpose::tperm\\\"]\\)\"\>"}]], "Message", "MSG",
+   RowBox[{"Transpose", "::", "tperm"}], "MessageName"], ":", 
+  " ", "\<\"Permutation \[NoBreak]\\!\\({3, 2, 1}\\)\[NoBreak] is longer than \
+the dimensions \[NoBreak]\\!\\({0}\\)\[NoBreak] of the expression. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/Transpose/tperm\\\", \
+ButtonNote -> \\\"Transpose::tperm\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6171182729017024`*^9}],
 
 Cell[BoxData[
@@ -3290,28 +3399,25 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Transpose", "::", "tperm"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Permutation \[NoBreak]\\!\\({3, 2, 1}\\)\[NoBreak] is \
-longer than the dimensions \[NoBreak]\\!\\({0}\\)\[NoBreak] of the \
-expression. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/Transpose/tperm\\\", ButtonNote -> \
-\\\"Transpose::tperm\\\"]\\)\"\>"}]], "Message", "MSG",
+   RowBox[{"Transpose", "::", "tperm"}], "MessageName"], ":", 
+  " ", "\<\"Permutation \[NoBreak]\\!\\({3, 2, 1}\\)\[NoBreak] is longer than \
+the dimensions \[NoBreak]\\!\\({0}\\)\[NoBreak] of the expression. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/Transpose/tperm\\\", \
+ButtonNote -> \\\"Transpose::tperm\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6171182729617023`*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Part specification \
-\[NoBreak]\\!\\(\\(\\(Transpose[\\(\\(\\(\\({}\\)\\), \\(\\({3, 2, \
-1}\\)\\)\\)\\)]\\)\\) \[LeftDoubleBracket] \\(\\(All, All, \\(\\({1, 2}\\)\\)\
-\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is longer than depth of object. \\!\
-\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
-ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/partd\\\", \
-ButtonNote -> \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
+  " ", "\<\"Part specification \[NoBreak]\\!\\(\\(\\(Transpose[\\(\\(\\(\\({}\
+\\)\\), \\(\\({3, 2, 1}\\)\\)\\)\\)]\\)\\) \[LeftDoubleBracket] \\(\\(All, \
+All, \\(\\({1, 2}\\)\\)\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is longer \
+than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->{3.6171182730417023`*^9}],
 
 Cell[BoxData[
@@ -7988,8 +8094,8 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"{", "stdDev", "}"}], "//.", "simpStoSubs"}], ",", 
        RowBox[{"integOrders", "//.", "simpStoSubs"}], ",", "shockPower", ",", 
-       "nonStateVar"}], "]"}]}], ";"}], "\n", 
-   "\[IndentingNewLine]"}]}]], "Input",
+       "nonStateVar"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\n"}]}]], "Input",
  CellChangeTimes->{{3.6166011010166187`*^9, 3.6166011010166187`*^9}, {
    3.616676221265072*^9, 3.616676295813581*^9}, {3.616676336272772*^9, 
    3.616676372632045*^9}, {3.616676422312051*^9, 3.616676428621925*^9}, {
@@ -8962,7 +9068,7 @@ Cell[BoxData[{
             RowBox[{"getResWeights", "[", "]"}], "]"}], "]"}], "\[Equal]", 
           "True"}], ",", "1", ",", 
          RowBox[{"-", "1"}]}], "]"}], ",", "restry"}], "}"}]}], "]"}]}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"retrieveIters", "[", 
@@ -8975,7 +9081,7 @@ Cell[BoxData[{
         RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
      RowBox[{"nisInfo", "[", 
       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"retrieveIters", "[", 
@@ -8987,8 +9093,8 @@ Cell[BoxData[{
        RowBox[{"stratInfo", "[", 
         RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
      RowBox[{"nisInfo", "[", 
-      RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], "\[IndentingNewLine]",
-   "\n", 
+      RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], "\n", 
+  "\[IndentingNewLine]", 
   RowBox[{"(*", 
    RowBox[{"from", " ", "getmathtowork"}], "*)"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
@@ -9063,7 +9169,7 @@ Cell[BoxData[{
      RowBox[{
       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterInfo\>\""}], 
-     "]"}]}]}], "\[IndentingNewLine]"}], "\n", 
+     "]"}]}]}], "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"getNewtonSeq", "[", 
    RowBox[{
@@ -9124,7 +9230,7 @@ Cell[BoxData[{
      RowBox[{
       RowBox[{"ClassName", "[", "nis", "]"}], ",", 
       "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterInfo\>\""}], 
-     "]"}]}]}], "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\n", 
+     "]"}]}]}], "\[IndentingNewLine]", "\n"}], "\[IndentingNewLine]", 
  RowBox[{"juddSSSys", "=", 
   RowBox[{"juddEqn", "/.", 
    RowBox[{"{", 
@@ -9145,7 +9251,7 @@ Cell[BoxData[{
      RowBox[{"kss", ",", "1"}], "}"}], ",", 
     RowBox[{"{", 
      RowBox[{"css", ",", "1"}], "}"}]}], "]"}], "\[IndentingNewLine]", 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"simp", "=", 
    RowBox[{
@@ -9159,7 +9265,7 @@ Cell[BoxData[{
      RowBox[{"flg", ",", "res"}], "}"}], "=", 
     RowBox[{"indFunc00", "[", 
      RowBox[{".2", ",", "1.", ",", "simp"}], "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"nis", "=", 
    RowBox[{"res", "[", 
@@ -9195,13 +9301,42 @@ Cell[BoxData[{
 
 Cell[BoxData["juddEqn"], "Output",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeJPgTYFfp9eORpwuW5KA9IeTIfOg+iY633zc4D0vKXr
+1:eJxTTMoPSmVkYGDQBeJPgTYFfp9eORpwuW5KA9IeTIfOg+iY633zc4D0vKXr
 YvKB9F/JzpUges+k5PAiIP2qWjgfRL/LuzUTRHM9WLoVRC8o9W8sBdLbj7a9
 A9F+6hm1ZUC6R+BfZDmQXnhvSQaITtV+0gCicxd45U8A0n+CHPpA9IT0C4wT
 gXTjbT9lEH25pOcSiJ6WJfMWRPMqnk2fAnIXX9TsqSDzG58tA9EhQXtVZgLp
 E08lDUH0oi1TLUC0ruLDShDdrP/uFoju3CAvPAdk3iYzv7lAOkvboH0+kL4u
 FLETRD96+d9hAZB+kcUbDqKZ+Bt49gDpKfMuhh8H0m9Pzt8KogUKhH+cAtJV
-69LlTgNpkzzd+4Kfgf5cfvKXFJDef6uFTRpIAwDTFc3Y
+69LlTgNpkzzd+4Kfgf5cfvKXFJDef6uFTRpIu27z6TgKpAFXPtKL
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\(\\(\
+\[LeftSkeleton] 142 \[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] has an invalid LinkObject number; the link may be closed. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", \
+ButtonNote -> \\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kU1JiOo4CaQA5BdEl
   "]],
 
 Cell[BoxData[
@@ -9216,13 +9351,42 @@ replacing. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\
 ButtonData:>\\\"paclet:ref/message/ReplaceRepeated/reps\\\", ButtonNote -> \\\
 \"ReplaceRepeated::reps\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
 Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
 DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
 9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
 WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
 53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
-BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kAb/azJU=
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kry2M6zgKpAE+TNHW
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\(\\(\
+\[LeftSkeleton] 140 \[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] has an invalid LinkObject number; the link may be closed. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", \
+ButtonNote -> \\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kZdfkdhwF0gA5K9E3
   "]],
 
 Cell[BoxData[
@@ -9238,13 +9402,13 @@ dimensions \[NoBreak]\\!\\({1}\\)\[NoBreak] at \[NoBreak]\\!\\({kss, css}\\)\
 ButtonData:>\\\"paclet:ref/FindRoot\\\", ButtonNote -> \
 \\\"FindRoot::nlnum\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
 Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
 DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
 9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
 WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
 53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
-BtJtajb3BT+/cvzz5PIvKSA9ra6XTRpIAwDC6cz+
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kq60LOo4CaQA5FtEn
   "]],
 
 Cell[BoxData[
@@ -9256,13 +9420,143 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{"css", ",", "1"}], "}"}]}], "]"}]], "Output",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeJPgTYFfp9eORpwuW5KA9IeTIfOg+iY633zc4D0vKXr
+1:eJxTTMoPSmVkYGDQBeJPgTYFfp9eORpwuW5KA9IeTIfOg+iY633zc4D0vKXr
 YvKB9F/JzpUges+k5PAiIP2qWjgfRL/LuzUTRHM9WLoVRC8o9W8sBdLbj7a9
 A9F+6hm1ZUC6R+BfZDmQXnhvSQaITtV+0gCicxd45U8A0n+CHPpA9IT0C4wT
 gXTjbT9lEH25pOcSiJ6WJfMWRPMqnk2fAnIXX9TsqSDzG58tA9EhQXtVZgLp
 E08lDUH0oi1TLUC0ruLDShDdrP/uFoju3CAvPAdk3iYzv7lAOkvboH0+kL4u
 FLETRD96+d9hAZB+kcUbDqKZ+Bt49gDpKfMuhh8H0m9Pzt8KogUKhH+cAtJV
-69LlTgNpkzzd+4Kfgf5cfvKXFJBuutDLJg2kAdEdzZo=
+69LlTgNpkzzd+4Kfgf5cfvKXFJDef6uFTRpIv6so6jgKpAFbuNMc
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\\"Java::init: \
+Java is not running. You must call InstallJava[] to start the Java runtime.\\\
+\"}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\[NoBreak] has an invalid LinkObject number; \
+the link may be closed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
+\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2k102v7zgKpAE9jNHF
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "init"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Java is not running. You must call InstallJava[] to start \
+the Java runtime.\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kedSbOo4CaQA1ftC2
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\\"Set::shape: \
+Lists \\\\[NoBreak]{flg, res}\\\\[NoBreak] and \\\\[NoBreak]indFunc00[0.2, \
+1., $Failed]\\\\[NoBreak] are not the same shape. \\\\[RightSkeleton]\\\"}\\)\
+\\)\\)\\)]\\)\\)\\)\\)]\\)\[NoBreak] has an invalid LinkObject number; the \
+link may be closed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
+\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2k73xu6zgKpAFBqtJW
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Set", "::", "shape"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Lists \[NoBreak]\\!\\({flg, res}\\)\[NoBreak] and \
+\[NoBreak]\\!\\(indFunc00[\\(\\(0.2`, 1.`, $Failed\\)\\)]\\)\[NoBreak] are \
+not the same shape. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Set/shape\\\", ButtonNote -> \
+\\\"Set::shape\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2ky3o7Oo4CaQA7vNGM
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), \
+\\(\\(\[LeftSkeleton] 4 \[RightSkeleton]\\)\\), \\\"Range::range: Range \
+specification in \\\\[NoBreak]Range[0, -1 + \
+res[getTheStrategyIters[]][size[]]]\\\\[NoBreak] does not have appropriate \
+bounds. \\\\[RightSkeleton]\\\"}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\[NoBreak] has \
+an invalid LinkObject number; the link may be closed. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
+\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2ka3ondBwF0gA8HNGa
   "]],
 
 Cell[BoxData[
@@ -9271,25 +9565,49 @@ Cell[BoxData[
    RowBox[{"Range", "::", "range"}], "MessageName"], 
   RowBox[{
   ":", " "}], "\<\"Range specification in \[NoBreak]\\!\\(Range[\\(\\(0, \
-\\(\\(\\(\\(-1\\)\\) + \\(\\(\\(\\(\\(\\(ComputeInitialCollocationWeights[\\(\
-\\(juddBasisSto00, \\(\\({\\(\\({0.2`}\\)\\), \\(\\({1.`}\\)\\)}\\)\\), \
-modEqns, \\*InterpretationBox[\\(\[LeftGuillemet] \
-\\(\\(JavaObject[gov.frb.ma.msu.ProjectionMethodToolsJava.\
-SimpleFindZeroStrategy]\\)\\) \[RightGuillemet]\\), \
-JLink`Objects`vm1`JavaObject21209389012615169]\\)\\)]\\)\\)[\\(\\(\
-getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(size[]\\)\\)]\\)\\)\\)\\)\\)\\)]\\)\
-\[NoBreak] does not have appropriate bounds. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/Range/range\\\", ButtonNote -> \
-\\\"Range::range\\\"]\\)\"\>"}]], "Message", "MSG",
+\\(\\(\\(\\(-1\\)\\) + \
+\\(\\(\\(\\(res[\\(\\(getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(size[]\\)\\)]\\\
+)\\)\\)\\)\\)\\)]\\)\[NoBreak] does not have appropriate bounds. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/Range/range\\\", \
+ButtonNote -> \\\"Range::range\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
 Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
 DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
 9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
 WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
 53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
-BtJtajb3BT+/cvzz5PIvKSCt5jibTRpIAwC+Esxf
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kO1KmdBwF0gA7ddGB
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\(\\(\
+\[LeftSkeleton] 192 \[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] has an invalid LinkObject number; the link may be closed. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", \
+ButtonNote -> \\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kOSpndRwF0gA4LNEc
   "]],
 
 Cell[BoxData[
@@ -9298,34 +9616,52 @@ Cell[BoxData[
    RowBox[{"Range", "::", "range"}], "MessageName"], 
   RowBox[{
   ":", " "}], "\<\"Range specification in \
-\[NoBreak]\\!\\(Range[\\(\\(\\(\\(\\(\\(\\(\\(\
-ComputeInitialCollocationWeights[\\(\\(juddBasisSto00, \\(\\({\\(\\({0.2`}\\)\
-\\), \\(\\({1.`}\\)\\)}\\)\\), modEqns, \\*InterpretationBox[\\(\
-\[LeftGuillemet] \
-\\(\\(JavaObject[gov.frb.ma.msu.ProjectionMethodToolsJava.\
-SimpleFindZeroStrategy]\\)\\) \[RightGuillemet]\\), \
-JLink`Objects`vm1`JavaObject21209389012615169]\\)\\)]\\)\\)[\\(\\(\
-getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(get[0]\\)\\)]\\)\\), \\(\\(\\(\\(\\(\
-\\(ComputeInitialCollocationWeights[\\(\\(juddBasisSto00, \\(\\({\\(\\({0.2`}\
-\\)\\), \\(\\({1.`}\\)\\)}\\)\\), modEqns, \\*InterpretationBox[\\(\
-\[LeftGuillemet] \\(\\(JavaObject[\\(\\(\[LeftSkeleton] 63 \
-\[RightSkeleton]\\)\\)]\\)\\) \[RightGuillemet]\\), \
-JLink`Objects`vm1`JavaObject21209389012615169]\\)\\)]\\)\\)[\\(\\(\\(\\(\
-\[LeftSkeleton] 19 \
-\[RightSkeleton]\\)\\)[]\\)\\)]\\)\\)[\\(\\(get[\\(\\(\\(\\(-1\\)\\) + \\(\\(\
-\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)\\)\\)]\\)\\)]\\)\\)\\)\\)]\\)\
-\[NoBreak] does not have appropriate bounds. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+\[NoBreak]\\!\\(Range[\\(\\(\\(\\(\\(\\(res[\\(\\(getTheStrategyIters[]\\)\\)]\
+\\)\\)[\\(\\(get[0]\\)\\)]\\)\\), \\(\\(\\(\\(res[\\(\\(getTheStrategyIters[]\
+\\)\\)]\\)\\)[\\(\\(get[\\(\\(\\(\\(-1\\)\\) + \
+\\(\\(\\(\\(res[\\(\\(getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(size[]\\)\\)]\\\
+)\\)\\)\\)]\\)\\)]\\)\\)\\)\\)]\\)\[NoBreak] does not have appropriate \
+bounds. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/Range/range\\\", ButtonNote -> \
 \\\"Range::range\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
 Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
 DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
 9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
 WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
 53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
-BtJtajb3BT+/cvzz5PIvKSB9pWMOmzSQBgDFec1V
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kP5+a1XEUSAMAQbvSWA==
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\(\\(\
+\[LeftSkeleton] 137 \[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] has an invalid LinkObject number; the link may be closed. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", \
+ButtonNote -> \\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2k33ye13EUSAMAQrrSfg==
   "]],
 
 Cell[BoxData[
@@ -9334,26 +9670,49 @@ Cell[BoxData[
    RowBox[{"Range", "::", "range"}], "MessageName"], 
   RowBox[{
   ":", " "}], "\<\"Range specification in \
-\[NoBreak]\\!\\(Range[\\(\\(getNumNewtonIters[\\(\\(\\(\\(\\(\\(\
-ComputeInitialCollocationWeights[\\(\\(juddBasisSto00, \\(\\({\\(\\({0.2`}\\)\
-\\), \\(\\({1.`}\\)\\)}\\)\\), modEqns, \\*InterpretationBox[\\(\
-\[LeftGuillemet] \
-\\(\\(JavaObject[gov.frb.ma.msu.ProjectionMethodToolsJava.\
-SimpleFindZeroStrategy]\\)\\) \[RightGuillemet]\\), \
-JLink`Objects`vm1`JavaObject21209389012615169]\\)\\)]\\)\\)[\\(\\(\
+\[NoBreak]\\!\\(Range[\\(\\(getNumNewtonIters[\\(\\(\\(\\(res[\\(\\(\
 getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(get[0]\\)\\)]\\)\\)]\\)\\)]\\)\
 \[NoBreak] does not have appropriate bounds. \\!\\(\\*ButtonBox[\\\"\
 \[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/Range/range\\\", ButtonNote -> \
 \\\"Range::range\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
 Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
 DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
 9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
 WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
 53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
-BtJtajb3BT+/cvzz5PIvKSDddGEumzSQBgDE581M
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kb7jO7zgKpAE9XtG9
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(LinkObject[\\(\\(\\\"b5y_shm\\\", \
+116, 5\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(LinkWrite[\\(\\(\\(\\(LinkObject[\\(\\(\\\"b5y_shm\\\", 116, \
+5\\)\\)]\\)\\), \\(\\(CallPacket[\\(\\(1, \\(\\({\\(\\({0, 2, \
+\\*InterpretationBox[\\(\[LeftGuillemet] \
+\\(\\(JavaObject[com.wolfram.eclipse.MEET.launch.MathematicaConsoleLaunch$\
+UnstructuredOutputHandler]\\)\\) \[RightGuillemet]\\), \
+JLink`Objects`vm1`JavaObject15460766563958785], \\(\\({1}\\)\\), 1}\\)\\), 2, \
+\\(\\(-9\\)\\), \\\"18572371069868496308\\\", \\(\\(-9\\)\\), \\(\\(\
+\[LeftSkeleton] 215 \[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] has an invalid LinkObject number; the link may be closed. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", \
+ButtonNote -> \\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
+DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
+9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
+WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
+53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kza4u7DgKpAE8StGt
   "]],
 
 Cell[BoxData[
@@ -9363,57 +9722,37 @@ Cell[BoxData[
   RowBox[{
   ":", " "}], "\<\"Range specification in \
 \[NoBreak]\\!\\(Range[\\(\\(displayStrategyIterInfo[\\(\\(getStrategyInfo[\\(\
-\\(\\(\\(\\(\\(\\(\\(ComputeInitialCollocationWeights[\\(\\(juddBasisSto00, \
-\\(\\({\\(\\({0.2`}\\)\\), \\(\\({1.`}\\)\\)}\\)\\), modEqns, \
-\\*InterpretationBox[\\(\[LeftGuillemet] \
-\\(\\(JavaObject[gov.frb.ma.msu.ProjectionMethodToolsJava.\
-SimpleFindZeroStrategy]\\)\\) \[RightGuillemet]\\), \
-JLink`Objects`vm1`JavaObject21209389012615169]\\)\\)]\\)\\)[\\(\\(\
-getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(get[0]\\)\\)]\\)\\), \
-\\(\\(getNumNewtonIters[\\(\\(\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)[\
-\\(\\(get[0]\\)\\)]\\)\\)]\\)\\)\\)\\)]\\)\\)]\\)\\)]\\)\[NoBreak] does not \
-have appropriate bounds. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/Range/range\\\", ButtonNote -> \
-\\\"Range::range\\\"]\\)\"\>"}]], "Message", "MSG",
+\\(\\(\\(\\(\\(res[\\(\\(getTheStrategyIters[]\\)\\)]\\)\\)[\\(\\(get[0]\\)\\)\
+]\\)\\), \\(\\(getNumNewtonIters[\\(\\(\\(\\(res[\\(\\(getTheStrategyIters[]\\\
+)\\)]\\)\\)[\\(\\(get[0]\\)\\)]\\)\\)]\\)\\)\\)\\)]\\)\\)]\\)\\)]\\)\[NoBreak]\
+ does not have appropriate bounds. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/Range/range\\\", \
+ButtonNote -> \\\"Range::range\\\"]\\)\"\>"}]], "Message", "MSG",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
+1:eJxTTMoPSmVkYGDQBeKAHU4Ffp9eOe4447UpDUifP3L8PIiOWDdrfg6QPnRj
 Z0w+kP7xYcpKEB2ikxpeBKQbRUXzQXRB1J2ZIHpZwOqtIPodS1RjKZBmC534
 DkSzyBbWloHoP+xR5UA6Y/XKDBCtpvi0AURzCgbkTwDSJ7559IFojuBbjBOB
 9K49kcog2mzTtEtg/lz1tyB6ivm99ClAelpS4uypQFpS+c0yEB11eZ/KTCBt
 WC5tCKJv2k63ANEpqx5Vgugs7Q+3QPQBS0XhOWC+hd9cIH15j2H7fCDNNydy
 53wwn9FxAcgfr/nCQXSxTxfPHiC9rvRu+HEgbfB31VYQfaJP4ccpkDseFsmd
-BtJtajb3BT+/cvzz5PIvKSDtcmwemzSQBgDCt80F
+BtJtajb3BT+/cvzz5PIvKSCd7N3FJg2kn8gs7jgKpAE8t9Gk
   "]],
 
 Cell[BoxData[
  RowBox[{"getNumNewtonIters", "[", 
   RowBox[{
-   RowBox[{
-    RowBox[{"ComputeInitialCollocationWeights", "[", 
-     RowBox[{"juddBasisSto00", ",", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"{", "0.2`", "}"}], ",", 
-        RowBox[{"{", "1.`", "}"}]}], "}"}], ",", "modEqns", ",", 
-      InterpretationBox[
-       RowBox[{"\[LeftGuillemet]", 
-        RowBox[{"JavaObject", "[", 
-         RowBox[{
-         "gov", ".", "frb", ".", "ma", ".", "msu", ".", 
-          "ProjectionMethodToolsJava", ".", "SimpleFindZeroStrategy"}], "]"}],
-         "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject21209389012615169]}], "]"}], "[", 
+   RowBox[{"res", "[", 
     RowBox[{"getTheStrategyIters", "[", "]"}], "]"}], "[", 
    RowBox[{"get", "[", "0", "]"}], "]"}], "]"}]], "Output",
  CellChangeTimes->CompressedData["
-1:eJxTTMoPSmVkYGDQAeJPgTYFfp9eORpwuW5KA9IeTIfOg+iY633zc4D0vKXr
+1:eJxTTMoPSmVkYGDQBeJPgTYFfp9eORpwuW5KA9IeTIfOg+iY633zc4D0vKXr
 YvKB9F/JzpUges+k5PAiIP2qWjgfRL/LuzUTRHM9WLoVRC8o9W8sBdLbj7a9
 A9F+6hm1ZUC6R+BfZDmQXnhvSQaITtV+0gCicxd45U8A0n+CHPpA9IT0C4wT
 gXTjbT9lEH25pOcSiJ6WJfMWRPMqnk2fAnIXX9TsqSDzG58tA9EhQXtVZgLp
 E08lDUH0oi1TLUC0ruLDShDdrP/uFoju3CAvPAdk3iYzv7lAOkvboH0+kL4u
 FLETRD96+d9hAZB+kcUbDqKZ+Bt49gDpKfMuhh8H0m9Pzt8KogUKhH+cAtJV
-69LlTgNpkzzd+4Kfgf5cfvKXFJA2kJjPJg2kAcnxzKI=
+69LlTgNpkzzd+4Kfgf5cfvKXFJDef6uFTRpIP5FZ3HEUSAMAWgrS5w==
   "]]
 }, Open  ]],
 
@@ -9528,8 +9867,8 @@ Cell[BoxData[
         RowBox[{"stratInfo", "[", 
          RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
       RowBox[{"nisInfo", "[", 
-       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], 
-   "\[IndentingNewLine]", "\n", 
+       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], "\n", 
+   "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"retrieveIters", "[", 
      RowBox[{"stratInfo_", "?", "JavaObjectQ"}], "]"}], ":=", 
@@ -9540,8 +9879,8 @@ Cell[BoxData[
         RowBox[{"stratInfo", "[", 
          RowBox[{"getStrategyIters", "[", "]"}], "]"}]}], "}"}], ",", 
       RowBox[{"nisInfo", "[", 
-       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], 
-   "\[IndentingNewLine]", "\n", 
+       RowBox[{"get", "[", "0", "]"}], "]"}]}], "]"}]}], "\n", 
+   "\[IndentingNewLine]", 
    RowBox[{"(*", 
     RowBox[{"from", " ", "getmathtowork"}], "*)"}], "\[IndentingNewLine]", 
    "\[IndentingNewLine]", 
@@ -9616,7 +9955,7 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"ClassName", "[", "nis", "]"}], ",", 
        "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.StrategyIterInfo\>\""}], 
-      "]"}]}]}], "\[IndentingNewLine]", "\n", 
+      "]"}]}]}], "\n", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"getNewtonSeq", "[", 
      RowBox[{
@@ -9677,7 +10016,7 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"ClassName", "[", "nis", "]"}], ",", 
        "\"\<gov.frb.ma.msu.ProjectionMethodToolsJava.NewtonIterInfo\>\""}], 
-      "]"}]}]}], "\n", "\n", "\n", "\[IndentingNewLine]"}]}]], "Input",
+      "]"}]}]}], "\n", "\n", "\[IndentingNewLine]", "\n"}]}]], "Input",
  CellChangeTimes->{{3.6166011269860992`*^9, 3.6166011269860992`*^9}, {
    3.6166809447152967`*^9, 3.6166809548350945`*^9}, 3.616682941324365*^9}],
 
@@ -9821,7 +10160,7 @@ Cell[BoxData[{
        RowBox[{"(", 
         RowBox[{
          RowBox[{"x", "[", "t", "]"}], "-", "xbar"}], ")"}]}]}], "}"}]}], 
-   ";"}], "\[IndentingNewLine]"}], "\n", 
+   ";"}], "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"ericMoms", "=", 
@@ -9841,7 +10180,7 @@ Cell[BoxData[{
             RowBox[{"0", ",", "stdev"}], "]"}], ",", "ii"}], "]"}]}], ",", 
         RowBox[{"{", 
          RowBox[{"ii", ",", "10"}], "}"}]}], "]"}]}], "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"zapMoms", "=", 
@@ -9860,7 +10199,7 @@ Cell[BoxData[{
             RowBox[{"0", ",", "stdev"}], "]"}], ",", "ii"}], "]"}]}], ",", 
         RowBox[{"{", 
          RowBox[{"ii", ",", "10"}], "}"}]}], "]"}]}], "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"burnsideSubs", "=", 
@@ -9880,7 +10219,7 @@ Cell[BoxData[{
        RowBox[{"sigVal", "\[Rule]", 
         RowBox[{"0348", "/", "10000"}]}], ",", 
        RowBox[{"eta", "\[Rule]", "1"}]}], "}"}], "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\n"}], "Input",
+  "\n"}], "\[IndentingNewLine]"}], "Input",
  CellChangeTimes->{{3.6166788512157927`*^9, 3.616678851225792*^9}}],
 
 Cell[CellGroupData[{
@@ -9892,7 +10231,7 @@ Cell[BoxData[{
     RowBox[{"burnsideModProj", ",", 
      RowBox[{
       RowBox[{"(", "burnsideEqns", ")"}], "//.", "burnsideSubs"}]}], "]"}], 
-   ";"}], "\[IndentingNewLine]"}], "\n", 
+   ";"}], "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -9902,7 +10241,7 @@ Cell[BoxData[{
        RowBox[{"stateVars", ",", "nonStateVars", ",", "shocks"}], "}"}], ",", 
       "modEqns"}], "}"}], "=", 
     RowBox[{"GenerateModelCode", "[", "burnsideModProj", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\n", 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"polyRanges", "=", 
@@ -9916,11 +10255,11 @@ Cell[BoxData[{
        RowBox[{
         RowBox[{"zLow", "=", 
          RowBox[{"-", ".1"}]}], ",", 
-        RowBox[{"zHigh", "=", ".1"}]}], "}"}]}], "}"}]}], ";"}], "\n", 
+        RowBox[{"zHigh", "=", ".1"}]}], "}"}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]", 
   RowBox[{"(*", 
    RowBox[{"initial", " ", "power", " ", "of", " ", "polynomial"}], "*)"}], 
-  "\[IndentingNewLine]", "\[IndentingNewLine]", 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{"initPowers", "=", 
    RowBox[{"{", "0", "}"}]}], ";"}], "\n", 
@@ -9937,16 +10276,16 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{"intOrders", "=", 
-    RowBox[{"{", "10", "}"}]}], ";"}], "\n", 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+    RowBox[{"{", "10", "}"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{"burnsideBasis", "=", 
    RowBox[{"GenerateBasis", "[", 
     RowBox[{
     "stateVars", ",", "polyRanges", ",", "initPowers", ",", "shocks", ",", 
      "shockMeans", ",", "shockStDevs", ",", "intOrders", ",", "shockPowers", 
-     ",", "nonStateVars"}], "]"}]}], "\n", 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+     ",", "nonStateVars"}], "]"}]}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{"guessWts", "=", 
    RowBox[{"{", 
@@ -10049,8 +10388,8 @@ Cell[BoxData[{
        RowBox[{"{", 
         RowBox[{"x", ",", ".1"}], "}"}], ",", 
        RowBox[{"{", 
-        RowBox[{"y", ",", "5."}], "}"}]}], "}"}]}], "]"}]}], 
-  "\[IndentingNewLine]", "\n"}], "\[IndentingNewLine]"}], "Input",
+        RowBox[{"y", ",", "5."}], "}"}]}], "}"}]}], "]"}]}], "\n", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
  CellChangeTimes->{{3.6166786460829773`*^9, 3.6166786460829773`*^9}, 
    3.6166799306205783`*^9, {3.6166800058590736`*^9, 3.6166800644779015`*^9}, {
    3.616680097377243*^9, 3.616680134336504*^9}, 3.616690960468047*^9}],
@@ -11583,8 +11922,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{772, 885},
-WindowMargins->{{Automatic, 74}, {0, Automatic}},
+WindowSize->{772, 883},
+WindowMargins->{{315, Automatic}, {28, Automatic}},
 PrintingCopies->1,
 PrintingPageRange->{32000, 32000},
 PrintingOptions->{"Magnification"->1.,
