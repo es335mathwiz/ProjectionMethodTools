@@ -809,6 +809,21 @@ GenerateBasis[stateVars_List,stateRanges_?MatrixQ,statePowers_List,
 JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",
 	stateVars,stateRanges,statePowers,shockVars,shockMeans,shockStDevs,intOrders,shockPowers,nonStateVars]
 
+GenerateBasis[projRes_?JavaObjectQ]:=
+With[{theWSB=projRes[getTheWeightedStochasticBasis[]]},
+With[{theState=theWSB[getTheState[]],theNonState=theWSB[getTheNonState[]]},
+With[{numShocks=theState[getNumberOfShocks[]],
+allState=theState[getStateVariableNames[]]},
+With[{shockVars=Reverse[allState[[-Range[numShocks]]]]},
+With[{stateVars=Complement[allState,shockVars],
+stateRanges=theState[getRanges[]],
+statePowers=theState[getOrders[]],
+shockMeans=theWSB[getGaussHermiteMean[]],
+shockStDevs=theWSB[getGaussHermiteStDev[]],
+nonStateVars=theNonState[getNonStateVariableNames[]]},
+GenerateBasis[stateVars,stateRanges,statePowers,
+	shockVars,shockMeans,shockStDevs,intOrders,shockPowers,nonStateVars]]]]]]
+
 
 doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
     Module[ {futureStuff=futureEqns[eqns]},(*Print["future",eqns//InputForm];*)
