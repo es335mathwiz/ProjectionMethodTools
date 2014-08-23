@@ -52,75 +52,51 @@ kronProd::usage = "kronProd[varList_List,rangeList_{rng1,...,rngk},orders_List] 
 getAllXVals::usage="getAllXVals[theRes_?JavaObjectQ]"
 getAllFVals::usage="getAllFVals[theRes_?JavaObjectQ]"
 getAllDFVals::usage="getAllDFVals[theRes_?JavaObjectQ]"
-gtInitWeights[aRes_?JavaObjectQ]:=aRes[getInitWeights[]]/;
-  ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
-gtOrders[aRes_?JavaObjectQ]:=aRes[getOrders[]]/;
- ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
-gtParams[aRes_?JavaObjectQ]:=aRes[getParams[]]/;
-ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
-gtRanges[aRes_?JavaObjectQ]:=aRes[getRanges[]]/;
-ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
+
+gtInitWeights::usage="gtInitWeights[aRes_?JavaObjectQ]:"
+
+
+gtOrders::usage="gtOrders[aRes_?JavaObjectQ]:"
+
+
+gtParams::usage="gtParams[aRes_?JavaObjectQ]:"
+
+
+gtRanges::usage="gtRanges[aRes_?JavaObjectQ]:"
+
+
+
 
 evalMod::usage="evalMod[aMod_?JavaObjectQ,aWSB_?JavaObjectQ,aMat_?MatrixQ]"
 
 
-gtChebNodes[aWSB_?JavaObjectQ]:=With[{theSt=gtStateVarPolys[aWSB]},
-theSt[getXformedChebNodePts[]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+gtChebNodes::usage="gtChebNodes[aWSB_?JavaObjectQ]:"
 
-gtPolyOrdersForOuterProduct[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
-theGr[generatePolyOrdersForOuterProduct[]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
-
-gtPolyRanges[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
-theGr[getRanges[]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
-
-gtStateVars[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
-theGr[getVariableNames[]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+gtPolyOrdersForOuterProduct::usage="gtPolyOrdersForOuterProduct[aWSB_?JavaObjectQ]:"
 
 
-gtNonStateVars[aWSB_?JavaObjectQ]:=With[
-{theNS=aWSB[getTheNonState[]]},
-theNS[getNonStateVariableNames[]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+gtPolyRanges::usage="gtPolyRanges[aWSB_?JavaObjectQ]:"
+
+
+gtStateVars::usage="gtStateVars[aWSB_?JavaObjectQ]:"
 
 
 
-gtPolys[aWSB_?JavaObjectQ]:=With[{rngs=gtPolyRanges[aWSB],
-theOrds=gtPolyOrdersForOuterProduct[aWSB],theVars=gtStateVars[aWSB]},
-With[{xxVars=Table[Unique["anX"],{Length[theVars]}]},
-With[{funcList=
-MapThread[onePhiFunc[#2,#3,#1[[1]],#1[[2]]]&,{rngs,theVars,xxVars}]},
-With[{phiFuncs=Function@@ {xxVars,funcList}},
-(Times @@ #)&/@((phiFuncs @@ #)& /@ theOrds)
-]]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+gtNonStateVars::usage="gtNonStateVars[aWSB_?JavaObjectQ]:"
 
 
 
-mmaPolysAtPts[aWSB_?JavaObjectQ]:=With[{thePolys=gtPolys[aWSB],
-theSubs=gtXFormedChebSubs[aWSB]},
-Transpose[thePolys/.theSubs]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+gtPolys::usage="gtPolys[aWSB_?JavaObjectQ]:"
 
-mmaPolysAtOtherPts[aWSB_?JavaObjectQ,otherPts_?MatrixQ]:=
-With[{thePolys=gtPolys[aWSB],
-theSubs=otherChebSubs[aWSB,otherPts]},
-Transpose[thePolys/.theSubs]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+mmaPolysAtPts::usage="mmaPolysAtPts[aWSB_?JavaObjectQ]:"
 
-(*
-mmaPolysAtTP1Pts[aWSB_?JavaObjectQ]:=With[{thePolys=gtPolys[aWSB],
-theSubs=gtXFormedChebSubs[aWSB]},
-Transpose[thePolys/.theSubs]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
-*)
 
-gtPolysAtPts[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
-theGr[getBasisAtChebNodes[]]]/;
-ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+mmaPolysAtOtherPts::usage="mmaPolysAtOtherPts[aWSB_?JavaObjectQ,otherPts_?MatrixQ]:"
+
+
+
+gtPolysAtPts::usage="gtPolysAtPts[aWSB_?JavaObjectQ]:"
+
 
 
 gtXFormedChebSubs::usage="gtXFormedChebSubs[aWSB_?JavaObjectQ]"
@@ -130,6 +106,48 @@ gtXFormedChebSubs::usage="gtXFormedChebSubs[aWSB_?JavaObjectQ]"
 otherChebSubs::usage="otherChebSubs[aWSB_?JavaObjectQ,otherVals_?MatrixQ]"
 
 
+
+gtXFormedChebNodes::usage="gtXFormedChebNodes[aWSB_?JavaObjectQ]:"
+
+
+gtGrid::usage="gtGrid[aWSB_?JavaObjectQ]:"
+
+
+gtStateVarsTimeTAtNodes::usage="gtStateVarsTimeTAtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
+
+mmaStateVarsTimeTAtNodes::usage="mmaStateVarsTimeTAtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
+
+mmaStateVarsTimeTP1AtNodes::usage="mmaStateVarsTimeTP1AtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
+
+
+gtStateVarsTimeTP1AtNodes::usage="gtStateVarsTimeTP1AtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
+gtNStateVarsTimeTAtNodes::usage="gtNStateVarsTimeTAtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
+gtNStateVarsTimeTP1AtNodes::usage="gtNStateVarsTimeTP1AtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
+gtStateVarPolys::usage="gtStateVarPolys[aWSB_?JavaObjectQ]:"
+
+gtNStateVarPolys::usage="gtNStateVarPolys[aWSB_?JavaObjectQ]:"
+
+
+gtResWeights::usage="gtResWeights[aRes_?JavaObjectQ]:"
+
+
+
+debugEqCode::usage="debugEqCode[modelName_String,eqns_List,svInfo_List]"
+
+Print["beginning private defs"]
+Begin["`Private`"]
 
 
 
@@ -210,10 +228,83 @@ ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
 gtTheWeightedStochasticBasis[aRes_?JavaObjectQ]:=aRes[getTheWeightedStochasticBasis[]]/;
 ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
 
-debugEqCode::usage="debugEqCode[modelName_String,eqns_List,svInfo_List]"
 
-Print["beginning private defs"]
-Begin["`Private`"]
+
+
+gtChebNodes[aWSB_?JavaObjectQ]:=With[{theSt=gtStateVarPolys[aWSB]},
+theSt[getXformedChebNodePts[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+gtPolyOrdersForOuterProduct[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
+theGr[generatePolyOrdersForOuterProduct[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+gtPolyRanges[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
+theGr[getRanges[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+gtStateVars[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
+theGr[getVariableNames[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+gtNonStateVars[aWSB_?JavaObjectQ]:=With[
+{theNS=aWSB[getTheNonState[]]},
+theNS[getNonStateVariableNames[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+
+gtPolys[aWSB_?JavaObjectQ]:=With[{rngs=gtPolyRanges[aWSB],
+theOrds=gtPolyOrdersForOuterProduct[aWSB],theVars=gtStateVars[aWSB]},
+With[{xxVars=Table[Unique["anX"],{Length[theVars]}]},
+With[{funcList=
+MapThread[onePhiFunc[#2,#3,#1[[1]],#1[[2]]]&,{rngs,theVars,xxVars}]},
+With[{phiFuncs=Function@@ {xxVars,funcList}},
+(Times @@ #)&/@((phiFuncs @@ #)& /@ theOrds)
+]]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+
+mmaPolysAtPts[aWSB_?JavaObjectQ]:=With[{thePolys=gtPolys[aWSB],
+theSubs=gtXFormedChebSubs[aWSB]},
+Transpose[thePolys/.theSubs]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+mmaPolysAtOtherPts[aWSB_?JavaObjectQ,otherPts_?MatrixQ]:=
+With[{thePolys=gtPolys[aWSB],
+theSubs=otherChebSubs[aWSB,otherPts]},
+Transpose[thePolys/.theSubs]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+(*
+mmaPolysAtTP1Pts[aWSB_?JavaObjectQ]:=With[{thePolys=gtPolys[aWSB],
+theSubs=gtXFormedChebSubs[aWSB]},
+Transpose[thePolys/.theSubs]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+*)
+
+gtPolysAtPts[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
+theGr[getBasisAtChebNodes[]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+
+
+
+
+gtInitWeights[aRes_?JavaObjectQ]:=aRes[getInitWeights[]]/;
+  ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
+gtOrders[aRes_?JavaObjectQ]:=aRes[getOrders[]]/;
+ ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
+gtParams[aRes_?JavaObjectQ]:=aRes[getParams[]]/;
+ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
+gtRanges[aRes_?JavaObjectQ]:=aRes[getRanges[]]/;
+ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
+
+
+
 
 gtXFormedChebSubs[aWSB_?JavaObjectQ]:=With[{theVals=gtXFormedChebNodes[aWSB],
 theVars=gtStateVars[aWSB]},

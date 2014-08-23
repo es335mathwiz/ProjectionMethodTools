@@ -2,10 +2,10 @@
 (*copying stuff from 
 ~/scratch/learnProjection/proto/authoritative/
 *)
-Needs["JLink`"]
+(*Needs["JLink`"]
 Needs["ProjectionInterface`"]
 InstallJava[]
-
+*)
 (*from pathsForProjection.mth*)
 isWindowsQ[]:=$OperatingSystem=="Windows"
 If[isWindowsQ[],
@@ -253,4 +253,26 @@ ooPolys=(doExportOrderedOuter[theBasis]/.toSymbSubs[theBasis])/.eSubs
 
 
 *)
+
+modelDiags::usage="modelDiags[aMod_?JavaObjectQ,theWts_?MatrixQ,aWSB_?JavaObjectQ]"
+
+modelDiags[aMod_?JavaObjectQ,modParams_?VectorQ,theWts_?MatrixQ,
+aWSB_?JavaObjectQ]:=
+Module[{theStatePoly=aWSB[getTheState[]],theOrds,matRows,matCols,
+stateVars=gtStateVars[aWSB],nStateVars=gtNonStateVars[aWSB]},
+theOrds=theStatePoly[getOrders[]];
+{matRows,matCols}=Dimensions[theWts];
+numShks=aWSB[getNumberOfShocks[]];
+If[Or[matRows=!=(modMatRows=Length[stateVars]+Length[nStateVars]-numShks),
+matCols=!=(modMatCols=(Times @@ (theOrds+1)))],
+Throw[{"problem with weight matrix dimensions",{matRows,modMatRows},{matCols,modMatCols}}]];
+aMod[updateParams[modParams]];
+aWSB[setAllWeights[theWts]];
+With[{theRes=aMod[updateValDrv[aWSB]],
+theStatePoly=aWSB[getTheState[]]},
+With[{theVals=Partition[Flatten[theRes[getTheVal[]][getArray[]]],matCols],
+theDrvs=theRes[getTheJac[]][getArray[]]},
+With[{xformedNodes=theStatePoly[getXformedChebNodePts[]]},
+{stateVars,nStateVars,
+theRes,xformedNodes,theVals,theDrvs}]]]]
 
