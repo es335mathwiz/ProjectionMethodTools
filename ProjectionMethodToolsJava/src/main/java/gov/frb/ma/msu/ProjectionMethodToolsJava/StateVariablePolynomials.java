@@ -333,6 +333,7 @@ Matrix		variablesIteratedFromChebNodesTimeTP1DerivWRTWtsNSP;
  * @throws ProjectionRuntimeException
  */
 				public void setTheWeights(double [][] wtVal) throws ProjectionRuntimeException {
+					this.setTheShockVals(new double[this.getNumberOfShocks()]);
 					if(wtVal.length>0){setVariablePolynomialWeights(new Matrix(wtVal));
 					Matrix topMat =getStateVariablePolynomialWeights().times(getBasisAtChebNodesAsMatrix());
 					Matrix wholeMat = new Matrix(topMat.getRowDimension()+getNumberOfShocks(),topMat.getColumnDimension());
