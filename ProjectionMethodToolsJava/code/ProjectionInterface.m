@@ -448,14 +448,14 @@ doRng[pm_?JavaObjectQ,sml_?NumberQ,
 		With[{},
   {pm[collocateProjWtsMiddle[sml,anInit, modEqns]],{{}}}]]
 	
-	
+(*	
 kronProd[theStateVars_List,rngs_List,pws_List]:=
 Module[{aPolys,dPolys,gPolys,thePolys},
 	thePolys=MapThread[phiFunc[#3,#1,#2[[1]],#2[[2]]]&,
 		{pws,rngs,theStateVars}];(*Print[thePolys];*)
 Flatten[Outer[Times,Sequence@@thePolys]
 	]];
-
+*)
 	
 doBigRng[theModel_Symbol,smlLow_?NumberQ,smlHigh_?NumberQ,polyRanges_List,polyPowers_List,anInit_?MatrixQ,modEqns_?JavaObjectQ] :=
     Module[ {highRes,highPoly},
@@ -576,10 +576,11 @@ getPiEtcForPhiVary[thePhi_?NumberQ,theModel_Symbol,someSubs_List,polyRanges_List
             ]
         ]
     ]]]
-genPolys[theWts_?MatrixQ,theStateVars_List,theRanges_?MatrixQ,theOrds_?VectorQ]:=
+(*genPolys[theWts_?MatrixQ,theStateVars_List,theRanges_?MatrixQ,theOrds_?VectorQ]:=
 Module[{},(*Print[theWts,theStateVars,theRanges,theOrds];*)
 Expand[theWts . kronProd[theStateVars,theRanges,theOrds]]
 ]
+*)
 genPolys[theState_?JavaObjectQ,theWts_?MatrixQ]:=
 							With[{vNames=ToExpression/@(theState[getStateVariableNames[]])},
 		With[{grid=theState[getTheGrid[]]},
