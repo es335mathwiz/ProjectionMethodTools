@@ -833,7 +833,7 @@ With[{basis=results[getTheWeightedStochasticBasis[]],theWts=results[getResWeight
 				With[{
 				theMins=vSpec[getMinVals[]],
 				theMaxs=vSpec[getMaxVals[]]},Print["before genPolys in createpolynomials"];
-					genPolys[theState,Chop[theWts]]]]]]]
+					genPolys[basis,Chop[theWts]]]]]]]
 					
 PlotPolynomials[polys_List,varVals_List,varNames_List]:=With[{allPlots=
 	MapThread[onePlot[#,varVals,#2]&,{polys,varNames}]},GraphicsGrid[{allPlots}]]
