@@ -6,6 +6,7 @@ BeginPackage["ProjectionInterface`", { "JLink`"}]
 (* Exported symbols added here with SymbolName::usage *) 
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 
+getPhiFunc::usage="getPhiFunc[vName_String,theBasis_?JavaObjectQ]";
 applyNew::usage="applyNew[phiNow_?NumberQ,theOrders_List,newModEqns_?JavaObjectQ]\n for AKY paper. 'homotopy' for computing phi"
 GenerateBasis::usage="GenerateBasis[{stateVars_List,nonStateVars_List},
 	initRanges_?MatrixQ,initPowers_List]\n generates a WeightedStochasticBasis object for state and non state variables and polynomial ranges and powers"
@@ -45,8 +46,6 @@ phiFunc::usage="phiFunc[st_|(st_Symbol|st_?NumberQ),nn_Integer,aa_|(aa_|aa_?Numb
 computeChebCoeffs::usage="computeChebCoeffs[theFunc_, thePows_List, theRanges_List]"
 
 doJavac::usage = "doJavac[fName+String] compiles the ProjectionMethodToolsJava model (expects it to be a subclass of DoEqns "
-Print["temp export of kronProd"]
-kronProd::usage = "kronProd[varList_List,rangeList_{rng1,...,rngk},orders_List]  produces kronecker product of chebyshev polynomials in ProjectionMethodToolsJava order"
 
 
 getAllXVals::usage="getAllXVals[theRes_?JavaObjectQ]"
@@ -581,8 +580,9 @@ Module[{},(*Print[theWts,theStateVars,theRanges,theOrds];*)
 Expand[theWts . kronProd[theStateVars,theRanges,theOrds]]
 ]
 *)
+(*
 genPolys[theState_?JavaObjectQ,theWts_?MatrixQ]:=
-							With[{vNames=ToExpression/@(theState[getStateVariableNames[]])},
+	With[{vNames=ToExpression/@(theState[getStateVariableNames[]])},
 		With[{grid=theState[getTheGrid[]]},
 			With[{theOrds=grid[getTheOrders[]],vSpec=grid[getTheStateVars[]]},
 								With[{
@@ -591,8 +591,45 @@ genPolys[theState_?JavaObjectQ,theWts_?MatrixQ]:=
 				With[{theMins=vSpec[getMinVals[]],
 				theMaxs=vSpec[getMaxVals[]]},
 				With[{reOrd=columnMap[grid[generatePolyOrdersForOuterProduct[]],theOrds]},
-					Expand[(theWts[[All,reOrd]]) . kronProd[vNames,Transpose[{theMins,theMaxs}],theOrds]]]]]]]]
-					
+Expand[(theWts[[All,reOrd]]) . doExportOrderedOuter[theBasis_?JavaObjectQ]]]]]]]]
+				
+*)
+
+
+
+genPolys[theBasis_?JavaObjectQ,theWts_?MatrixQ]:=
+Module[{theStatePoly},
+With[{theStatePoly=theBasis[getTheState[]]},
+Module[{vNames=theStatePoly[getStateVariableNames[]],
+thePows=theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]},
+With[{thePolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]},
+With[{theRes=Expand[prodHelper01[thePolys,#]&/@ thePows]},
+theWts . theRes]]]]]
+
+prodHelper01[polys_List,ords_List]:=
+With[{prep=MapIndexed[polys[[#2[[1]],#1+1]]&,ords]},Times @@ prep]
+
+
+varNumberState[vName_String,aBasis_?JavaObjectQ]:=
+Position[
+Which[
+stateVarQ[vName,aBasis],gtStateVars[aBasis],
+True,Throw[vName,"-varNumber:variable not found in state-"]],vName][[1,1]]
+
+
+
+getPhiFunc[vName_String,theBasis_?JavaObjectQ]:=
+Module[{theStatePoly=theBasis[getTheState[]],
+vNumber=varNumberState[vName,theBasis]},
+With[{rng=theStatePoly[getRanges[]][[vNumber]],
+ord=theStatePoly[getOrders[]][[vNumber]]},
+phiFunc[vName,ord,rng[[1]],rng[[2]]]//Expand//Chop]]
+
+getRawPhiFunc[vName_String,theBasis_?JavaObjectQ]:=
+Module[{theStatePoly=theBasis[getTheState[]],
+vNumber=varNumberState[vName,theBasis]},
+With[{ord=theStatePoly[getOrders[]][[vNumber]]},
+phiFunc[vName,ord,-1,1]]//Expand//Chop]
 
 
 columnMap[spOrds_List,theOrds_List]:=

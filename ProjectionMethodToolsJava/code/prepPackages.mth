@@ -210,6 +210,8 @@ doDrv[vName,vTime,aBasis,theMat][[All,Range[cols]]]-
 ArrayFlatten[{doNumDrv[vName,vTime,aBasis,theMat,{theRow[[1,1]],#},val]&/@Range[cols]}]]]
 
 
+getPhiFunc::usage="getPhiFunc[vName_String,theBasis_?JavaObjectQ]"
+
 getPhiFunc[vName_String,theBasis_?JavaObjectQ]:=
 Module[{theStatePoly=theBasis[getTheState[]],
 vNumber=varNumberState[vName,theBasis]},
