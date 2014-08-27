@@ -7,7 +7,10 @@ import Jama.Matrix;
 import gov.frb.ma.msu.gsmin.ValueDerivative;
 
 import java.util.Comparator;
+
+import org.apache.commons.math.MathException;
 import org.apache.commons.math.complex.Complex;
+import org.apache.commons.math.special.Erf;
 public class EquationValDrv {
    	double zeroThreshold = 1e-10;
     public int numNodes;
@@ -159,7 +162,49 @@ public class EquationValDrv {
     	chkNan(du,"log:du");
     	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
     }
-
+    /*ERROR FUNCTION*/
+    public EquationValDrv erfc()throws ProjectionRuntimeException {
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	int numRows=du.length;int numCols=du[0].length;
+    	int ii;int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		try {
+				uu[ii][0]=1-org.apache.commons.math.special.Erf.erf(uu[ii][0]);
+			} catch (MathException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		for(jj=0;jj<numCols;jj++){
+    			du[ii][jj]=(-2)/(myPow(Math.E,myPow(uu[ii][0],2))*Math.sqrt(Math.PI))*du[ii][jj];
+    			
+    		}
+    	}
+    	chkNan(uu,"erf:uu");
+    	chkNan(du,"erf:du");
+    	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
+    }
+    public EquationValDrv erf()throws ProjectionRuntimeException {
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	int numRows=du.length;int numCols=du[0].length;
+    	int ii;int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		try {
+				uu[ii][0]=org.apache.commons.math.special.Erf.erf(uu[ii][0]);
+			} catch (MathException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		for(jj=0;jj<numCols;jj++){
+    			du[ii][jj]=2/(myPow(Math.E,myPow(uu[ii][0],2))*Math.sqrt(Math.PI))*du[ii][jj];
+    			
+    		}
+    	}
+    	chkNan(uu,"erf:uu");
+    	chkNan(du,"erf:du");
+    	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
+    }
     /*EXPONENTIAL*/
 
     public EquationValDrv exp()throws ProjectionRuntimeException {

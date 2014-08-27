@@ -745,6 +745,8 @@ codeGenSubs = {doInt[xx__]:>xx,(*Global`eps[_][Global`t]->0,*)Global`theDeriv[aS
 (*	need to find way to handle this case for plus and times where constant all alone without dimension information	Plus[xx:(_?noVars),yy:(_?noVars),zz___]:> Plus[EquationValDrv[ToString[CForm[xx]]<>".plus("<>ToString[CForm[yy]]<>")"],zz],*)
 	    Times[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
 		Times[EquationValDrv[xx_String],yy:(_?noVars),zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
+		Erfc[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erfc()"],
+		Erf[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erf()"],
 		Log[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".log()"],
 		Power[EquationValDrv[xx_String],yy:(__?noVars)]:> EquationValDrv[xx<>".pow("<>ToString[CForm[yy]]<>")"],
 		Global`eps[xx_][Global`t]:>EquationValDrv[ToString[xx]<>"$Shock$tm1"]};
@@ -958,6 +960,7 @@ doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
     Module[ {futureStuff=futureEqns[eqns]},(*Print["future",eqns//InputForm];*)
         With[ {svInfoReady = Map[ToString,svInfo,{-1}],
             eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],EquationValDrvEqns = (futureStuff[[-1]])//.codeGenSubs},(*Print["doeqcodesubs03"];*)
+Print["daSubs=",EquationValDrvEqns];
             With[ {theAugs = augEqns[eqNames],shkDef=defShocks[eqns],
                 theDefs = (StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2[[1]]<>";\n")&,
                     {eqNames,EquationValDrvEqns}])<>"\n",
