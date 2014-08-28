@@ -10,7 +10,7 @@ import java.util.Comparator;
 
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.complex.Complex;
-import org.apache.commons.math.special.Erf;
+import org.apache.commons.math.special.Erf.*;
 public class EquationValDrv {
    	double zeroThreshold = 1e-10;
     public int numNodes;
@@ -118,7 +118,76 @@ public class EquationValDrv {
     	chkNan(du,"plus:du");
     	return(theRes);
     }
+/*compare 1 true -1 false, size of deriv matrix should match but values derivatives never used set zero*/
+    public EquationValDrv ge(int aVal) throws ProjectionRuntimeException{
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	int numRows=uu.length;int numCols=du[0].length;
+    	int ii;int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		if(uu[ii][0]>=aVal)
+    			{uu[ii][0]=1;} else {uu[ii][0]=-1;};
+  	}
+    	EquationValDrv theRes = new EquationValDrv(new Matrix(uu),new Matrix(numRows,numCols));
+    	return(theRes);
+    }
+	
 
+    public EquationValDrv ge(double aVal) throws ProjectionRuntimeException{
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	int numRows=uu.length;int numCols=du[0].length;
+    	int ii;
+    	int jj;
+    	for(ii=0;ii<numRows;ii++){
+       		if(uu[ii][0]>=aVal)
+			{uu[ii][0]=1;} else {uu[ii][0]=-1;};
+	}
+	EquationValDrv theRes = new EquationValDrv(new Matrix(uu),new Matrix(numRows,numCols));
+    	return(theRes);
+    }
+
+
+    public EquationValDrv ge(EquationValDrv anEqValDrv) throws ProjectionRuntimeException{
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	double [][] vv=anEqValDrv.theVal.getArrayCopy();
+    	int numRows=uu.length;int numCols=du[0].length;
+    	int ii;
+    	int jj;
+    	for(ii=0;ii<numRows;ii++){
+       		if(uu[ii][0]>vv[ii][0])
+			{uu[ii][0]=1;} else {uu[ii][0]=-1;};
+	}
+    	EquationValDrv theRes = new EquationValDrv(new Matrix(uu),new Matrix(numRows,numCols));
+    	return(theRes);
+    }
+
+    public EquationValDrv eqvdIf(EquationValDrv lftEqvd,EquationValDrv rghtEqvd)throws ProjectionRuntimeException {
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	double [][] ldu=lftEqvd.theJac.getArrayCopy();
+    	double [][] luu=lftEqvd.theVal.getArrayCopy();
+    	double [][] rdu=rghtEqvd.theJac.getArrayCopy();
+    	double [][] ruu=rghtEqvd.theVal.getArrayCopy();
+    	int numRows=du.length;int numCols=du[0].length;
+    	int ii;int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		if(uu[ii][0]==1){
+    			uu[ii][0]=luu[ii][0];
+    			for(jj=0;jj<numCols;jj++){
+    			du[ii][jj]=ldu[ii][jj];
+    		}} else {
+    			uu[ii][0]=ruu[ii][0];
+    			for(jj=0;jj<numCols;jj++){
+    			du[ii][jj]=rdu[ii][jj];
+    		}   			
+    		}
+    	}
+    	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
+    }
+	   
+    
 /*SUBTRACT*/
     public EquationValDrv minus(double aVal) throws ProjectionRuntimeException{
     	EquationValDrv theRes = new EquationValDrv(theVal.minus(new Matrix(theVal.getRowDimension(),1,aVal)),theJac);
