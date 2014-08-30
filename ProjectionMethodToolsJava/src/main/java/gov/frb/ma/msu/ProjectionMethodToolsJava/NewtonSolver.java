@@ -66,7 +66,7 @@ public void setundefinedRanges(boolean undefinedRangesV) {
 		public NewtonIterSequenceInfo getNewtonIters() {
 		return newtonIters;
 	}
-	public void setNewtonIters(NewtonIterSequenceInfo newtonIters) {
+	private void setNewtonIters(NewtonIterSequenceInfo newtonIters) {
 		this.newtonIters = newtonIters;
 	}
 	public void newtonItersAdd(NewtonIterInfo nii,double shrinkWD){
@@ -120,7 +120,7 @@ public void setundefinedRanges(boolean undefinedRangesV) {
 		solution.setAllWeights(xx);}
 
 	EquationValDrv theEqValDrv=modelEquations.updateValDrv(solution);
-    if ( theEqValDrv.theVal.norm1()<newtonMethodEpsilon) newtonIters.setNewtonConvergedQ(true);
+    if ( theEqValDrv.theVal.norm1()<newtonMethodEpsilon) {		newtonIters.setNewtonConvergedQ(true);}
     else{
 	    while (true) {    itsSoFar++;solution.setNewtonSteps(itsSoFar);
 	    Matrix delta = computeDelta(solution, theEqValDrv);

@@ -5,7 +5,9 @@ BeginPackage["ProjectionInterface`", { "JLink`"}]
 (* Exported symbols added here with SymbolName::usage *)  
 (* Exported symbols added here with SymbolName::usage *) 
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
+GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 
+gtXFormedChebSubsNotStrings::usage="gtXFormedChebSubsNotStrings"
 getPhiFunc::usage="getPhiFunc[vName_String,theBasis_?JavaObjectQ]";
 applyNew::usage="applyNew[phiNow_?NumberQ,theOrders_List,newModEqns_?JavaObjectQ]\n for AKY paper. 'homotopy' for computing phi"
 GenerateBasis::usage="GenerateBasis[{stateVars_List,nonStateVars_List},
@@ -69,7 +71,6 @@ gtRanges::usage="gtRanges[aRes_?JavaObjectQ]:"
 evalMod::usage="evalMod[aMod_?JavaObjectQ,aWSB_?JavaObjectQ,aMat_?MatrixQ]"
 
 
-gtChebNodes::usage="gtChebNodes[aWSB_?JavaObjectQ]:"
 
 gtPolyOrdersForOuterProduct::usage="gtPolyOrdersForOuterProduct[aWSB_?JavaObjectQ]:"
 
@@ -78,6 +79,9 @@ gtPolyRanges::usage="gtPolyRanges[aWSB_?JavaObjectQ]:"
 
 
 gtStateVars::usage="gtStateVars[aWSB_?JavaObjectQ]:"
+gtShockVars::usage="gtStateVars[aWSB_?JavaObjectQ]:"
+gtStateVarsNoShocks::usage="gtStateVarsNoShocks[aWSB_?JavaObjectQ]"
+
 
 
 
@@ -113,6 +117,8 @@ gtGrid::usage="gtGrid[aWSB_?JavaObjectQ]:"
 
 
 gtStateVarsTimeTAtNodes::usage="gtStateVarsTimeTAtNodes[aWSB_?JavaObjectQ,aMat_?MatrixQ]:"
+
+
 
 
 
@@ -246,6 +252,20 @@ gtStateVars[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
 theGr[getVariableNames[]]]/;
 ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
 
+gtStateVarsNoShocks[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
+With[{withoutShocksDim=theGr[getStateDimWithoutShocks[]]},
+theGr[getVariableNames[]][[Range[withoutShocksDim]]]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+gtShockVars[aWSB_?JavaObjectQ]:=With[{theGr=gtGrid[aWSB]},
+With[{withoutShocksDim=theGr[getStateDimWithoutShocks[]]},
+Drop[theGr[getVariableNames[]],withoutShocksDim]]]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+
+
+
 
 gtNonStateVars[aWSB_?JavaObjectQ]:=With[
 {theNS=aWSB[getTheNonState[]]},
@@ -308,6 +328,11 @@ ClassName[aRes]==="gov.frb.ma.msu.ProjectionMethodToolsJava.ProjectionResults"
 gtXFormedChebSubs[aWSB_?JavaObjectQ]:=With[{theVals=gtXFormedChebNodes[aWSB],
 theVars=gtStateVars[aWSB]},
 Function[xxx,Transpose[{theVars,xxx}]/.List[xx_String,yy_]->Rule[xx,yy]]/@theVals]/;
+ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
+
+gtXFormedChebSubsNotStrings[aWSB_?JavaObjectQ]:=With[{theVals=gtXFormedChebNodes[aWSB],
+theVars=ToExpression /@gtStateVars[aWSB]},
+Function[xxx,Transpose[{theVars,xxx}]/.List[xx_Symbol,yy_]->Rule[xx,yy]]/@theVals]/;
 ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
 
 
@@ -602,9 +627,10 @@ Module[{theStatePoly},
 With[{theStatePoly=theBasis[getTheState[]]},
 Module[{vNames=theStatePoly[getStateVariableNames[]],
 thePows=theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]},
-With[{thePolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]},
+With[{vNameSubs=Thread[vNames->(ToExpression/@vNames)],
+thePolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]},
 With[{theRes=Expand[prodHelper01[thePolys,#]&/@ thePows]},
-theWts . theRes]]]]]
+theWts . theRes/.vNameSubs]]]]]
 
 prodHelper01[polys_List,ords_List]:=
 With[{prep=MapIndexed[polys[[#2[[1]],#1+1]]&,ords]},Times @@ prep]
@@ -745,6 +771,26 @@ codeGenSubs = {doInt[xx__]:>xx,(*Global`eps[_][Global`t]->0,*)Global`theDeriv[aS
 (*	need to find way to handle this case for plus and times where constant all alone without dimension information	Plus[xx:(_?noVars),yy:(_?noVars),zz___]:> Plus[EquationValDrv[ToString[CForm[xx]]<>".plus("<>ToString[CForm[yy]]<>")"],zz],*)
 	    Times[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
 		Times[EquationValDrv[xx_String],yy:(_?noVars),zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
+Global`eqvdIf[EquationValDrv[aa_String]>=
+EquationValDrv[bb_String],
+EquationValDrv[cc_String],
+EquationValDrv[dd_String]]:>
+EquationValDrv[aa<>".ge("<>bb<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[EquationValDrv[aa_String]>=
+bb:(__?noVars),
+EquationValDrv[cc_String],
+EquationValDrv[dd_String]]:>
+EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[EquationValDrv[aa_String]>=
+bb:(__?noVars),
+EquationValDrv[cc_String],
+dd:(__?noVars)]:>
+EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[EquationValDrv[aa_String]>=
+bb:(__?noVars),
+EquationValDrv[cc_String],
+EquationValDrv[dd:(__?noVars)]]:>
+EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
 		Erfc[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erfc()"],
 		Erf[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erf()"],
 		Log[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".log()"],
@@ -825,18 +871,59 @@ ComputeCollocationWeightsToOrder[previousResult_?JavaObjectQ,
 	targetOrders_List]:=
 	previousResult[toOrder[targetOrders]];
 	
+
+(*for now, 
+require constraints to involve 
+nonState variables and constants for results*)
+
+
+GetCnstrnsReplaceVariables[theMod_,
+thePolys_List,{stateStr_List,nonStateStr_List}]:=
+With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
+With[{eqns=projEquations[theMod],
+thePattern=xxL_Symbol[Global`t]-
+Global`eqvdIf[xxR_Symbol[Global`t]>=yy__,zz__,ww_]},
+With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
+Global`eqvdIf[xxR[Global`t]>=yy,xxL[Global`t],ww]}]},
+With[{
+	lsSubs=makeLaggedStateSubs[state],
+	csSubs=makeCurrentStateSubs[thePolys,state],
+	cnsSubs=makeCurrentNonStateSubs[thePolys,state,nonState],
+	nxtsSubs=makeNextStateSubs[thePolys,state],
+	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
+	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
+Print["subbing",nxtsSubs,"PPP",nxtnsSubs,"subbing",csSubs,"PPP",cnsSubs,"PPP",lsSubs,"done"];
+	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,csSubs,cnsSubs,nxtsSubs,nxtnsSubs]}]]]]
+
+
+
+
+CreatePolynomials[aMod_,results_?JavaObjectQ]:=
+With[{origPolys=CreatePolynomials[results],
+basis=results[getTheWeightedStochasticBasis[]]},
+With[{nonStateVars=gtNonStateVars[basis],
+stateVars=gtStateVarsNoShocks[basis]},
+With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
+origPolys,{stateVars,nonStateVars}]},
+With[{subPos=Flatten[Position[ToExpression/@
+Join[stateVars,nonStateVars],Head[#]]&/@cnstrPolys[[All,1]]]},
+With[{subbed=ReplacePart[origPolys,#]&@@(Transpose[{subPos,cnstrPolys[[2]]}]/.{xx_,yy_}->xx:>yy)},
+PiecewiseExpand/@(subbed/.Global`eqvdIf->If)]]]]]
+
+
 CreatePolynomials[results_?JavaObjectQ]:=
-With[{basis=results[getTheWeightedStochasticBasis[]],theWts=results[getResWeights[]]},
-	Print["before genPolys in createpolynomials 1"];
+With[{basis=results[getTheWeightedStochasticBasis[]],
+theWts=results[getResWeights[]]},
 	With[{theState=basis[getTheState[]]},
-		With[{vNames=ToExpression/@(theState[getStateVariableNames[]]),
-			grid=theState[getTheGrid[]]},
+		With[{grid=theState[getTheGrid[]]},
 			With[{theOrds=grid[getTheOrders[]],vSpec=grid[getTheStateVars[]]},
 				With[{
 				theMins=vSpec[getMinVals[]],
-				theMaxs=vSpec[getMaxVals[]]},Print["before genPolys in createpolynomials"];
+				theMaxs=vSpec[getMaxVals[]]},
 					genPolys[basis,Chop[theWts]]]]]]]
 					
+
 PlotPolynomials[polys_List,varVals_List,varNames_List]:=With[{allPlots=
 	MapThread[onePlot[#,varVals,#2]&,{polys,varNames}]},GraphicsGrid[{allPlots}]]
 	
@@ -868,8 +955,8 @@ With[{eqns=projEquations[theMod],
 	nxtsSubs=makeNextStateSubs[thePolys,state],
 	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
-	(eqns/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtnsSubs]]]]
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},Print["need modification to actually compute expected value"];
+	(eqns/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtsSubs,nxtnsSubs]]]]
 
 makeAllFirstDerivTp1[state_List,nonState_List,thePolys_List]:=
 With[{interact=Flatten[Outer[Global`theDeriv[#1[Global`t+1],#2[Global`t]]&,Join[state,nonState],state]],
@@ -902,13 +989,16 @@ With[{numState=Length[state],numNonState=Length[nonState],
 	
 
 	
-(*	
+	
 
 makeNextStateSubs[thePolys_List,state_List]:=
 	With[{numState=Length[state],nxt=Through[state[t+1]]},
-	With[{justState=thePolys[[Range[numState]]]},
-	With[{prep=thePolys/.Thread[state->justState]},Thread[nxt->prep]]]]
-*)
+With[{partialPolys=thePolys[[Range[numState]]]},
+	With[{justState=partialPolys},Print["inmake",numState,state,partialPolys,"duh"];
+	With[{prep=(thePolys[[Range[numState]]])/.Thread[state->justState]},
+Print["prep=",prep,"huh",nxt,"luh",{Length[prep],Length[nxt]}];
+Thread[nxt->prep]]]]]
+
 
 
 makeNextNonStateSubs[thePolys_List,state_List,nonState_List]:=
@@ -959,8 +1049,8 @@ GenerateBasis[stateVars,stateRanges,statePowers,
 doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
     Module[ {futureStuff=futureEqns[eqns]},(*Print["future",eqns//InputForm];*)
         With[ {svInfoReady = Map[ToString,svInfo,{-1}],
-            eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],EquationValDrvEqns = (futureStuff[[-1]])//.codeGenSubs},(*Print["doeqcodesubs03"];*)
-Print["daSubs=",EquationValDrvEqns];
+            eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],EquationValDrvEqns = (futureStuff[[-1]])//.codeGenSubs},
+(*Print["daSubs=",EquationValDrvEqns//FullForm];*)
             With[ {theAugs = augEqns[eqNames],shkDef=defShocks[eqns],
                 theDefs = (StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2[[1]]<>";\n")&,
                     {eqNames,EquationValDrvEqns}])<>"\n",

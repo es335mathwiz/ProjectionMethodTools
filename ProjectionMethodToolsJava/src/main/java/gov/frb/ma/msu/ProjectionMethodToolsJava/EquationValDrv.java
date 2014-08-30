@@ -181,7 +181,30 @@ public class EquationValDrv {
     			uu[ii][0]=ruu[ii][0];
     			for(jj=0;jj<numCols;jj++){
     			du[ii][jj]=rdu[ii][jj];
-    		}   			
+    		}   du[ii][0]=1;				
+    		}
+    	}
+    	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
+    }
+	   
+    
+    public EquationValDrv eqvdIf(EquationValDrv lftEqvd,double rghtVal)throws ProjectionRuntimeException {
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	double [][] ldu=lftEqvd.theJac.getArrayCopy();
+    	double [][] luu=lftEqvd.theVal.getArrayCopy();
+    	int numRows=du.length;int numCols=du[0].length;
+    	int ii;int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		if(uu[ii][0]==1){
+    			uu[ii][0]=luu[ii][0];
+    			for(jj=0;jj<numCols;jj++){
+    			du[ii][jj]=ldu[ii][jj];
+    		}} else {
+    			uu[ii][0]=rghtVal;
+    			for(jj=0;jj<numCols;jj++){
+    			du[ii][jj]=0;
+    		}   du[ii][0]=1;			
     		}
     	}
     	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
