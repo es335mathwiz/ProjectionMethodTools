@@ -11,9 +11,11 @@ isWindowsQ[]:=$OperatingSystem=="Windows"
 If[isWindowsQ[],
 $MAVENREPO="R:/Software/mavenRepositories/tryRep";
 AddToClassPath[$MAVENREPO<>"/org/apache/commons/commons-math/2.0/commons-math-2.0.jar"];
+AddToClassPath[$MAVENREPO<>"/ooNumMethods/OONumericalMethods/1.0/OONumericalMethods-1.0.jar"];
 AddToClassPath[$JamaJar=$MAVENREPO<>"/math/nist/gov/Jama/1.0.3/Jama-1.0.3.jar"];
 AddToClassPath[$ProjJar=$MAVENREPO<>"/gov/frb/ma/msu/ProjectionMethodToolsJava/0.0.1-SNAPSHOT/ProjectionMethodToolsJava-0.0.1-SNAPSHOT.jar"],
 $MAVENREPO="/msu/res1/Software/mavenRepositories/tryRep/";
+AddToClassPath[$MAVENREPO<>"/ooNumMethods/OONumericalMethods/1.0/OONumericalMethods-1.0.jar"];
 AddToClassPath[$MAVENREPO<>"/org/apache/commons/commons-math/2.0/commons-math-2.0.jar"];
 AddToClassPath[$JamaJar=$MAVENREPO<>"/math/nist/gov/Jama/1.0.3/Jama-1.0.3.jar"];
 AddToClassPath[$ProjJar=$MAVENREPO<>"/gov/frb/ma/msu/ProjectionMethodToolsJava/0.0.1-SNAPSHOT/ProjectionMethodToolsJava-0.0.1-SNAPSHOT.jar"];

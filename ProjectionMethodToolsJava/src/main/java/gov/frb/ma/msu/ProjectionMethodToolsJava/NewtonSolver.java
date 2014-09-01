@@ -120,7 +120,10 @@ public void setundefinedRanges(boolean undefinedRangesV) {
 		solution.setAllWeights(xx);}
 
 	EquationValDrv theEqValDrv=modelEquations.updateValDrv(solution);
-    if ( theEqValDrv.theVal.norm1()<newtonMethodEpsilon) {		newtonIters.setNewtonConvergedQ(true);}
+    if ( theEqValDrv.theVal.norm1()<newtonMethodEpsilon) {
+	    Matrix delta = computeDelta(solution, theEqValDrv);
+		newtonItersAdd(new NewtonIterInfo(xx,delta.getArray(),getShrinkNow(),theEqValDrv.getTheVal().getArray(),theEqValDrv.getTheJac().getArray(), true),shrinkNow);
+    	newtonIters.setNewtonConvergedQ(true);}
     else{
 	    while (true) {    itsSoFar++;solution.setNewtonSteps(itsSoFar);
 	    Matrix delta = computeDelta(solution, theEqValDrv);
@@ -133,6 +136,8 @@ public void setundefinedRanges(boolean undefinedRangesV) {
 	        if (delta.norm1() < newtonMethodEpsilon|| theEqValDrv.theVal.norm1()<newtonMethodEpsilon) break;
 	    checkWhetherMaxIterationsExceeded(itsSoFar, solution, delta,theEqValDrv);
 	    }
+	    Matrix delta = computeDelta(solution, theEqValDrv);
+			newtonItersAdd(new NewtonIterInfo(xx,delta.getArray(),getShrinkNow(),theEqValDrv.getTheVal().getArray(),theEqValDrv.getTheJac().getArray(), true),shrinkNow);
 	    newtonIters.setNewtonConvergedQ(true);
     }
 	if(undefinedRanges){

@@ -882,9 +882,10 @@ thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
 With[{eqns=projEquations[theMod],
 thePattern=xxL_Symbol[Global`t]-
-Global`eqvdIf[xxR_Symbol[Global`t]>=yy__,zz__,ww_]},
+Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-Global`eqvdIf[xxR[Global`t]>=yy,xxL[Global`t],ww]}]},
+Global`eqvdIf[xxR>=yy,xxL[Global`t],ww]}]},
+(*Print["ingtcns:",rhsForSubbing,eqns];*)
 With[{
 	lsSubs=makeLaggedStateSubs[state],
 	csSubs=makeCurrentStateSubs[thePolys,state],
@@ -893,7 +894,6 @@ With[{
 	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
 	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
-Print["subbing",nxtsSubs,"PPP",nxtnsSubs,"subbing",csSubs,"PPP",cnsSubs,"PPP",lsSubs,"done"];
 	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,csSubs,cnsSubs,nxtsSubs,nxtnsSubs]}]]]]
 
 
@@ -901,11 +901,11 @@ Print["subbing",nxtsSubs,"PPP",nxtnsSubs,"subbing",csSubs,"PPP",cnsSubs,"PPP",ls
 
 CreatePolynomials[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=CreatePolynomials[results],
-basis=results[getTheWeightedStochasticBasis[]]},
+basis=results[getTheWeightedStochasticBasis[]]},(*Print["orig",origPolys];*)
 With[{nonStateVars=gtNonStateVars[basis],
 stateVars=gtStateVarsNoShocks[basis]},
 With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
-origPolys,{stateVars,nonStateVars}]},
+origPolys,{stateVars,nonStateVars}]},(*Print["cnstrPolys=",cnstrPolys,subPos];*)
 With[{subPos=Flatten[Position[ToExpression/@
 Join[stateVars,nonStateVars],Head[#]]&/@cnstrPolys[[All,1]]]},
 With[{subbed=ReplacePart[origPolys,#]&@@(Transpose[{subPos,cnstrPolys[[2]]}]/.{xx_,yy_}->xx:>yy)},
@@ -948,7 +948,8 @@ ToExpression[
 
 ReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
-With[{eqns=projEquations[theMod],
+With[{
+eqns=projEquations[theMod]/.Global`eps[xx_][Global`t]:>ToString[xx]<>"$Shock",
 	lsSubs=makeLaggedStateSubs[state],
 	csSubs=makeCurrentStateSubs[thePolys,state],
 	cnsSubs=makeCurrentNonStateSubs[thePolys,state,nonState],
@@ -956,6 +957,7 @@ With[{eqns=projEquations[theMod],
 	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
 	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},Print["need modification to actually compute expected value"];
+(*Print[csSubs,nxtsSubs];*)
 	(eqns/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtsSubs,nxtnsSubs]]]]
 
 makeAllFirstDerivTp1[state_List,nonState_List,thePolys_List]:=
@@ -988,15 +990,15 @@ With[{numState=Length[state],numNonState=Length[nonState],
 	Thread[current->justNonState]]]	
 	
 
-	
+shocksTtoTp1[eqns_]:=With[{shocks=findShocks[eqns]},shocks]
+
 	
 
 makeNextStateSubs[thePolys_List,state_List]:=
-	With[{numState=Length[state],nxt=Through[state[t+1]]},
+	With[{numState=Length[state],nxt=Through[state[Global`t+1]]},
 With[{partialPolys=thePolys[[Range[numState]]]},
-	With[{justState=partialPolys},Print["inmake",numState,state,partialPolys,"duh"];
-	With[{prep=(thePolys[[Range[numState]]])/.Thread[state->justState]},
-Print["prep=",prep,"huh",nxt,"luh",{Length[prep],Length[nxt]}];
+	With[{justState=partialPolys},
+	With[{prep=(thePolys[[Range[numState]]])/.Thread[state->justState]/.Global`uu$Shock->Global`lookey},
 Thread[nxt->prep]]]]]
 
 
