@@ -920,12 +920,12 @@ With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]},
 With[{
 	lsSubs=makeLaggedStateSubs[state],
 	csSubs=makeCurrentStateSubs[thePolys,state],
-	cnsSubs=makeCurrentNoageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]nStateSubs[thePolys,state,nonState],
-	nxtsSubs={}(*makeNextStateSubs[thePolys,state]*),
-	nxtnsSubs={}(*makeNextNonStateSubs[thePolys,state,nonState]*),
+	cnsSubs=makeCurrentNonStateSubs[thePolys,state,nonState],
+	nxtsSubs=makeNextStateSubs[thePolys,state],
+	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
-	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,nxtnsSubs,csSubs,cnsSubs]}]]]]]
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},Print["rhsforsubbing in getcnstrsrepvar",rhsForSubbing,nxtsSubs,nxtnsSubs,"uhu"];
+	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs]}]]]]]
 
 GetCnstrnsTp1Subs[theMod_,
 thePolys_List,{stateStr_List,nonStateStr_List}]:=
@@ -955,9 +955,10 @@ With[{vNames=ToExpression/@
 Join[stateVars,nonStateVars]},
 With[{theLHS=cnstrPolys[[1]]},Print[theLHS];
 With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
+Print["cnstrPolysin create:",cnstrPolys,subPos];
 With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},
 Print["guts=",guts];
-With[{subbed=ReplacePart[origPolys,#]&@@ guts },Print["cnstrPolys=",cnstrPolys,subPos];
+With[{subbed=ReplacePart[origPolys,#]&@guts },Print["cnstrPolys=",cnstrPolys,subPos];
 Print["now subbed",subbed];
 PiecewiseExpand/@(subbed/.Global`eqvdIf->If)]]]]]]]]]
 
