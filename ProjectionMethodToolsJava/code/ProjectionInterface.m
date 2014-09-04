@@ -914,8 +914,7 @@ thePattern=xxL_Symbol[Global`t]-
 Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
 Global`eqvdIf[xxR>=yy,zz,ww]}]},
-Print["ingtcnsrepvars:",rhsForSubbing,eqns];
-Print["constraints explicitly involving future state or non state not implemented yet: augment model with dummy for now"];
+Print["constraints explicitly involving future state or non state validated in general: augment model with dummy for now to check"];
 With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]},
 With[{
 	lsSubs=makeLaggedStateSubs[state],
@@ -924,7 +923,7 @@ With[{
 	nxtsSubs=makeNextStateSubs[thePolys,state],
 	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},Print["rhsforsubbing in getcnstrsrepvar",rhsForSubbing,nxtsSubs,nxtnsSubs,"uhu"];
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
 	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs]}]]]]]
 
 GetCnstrnsTp1Subs[theMod_,
@@ -935,7 +934,6 @@ thePattern=xxL_Symbol[Global`t]-
 Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
 Global`eqvdIf[xxR>=yy,zz,ww]}]},
-Print["ingtcnstp1subs:",rhsForSubbing,eqns];
 Print["constraints explicitly involving future state or non state not implemented yet: augment model with dummy for now"];
 With[{},
 makeNextStateSubs[thePolys,state]]]]]
@@ -945,7 +943,7 @@ makeNextStateSubs[thePolys,state]]]]]
 
 CreatePolynomials[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=CreatePolynomials[results],
-basis=results[getTheWeightedStochasticBasis[]]},Print["orig",origPolys];
+basis=results[getTheWeightedStochasticBasis[]]},
 With[{nonStateVars=gtNonStateVars[basis],
 stateVars=gtStateVarsNoShocks[basis]},
 With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
@@ -953,13 +951,10 @@ origPolys,{stateVars,nonStateVars}]},
 If[cnstrPolys==={{},{}},origPolys,
 With[{vNames=ToExpression/@
 Join[stateVars,nonStateVars]},
-With[{theLHS=cnstrPolys[[1]]},Print[theLHS];
+With[{theLHS=cnstrPolys[[1]]},
 With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
-Print["cnstrPolysin create:",cnstrPolys,subPos];
 With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},
-Print["guts=",guts];
-With[{subbed=ReplacePart[origPolys,#]&@guts },Print["cnstrPolys=",cnstrPolys,subPos];
-Print["now subbed",subbed];
+With[{subbed=ReplacePart[origPolys,#]&@guts },
 PiecewiseExpand/@(subbed/.Global`eqvdIf->If)]]]]]]]]]
 
 
