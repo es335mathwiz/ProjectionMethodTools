@@ -7,6 +7,11 @@ BeginPackage["ProjectionInterface`", { "JLink`"}]
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 
+(*
+genPolysFromBasis::usage="genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?MatrixQ]"
+*)
+
+gtChebNodes::usage="gtChebNodes[aWSB_?JavaObjectQ]"
 gtXFormedChebSubsNotStrings::usage="gtXFormedChebSubsNotStrings"
 getPhiFunc::usage="getPhiFunc[vName_String,theBasis_?JavaObjectQ]";
 applyNew::usage="applyNew[phiNow_?NumberQ,theOrders_List,newModEqns_?JavaObjectQ]\n for AKY paper. 'homotopy' for computing phi"
@@ -20,8 +25,10 @@ GenerateModelCode::usage="GenerateModelCode[theModel_Symbol]"
 chebyshevExtrema::usage="chebyshevExtrema[nn_Integer]";
 
 chebyshevNodes::usage = "chebyshevNodes[nn_Integer]\n pure mathematica functions that computes the chebyshev nodes (to infinite precision)"
+(*
 genPolys::usage = "genPolys[theWts_?MatrixQ,theStateVars_List,theRanges_?MatrixQ,theOrds_?VectorQ]\n Pure mathematica function that generates a list of the tensor product of the chebyshev polynomials in 'ProjectionMethodToolsJava order"
 nearestLQ::usage="nearestLQ[theSolnSubs_List,thePhi_?NumberQ,thePoly_,theSubs_List]"
+*)
 fromChebyshevInterval::usage = "fromChebyshevInterval[xVal_,theMin_,theMax_]"
     theMin+((xVal+1)*(theMax-theMin)/2)
 ComputeInitialCollocationWeights::usage=
@@ -275,7 +282,8 @@ ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBa
 
 
 gtPolys[aWSB_?JavaObjectQ]:=With[{rngs=gtPolyRanges[aWSB],
-theOrds=gtPolyOrdersForOuterProduct[aWSB],theVars=gtStateVars[aWSB]},
+theOrds=gtPolyOrdersForOuterProduct[aWSB],
+theVars=ToExpression/@gtStateVars[aWSB]},
 With[{xxVars=Table[Unique["anX"],{Length[theVars]}]},
 With[{funcList=
 MapThread[onePhiFunc[#2,#3,#1[[1]],#1[[2]]]&,{rngs,theVars,xxVars}]},
@@ -566,7 +574,7 @@ phiWts[pm_?JavaObjectQ,phiTarg_?NumberQ,  someSubs_List,
          ArrayFlatten[{{almostDone,
          	ConstantArray[0,{Length[someWts],1(*(Times @@ (polyPowers+1))-1*)}]}}]
     ]]]]
- 
+(* 
 getPiEtcForPhiWider[theRes_?JavaObjectQ,someSubs_List]:=
 With[{theRanges=theRes[getRanges[]],thePows=theRes[getOrders[]],thePhi=1-(theRes[getParams[]])[[-1]]},
     With[{thePolys=genPolys[Chop[theRes@resWeights], {Global`theAA,Global`theAA$Shock, Global`theBigDelta,
@@ -600,13 +608,15 @@ getPiEtcForPhiVary[thePhi_?NumberQ,theModel_Symbol,someSubs_List,polyRanges_List
             ]
         ]
     ]]]
+*)
 (*genPolys[theWts_?MatrixQ,theStateVars_List,theRanges_?MatrixQ,theOrds_?VectorQ]:=
 Module[{},(*Print[theWts,theStateVars,theRanges,theOrds];*)
 Expand[theWts . kronProd[theStateVars,theRanges,theOrds]]
 ]
 *)
 (*
-genPolys[theState_?JavaObjectQ,theWts_?MatrixQ]:=
+genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?MatrixQ]:=
+Module[{theState=theBasis[getTheState[]]},
 	With[{vNames=ToExpression/@(theState[getStateVariableNames[]])},
 		With[{grid=theState[getTheGrid[]]},
 			With[{theOrds=grid[getTheOrders[]],vSpec=grid[getTheStateVars[]]},
@@ -615,13 +625,27 @@ genPolys[theState_?JavaObjectQ,theWts_?MatrixQ]:=
 				theMaxs=vSpec[getMaxVals[]]},
 				With[{theMins=vSpec[getMinVals[]],
 				theMaxs=vSpec[getMaxVals[]]},
-				With[{reOrd=columnMap[grid[generatePolyOrdersForOuterProduct[]],theOrds]},
-Expand[(theWts[[All,reOrd]]) . doExportOrderedOuter[theBasis_?JavaObjectQ]]]]]]]]
+				With[{reOrd=columnMap[grid[
+generatePolyOrdersForOuterProduct[]],theOrds]},
+With[{theOrdOut=getOrderedOuter[theBasis]},
+Print[theMins,theMaxs,reOrd,theOrdOut];
+Expand[(theWts(*[[All,reOrd]]*)) . theOrdOut]]]]]]]]]
 				
+
+prodHelper01[polys_List,ords_List]:=
+With[{prep=MapIndexed[polys[[#2[[1]],#1+1]]&,ords]},Times @@ prep]
+
 *)
 
+getOrderedOuter[theBasis_?JavaObjectQ]:=
+Module[{theStatePoly=theBasis[getTheState[]]},
+Module[{vNames=theStatePoly[getStateVariableNames[]],
+thePows=theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]},
+With[{thePolys=getPhiFunc[#,theBasis]&/@theStatePoly[getStateVariableNames[]]},
+With[{theRes=Expand[prodHelper01[thePolys,#]&/@ thePows]},
+theRes]]]]
 
-
+(*
 genPolys[theBasis_?JavaObjectQ,theWts_?MatrixQ]:=
 Module[{theStatePoly},
 With[{theStatePoly=theBasis[getTheState[]]},
@@ -635,7 +659,7 @@ theWts . theRes/.vNameSubs]]]]]
 prodHelper01[polys_List,ords_List]:=
 With[{prep=MapIndexed[polys[[#2[[1]],#1+1]]&,ords]},Times @@ prep]
 
-
+*)
 varNumberState[vName_String,aBasis_?JavaObjectQ]:=
 Position[
 Which[
@@ -783,6 +807,11 @@ EquationValDrv[dd_String]]:>
 EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
 Global`eqvdIf[EquationValDrv[aa_String]>=
 bb:(__?noVars),
+cc:(__?noVars),
+EquationValDrv[dd_String]]:>
+EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
+Global`eqvdIf[EquationValDrv[aa_String]>=
+bb:(__?noVars),
 EquationValDrv[cc_String],
 dd:(__?noVars)]:>
 EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
@@ -884,32 +913,53 @@ With[{eqns=projEquations[theMod],
 thePattern=xxL_Symbol[Global`t]-
 Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-Global`eqvdIf[xxR>=yy,xxL[Global`t],ww]}]},
-(*Print["ingtcns:",rhsForSubbing,eqns];*)
+Global`eqvdIf[xxR>=yy,zz,ww]}]},
+Print["ingtcnsrepvars:",rhsForSubbing,eqns];
+Print["constraints explicitly involving future state or non state not implemented yet: augment model with dummy for now"];
+With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]},
 With[{
 	lsSubs=makeLaggedStateSubs[state],
 	csSubs=makeCurrentStateSubs[thePolys,state],
-	cnsSubs=makeCurrentNonStateSubs[thePolys,state,nonState],
-	nxtsSubs=makeNextStateSubs[thePolys,state],
-	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
-	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
+	cnsSubs=makeCurrentNoageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]nStateSubs[thePolys,state,nonState],
+	nxtsSubs={}(*makeNextStateSubs[thePolys,state]*),
+	nxtnsSubs={}(*makeNextNonStateSubs[thePolys,state,nonState]*),
+	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
 	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
-	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,csSubs,cnsSubs,nxtsSubs,nxtnsSubs]}]]]]
+	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs,nxtnsSubs,csSubs,cnsSubs]}]]]]]
+
+GetCnstrnsTp1Subs[theMod_,
+thePolys_List,{stateStr_List,nonStateStr_List}]:=
+With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
+With[{eqns=projEquations[theMod],
+thePattern=xxL_Symbol[Global`t]-
+Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
+With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
+Global`eqvdIf[xxR>=yy,zz,ww]}]},
+Print["ingtcnstp1subs:",rhsForSubbing,eqns];
+Print["constraints explicitly involving future state or non state not implemented yet: augment model with dummy for now"];
+With[{},
+makeNextStateSubs[thePolys,state]]]]]
 
 
 
 
 CreatePolynomials[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=CreatePolynomials[results],
-basis=results[getTheWeightedStochasticBasis[]]},(*Print["orig",origPolys];*)
+basis=results[getTheWeightedStochasticBasis[]]},Print["orig",origPolys];
 With[{nonStateVars=gtNonStateVars[basis],
 stateVars=gtStateVarsNoShocks[basis]},
 With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
-origPolys,{stateVars,nonStateVars}]},(*Print["cnstrPolys=",cnstrPolys,subPos];*)
-With[{subPos=Flatten[Position[ToExpression/@
-Join[stateVars,nonStateVars],Head[#]]&/@cnstrPolys[[All,1]]]},
-With[{subbed=ReplacePart[origPolys,#]&@@(Transpose[{subPos,cnstrPolys[[2]]}]/.{xx_,yy_}->xx:>yy)},
-PiecewiseExpand/@(subbed/.Global`eqvdIf->If)]]]]]
+origPolys,{stateVars,nonStateVars}]},
+If[cnstrPolys==={{},{}},origPolys,
+With[{vNames=ToExpression/@
+Join[stateVars,nonStateVars]},
+With[{theLHS=cnstrPolys[[1]]},Print[theLHS];
+With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
+With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},
+Print["guts=",guts];
+With[{subbed=ReplacePart[origPolys,#]&@@ guts },Print["cnstrPolys=",cnstrPolys,subPos];
+Print["now subbed",subbed];
+PiecewiseExpand/@(subbed/.Global`eqvdIf->If)]]]]]]]]]
 
 
 CreatePolynomials[results_?JavaObjectQ]:=
@@ -921,7 +971,7 @@ theWts=results[getResWeights[]]},
 				With[{
 				theMins=vSpec[getMinVals[]],
 				theMaxs=vSpec[getMaxVals[]]},
-					genPolys[basis,Chop[theWts]]]]]]]
+					(theWts .  gtPolys[basis])//Chop]]]]]
 					
 
 PlotPolynomials[polys_List,varVals_List,varNames_List]:=With[{allPlots=
@@ -948,17 +998,19 @@ ToExpression[
 
 ReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
-With[{
-eqns=projEquations[theMod]/.Global`eps[xx_][Global`t]:>ToString[xx]<>"$Shock",
+With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}],
+eqns=projEquations[theMod]/.Global`eps[xx_][Global`t]:>ToExpression[ToString[xx]<>"$Shock"],
 	lsSubs=makeLaggedStateSubs[state],
 	csSubs=makeCurrentStateSubs[thePolys,state],
 	cnsSubs=makeCurrentNonStateSubs[thePolys,state,nonState],
 	nxtsSubs=makeNextStateSubs[thePolys,state],
 	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},Print["need modification to actually compute expected value"];
-(*Print[csSubs,nxtsSubs];*)
-	(eqns/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtsSubs,nxtnsSubs]]]]
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
+Print["agedconstraint",ageCnstrSubs,"haha",(ageCnstrSubs/.Join[nxtsSubs])[[1,2]],nxtsSubs,nxtnsSubs];
+Print["need modification to actually compute expected value"];
+(*Print[csSubs//ExpandAll,nxtsSubs//ExpandAll];*)
+	((eqns/.ageCnstrSubs)/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtnsSubs,nxtsSubs]]]]
 
 makeAllFirstDerivTp1[state_List,nonState_List,thePolys_List]:=
 With[{interact=Flatten[Outer[Global`theDeriv[#1[Global`t+1],#2[Global`t]]&,Join[state,nonState],state]],
@@ -996,10 +1048,11 @@ shocksTtoTp1[eqns_]:=With[{shocks=findShocks[eqns]},shocks]
 
 makeNextStateSubs[thePolys_List,state_List]:=
 	With[{numState=Length[state],nxt=Through[state[Global`t+1]]},
+Print["need to generalize code for makeNextStateSubs"];
 With[{partialPolys=thePolys[[Range[numState]]]},
-	With[{justState=partialPolys},
+	With[{justState=partialPolys/.Global`uu$Shock->Global`notlookey},
 	With[{prep=(thePolys[[Range[numState]]])/.Thread[state->justState]/.Global`uu$Shock->Global`lookey},
-Thread[nxt->prep]]]]]
+Thread[nxt->prep]/.Global`notlookey->Global`uu$Shock]]]]
 
 
 
@@ -1018,6 +1071,7 @@ Cases[varVals,{_Symbol,_?NumberQ,_?NumberQ},Infinity]
 GenerateModelCode[theModel_Symbol] :=
     With[ {eqns = projEquations[theModel],snsVars = getStateNonState[theModel]},
         With[ {eqnsCode = doEqCodeSubs[ToString[theModel],eqns,snsVars]},
+Print["ingenmodcode:",eqnsCode,snsVars];
             {Map[ToString,snsVars,{-1}],eqnsCode}
             ]
     ]/;And[projLags[theModel]<= 1,projLeads[theModel]<= 1]

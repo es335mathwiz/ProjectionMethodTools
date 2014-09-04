@@ -133,7 +133,7 @@ public void setundefinedRanges(boolean undefinedRangesV) {
 		
 		solution.setAllWeights(xx);
 	    theEqValDrv=modelEquations.updateValDrv(solution);
-	        if (delta.norm1() < newtonMethodEpsilon|| theEqValDrv.theVal.norm1()<newtonMethodEpsilon) break;
+	        if (delta.norm1() < 0*newtonMethodEpsilon|| theEqValDrv.theVal.norm1()<newtonMethodEpsilon) break;
 	    checkWhetherMaxIterationsExceeded(itsSoFar, solution, delta,theEqValDrv);
 	    }
 	    Matrix delta = computeDelta(solution, theEqValDrv);
