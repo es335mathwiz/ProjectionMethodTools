@@ -1,0 +1,134 @@
+
+(* use reliable paper formula to solve occasionally binding constraints models*)
+Get["prepPackages.mth"];
+PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
+PrependTo[$Path,"../../../mathAMA/NumericAMA"];
+PrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
+PrependTo[$Path,"../../../paperProduction/symbAMA/code"];
+PrependTo[$Path,"../../../paperProduction/FormatOptimize/"];
+
+Needs["AccelerateAMA`"]
+
+
+
+Print["need code to compute psimat"]
+psimat={{0},{1},{0}};
+
+
+
+augmentProjection[eqns_List]:=
+Module[{noCnstr=eqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx},zf,hr,
+bmat,phimat,fmat},Print[noCnstr];
+With[{hmat=equationsToMatrix[noCnstr]},Print[hmat];
+{ig,ig,ig,ig,qmat,ig,ig,ig}=numericAMA[hmat,1,1];Print[zf,hf];
+Print["need to generalize to actually compute qmat"];
+{hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat,1]}
+]]
+
+
+
+
+Print["need to generalize to multiple shocks and for symbols for tm1 ant t vars"]
+getXt[xtm1_?MatrixQ,
+bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ,
+zt_Function,ztp1_Function]:=
+Module[{},
+bmat. xtm1 + phimat. psimat. {{epst}} +  phimat. zt[xtm1,epst] +
+fmat . phimat . ztp1[xtm1,eps]]
+
+getXtInf[xtm1_?MatrixQ,
+bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ,
+zt_Function,ztp1_Function]:=
+Module[{},
+bmat. xtm1 + phimat. psimat. {{epst}} +  
+phimat. (zt[xtm1,epst] -ztp1[xtm1,epst]) +
+Inverse[IdentityMatrix[Length[fmat]]-fmat] . phimat . ztp1[xtm1,eps]]
+
+
+
+
+(*
+makeBigZFunc[zt_Function]:=Function @@ {{xtm1,epst},
+Map[Expectation[#,epst \[Distributed] NormalDistribution[0,1]]&,
+zt[xt,epst],{2}]}
+*)
+lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
+   rUnderBar -> -.18(*2/100*), qLow -> -.5, qHigh -> .5, 
+   ruLow -> -4*sigma$u/(1 - rho$ru), 
+   ruHigh ->  4*sigma$u/(1 - rho$ru), integOrder -> {20}, 
+   sigma$u -> 0.02, theMean -> {0}, rho$ru -> 0.5, adj -> 1};
+
+lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] - 
+      sigmap*rr[t] + ru[t]),
+   ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
+   rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]}
+
+(*superSimpleEqns = {qq[t] - 
+    eqvdIf[notZ[t] >= 0, notZ[t+1], 99],
+   notZ[t] - rho*qq[t - 1] - eps[notZ][t]}
+*)
+
+{hmat,qmat,{bmat,phimat,fmat}}=augmentProjection[lucaEqns//.lucaSubs]
+
+
+
+
+tryzt=Function @@ {{xtm1,epst},{{0},{0},{z2[xtm1,epst]}}}
+tryztp1=Function @@ {{xtm1,epst},{{0},{0},{z2exp[xtm1,epst]}}}
+
+
+getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]
+
+
+
+hmat . ArrayFlatten[{{{{qqtm1},{rrtm1},{rutm1}}},{getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]},{bmat . getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]}}]//FullSimplify
+
+noCnstr=lucaEqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx};
+hmat=equationsToMatrix[noCnstr];
+{zf,hf}=symbolicAR[hmat]//Simplify;
+aMat=symbolicTransitionMatrix[hf]//Simplify;
+{evls,evcs}=Eigensystem[Transpose[aMat]];
+
+(*
+evls//.lucaSubs//N
+{0., 0., 0., 0.5, 3.77266, 0.267742}
+*)
+
+
+qmat=Join[zf,evcs[[{5}]]];
+
+{bmat,phimat,fmat}=symbolicComputeBPhiF[hmat,qmat]//FullSimplify;
+
+
+paperSubs={
+sigmap->Subscript[sigma,p],
+betap->Subscript[beta,p],
+rhop->Subscript[rho,p],
+rho$ru->Subscript[rho,u],
+phip->Subscript[phi,p],
+sigma$u->Subscript[sigma,u],
+qqtm1->Subscript[q,t-1],
+rutm1->Subscript[r,ut-1],
+rrtm1->Subscript[r,ut-1],
+epst->Subscript[epsilon,t],
+z2[___]->Subscript[z,t],
+z2exp[___]->Exptn[Subscript[z,t+1]],
+Union[Cases[fmat,Sqrt[___],Infinity]][[1]]->nu
+}
+
+(*
+TeXForm[fmat/.paperSubs]
+TeXForm[phimat/.paperSubs]
+TeXForm[fmat/.paperSubs]
+*)
+
+applyFormula=getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]//FullSimplify;
+
+nFormula=applyFormula//.lucaSubs//N//Simplify//Expand/.paperSubs;
+
+applyFormulaInf=getXtInf[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt, tryztp1]//FullSimplify;
+
+
+nFormulaInf=applyFormulaInf//.lucaSubs//N//Simplify//Expand/.paperSubs;
+
+

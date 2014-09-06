@@ -10,7 +10,7 @@ GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_L
 (*
 genPolysFromBasis::usage="genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?MatrixQ]"
 *)
-
+CreateRHSPolynomials::usage="CreateRHSPolynomials[aMod_,results_?JavaObjectQ]"
 gtChebNodes::usage="gtChebNodes[aWSB_?JavaObjectQ]"
 gtXFormedChebSubsNotStrings::usage="gtXFormedChebSubsNotStrings"
 getPhiFunc::usage="getPhiFunc[vName_String,theBasis_?JavaObjectQ]";
@@ -941,6 +941,23 @@ makeNextStateSubs[thePolys,state]]]]]
 
 
 
+CreateRHSPolynomials[theMod_,thePolys_List,{stateStr_List,nonStateStr_List}]:=
+With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
+With[{lhs=Through[Join[state,nonState][Global`t]]},
+With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}],
+eqns=projEquations[theMod]/.Global`eps[xx_][Global`t]:>ToExpression[ToString[xx]<>"$Shock"],
+	lsSubs=makeLaggedStateSubs[state],
+	csSubs=makeCurrentStateSubs[thePolys,state],
+	cnsSubs=makeCurrentNonStateSubs[thePolys,state,nonState],
+	nxtsSubs=makeNextStateSubs[thePolys,state],
+	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
+	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
+Print["need modification to actually compute expected value"];
+(*Print[csSubs//ExpandAll,nxtsSubs//ExpandAll];*)
+	(((eqns-lhs)/.ageCnstrSubs)/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtnsSubs,nxtsSubs]]]]]
+
+
 CreatePolynomials[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=CreatePolynomials[results],
 basis=results[getTheWeightedStochasticBasis[]]},
@@ -1003,7 +1020,6 @@ eqns=projEquations[theMod]/.Global`eps[xx_][Global`t]:>ToExpression[ToString[xx]
 	nxtnsSubs=makeNextNonStateSubs[thePolys,state,nonState],
 	nxtDrvSubsTp1=makeAllFirstDerivTp1[state,nonState,thePolys],
 	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,thePolys]},
-Print["agedconstraint",ageCnstrSubs,"haha",(ageCnstrSubs/.Join[nxtsSubs])[[1,2]],nxtsSubs,nxtnsSubs];
 Print["need modification to actually compute expected value"];
 (*Print[csSubs//ExpandAll,nxtsSubs//ExpandAll];*)
 	((eqns/.ageCnstrSubs)/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Flatten[Join[lsSubs,csSubs,cnsSubs,nxtnsSubs,nxtsSubs]]]]
