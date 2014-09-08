@@ -70,7 +70,7 @@ zvars=Table[
 ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"],{forTime,0,horizons},{ii,Length[lhsCnstrnt]}],
 leqns=genLeadEqns[lhsCnstrnt/.Global`t->Global`t+horizons]},
 With[{allSubs=Flatten[doVarSubs[#,horizons]&/@vars]},
-{allSubs,zvars,leqns,eqvdPart/.allSubs}]]/;
+{allSubs,zvars,leqns,zvars-eqvdPart/.allSubs}]]/;
 Union[Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity]]==={0}
 
 
