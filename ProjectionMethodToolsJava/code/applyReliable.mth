@@ -12,11 +12,10 @@ Needs["AccelerateAMA`"]
 
 
 Print["need code to compute psimat"]
-psimat={{0},{1},{0}};
 
 
 
-augmentProjection[eqns_List]:=
+linearizeSystemForOBC[eqns_List]:=
 Module[{noCnstr=eqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx},zf,hr,
 bmat,phimat,fmat},Print[noCnstr];
 With[{hmat=equationsToMatrix[noCnstr]},Print[hmat];
@@ -25,8 +24,49 @@ Print["need to generalize to actually compute qmat"];
 {hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat,1]}
 ]]
 
+nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
+bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]:=
+bmat . xtm1 + phimat . psimat . epsilon
+
+fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,zMats_List]:=
+Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,zMats]
 
 
+
+
+
+lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
+   rUnderBar -> -.18(*2/100*), qLow -> -.5, qHigh -> .5, 
+   ruLow -> -4*sigma$u/(1 - rho$ru), 
+   ruHigh ->  4*sigma$u/(1 - rho$ru), integOrder -> {20}, 
+   sigma$u -> 0.02, theMean -> {0}, rho$ru -> 0.5, adj -> 1};
+
+lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] - 
+      sigmap*rr[t] + ru[t]),
+   ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
+   rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]}
+
+
+
+
+{hmat,qmat,{bmat,phimat,fmat}}=augmentProjection[lucaEqns//.lucaSubs];
+Print["take care of difference in projmethod order and equations to matrix"]
+Print["projectionmethod order for state before nonstate"]
+(*
+Print["must do same for bmat phimat fmat etc"]
+*)
+psieps={{0},{1},{0}};
+psiz={{0},{0},{1}};
+(*
+projOrder={1,3,2};
+bmat=bmat[[projOrder]];fmat=fmat[[projOrder]];phimat=phimat[[projOrder]];
+*)
+
+nfp=nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps]//Chop;
+
+fp=fPart[phimat,fmat,psiz,{{{z10[t]}},{{z9[t]}},{{z8[t]}},{{z7[t]}},{{z6[t]}},{{z5[t]}},{{z4[t]}},{{z3[t]}},{{z2[t]}},{{z1[t]}},{{z0[t]}}}]//Chop
+
+(*
 
 Print["need to generalize to multiple shocks and for symbols for tm1 ant t vars"]
 getXt[xtm1_?MatrixQ,
@@ -47,11 +87,6 @@ Inverse[IdentityMatrix[Length[fmat]]-fmat] . phimat . ztp1[xtm1,eps]]
 
 
 
-(*
-makeBigZFunc[zt_Function]:=Function @@ {{xtm1,epst},
-Map[Expectation[#,epst \[Distributed] NormalDistribution[0,1]]&,
-zt[xt,epst],{2}]}
-*)
 lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
    rUnderBar -> -.18(*2/100*), qLow -> -.5, qHigh -> .5, 
    ruLow -> -4*sigma$u/(1 - rho$ru), 
@@ -68,9 +103,14 @@ lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] -
    notZ[t] - rho*qq[t - 1] - eps[notZ][t]}
 *)
 
-{hmat,qmat,{bmat,phimat,fmat}}=augmentProjection[lucaEqns//.lucaSubs]
 
 
+
+(*
+makeBigZFunc[zt_Function]:=Function @@ {{xtm1,epst},
+Map[Expectation[#,epst \[Distributed] NormalDistribution[0,1]]&,
+zt[xt,epst],{2}]}
+*)
 
 
 tryzt=Function @@ {{xtm1,epst},{{0},{0},{z2[xtm1,epst]}}}
@@ -130,5 +170,5 @@ applyFormulaInf=getXtInf[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt
 
 
 nFormulaInf=applyFormulaInf//.lucaSubs//N//Simplify//Expand/.paperSubs;
-
+*)
 
