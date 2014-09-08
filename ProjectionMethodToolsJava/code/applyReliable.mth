@@ -1,4 +1,3 @@
-
 (* use reliable paper formula to solve occasionally binding constraints models*)
 Get["prepPackages.mth"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
@@ -31,12 +30,56 @@ bmat . xtm1 + phimat . psimat . epsilon
 fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,zMats_List]:=
 Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,zMats]
 
+onlyOneTimePeriod[lhsCnstrnt_?MatrixQ]:=
+Length[Union[Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity]]]===1
+
+Print["assumes all variables on lhs and dated the same time period."]
+cnstrntsPart[lhsCnstrnt_?MatrixQ,rhsCnstrnt_?MatrixQ]:=
+With[{forTime=Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity][[1]]},
+MapThread[eqvdIf[#1>=#2,0,#2-#1]&,(Flatten/@{lhsCnstrnt,rhsCnstrnt})]]/;
+onlyOneTimePeriod[lhsCnstrnt]
+
+genLeadEqns[lhsCnstrns_?MatrixQ]:=
+With[{vars=Cases[lhsCnstrns,xx_[Global`t+_.]:>ToString[xx],Infinity],
+forTime=Cases[lhsCnstrns,_[Global`t+ss_.]->ss,Infinity][[1]]},
+If[forTime<2,{},
+With[{allTimes=genFutureDefs[#,forTime]&/@vars},Flatten[allTimes]
+]]]/;onlyOneTimePeriod[lhsCnstrns]
+
+doVar[vn_String,num_Integer]:=
+Table[ToExpression[vn<>"$tp"<>ToString[ii]],{ii,1,num}]
+
+doVarSubs[vn_String,num_Integer]:=
+Table[ToExpression[vn<>"[Global`t+"<>ToString[ii]<>"]:>"<>vn<>"$tp"<>ToString[ii]],{ii,1,num}]
+
+genFutureDefs[vn_String,num_Integer]:=
+If[num<2,{},
+With[{allVn=doVar[vn,num]},
+With[{lhs=Through[allVn[Global`t]],
+rhs=Prepend[Drop[Through[allVn[Global`t+1]],-1],
+ToExpression[vn<>"[Global`t+1]"]]},
+lhs-rhs]]]
+
+
+
+cnstrntsPartAll[horizons_Integer,lhsCnstrnt_?MatrixQ,rhsCnstrnt_?MatrixQ]:=
+With[{eqvdPart=Flatten[Table[
+cnstrntsPart[lhsCnstrnt/.Global`t->Global`t+ii,rhsCnstrnt],{ii,horizons,0,-1}]],
+vars=Cases[lhsCnstrnt,xx_[Global`t+_.]:>ToString[xx],Infinity],
+zvars=Table[
+ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"],{forTime,0,horizons},{ii,Length[lhsCnstrnt]}],
+leqns=genLeadEqns[lhsCnstrnt/.Global`t->Global`t+horizons]},
+With[{allSubs=Flatten[doVarSubs[#,horizons]&/@vars]},
+{allSubs,zvars,leqns,eqvdPart/.allSubs}]]/;
+Union[Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity]]==={0}
+
+
 
 
 
 
 lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
-   rUnderBar -> -.18(*2/100*), qLow -> -.5, qHigh -> .5, 
+   rUnderBar -> 2/100, qLow -> -.5, qHigh -> .5, 
    ruLow -> -4*sigma$u/(1 - rho$ru), 
    ruHigh ->  4*sigma$u/(1 - rho$ru), integOrder -> {20}, 
    sigma$u -> 0.02, theMean -> {0}, rho$ru -> 0.5, adj -> 1};
@@ -57,118 +100,21 @@ Print["must do same for bmat phimat fmat etc"]
 *)
 psieps={{0},{1},{0}};
 psiz={{0},{0},{1}};
-(*
-projOrder={1,3,2};
-bmat=bmat[[projOrder]];fmat=fmat[[projOrder]];phimat=phimat[[projOrder]];
-*)
+
+
+nfp=nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps]//Chop;
+
+fp=fPart[phimat,fmat,psiz,{}]//Chop
+
+eqns00=InputForm[Flatten[fp+nfp]]
+
+mMat={{phip},{0},{0}};
+
+cnstrntsPart[{{qq[t]}},{{0.02}}]
 
 nfp=nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps]//Chop;
 
 fp=fPart[phimat,fmat,psiz,{{{z10[t]}},{{z9[t]}},{{z8[t]}},{{z7[t]}},{{z6[t]}},{{z5[t]}},{{z4[t]}},{{z3[t]}},{{z2[t]}},{{z1[t]}},{{z0[t]}}}]//Chop
 
-(*
 
-Print["need to generalize to multiple shocks and for symbols for tm1 ant t vars"]
-getXt[xtm1_?MatrixQ,
-bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ,
-zt_Function,ztp1_Function]:=
-Module[{},
-bmat. xtm1 + phimat. psimat. {{epst}} +  phimat. zt[xtm1,epst] +
-fmat . phimat . ztp1[xtm1,eps]]
-
-getXtInf[xtm1_?MatrixQ,
-bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ,
-zt_Function,ztp1_Function]:=
-Module[{},
-bmat. xtm1 + phimat. psimat. {{epst}} +  
-phimat. (zt[xtm1,epst] -ztp1[xtm1,epst]) +
-Inverse[IdentityMatrix[Length[fmat]]-fmat] . phimat . ztp1[xtm1,eps]]
-
-
-
-
-lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
-   rUnderBar -> -.18(*2/100*), qLow -> -.5, qHigh -> .5, 
-   ruLow -> -4*sigma$u/(1 - rho$ru), 
-   ruHigh ->  4*sigma$u/(1 - rho$ru), integOrder -> {20}, 
-   sigma$u -> 0.02, theMean -> {0}, rho$ru -> 0.5, adj -> 1};
-
-lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] - 
-      sigmap*rr[t] + ru[t]),
-   ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
-   rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]}
-
-(*superSimpleEqns = {qq[t] - 
-    eqvdIf[notZ[t] >= 0, notZ[t+1], 99],
-   notZ[t] - rho*qq[t - 1] - eps[notZ][t]}
-*)
-
-
-
-
-(*
-makeBigZFunc[zt_Function]:=Function @@ {{xtm1,epst},
-Map[Expectation[#,epst \[Distributed] NormalDistribution[0,1]]&,
-zt[xt,epst],{2}]}
-*)
-
-
-tryzt=Function @@ {{xtm1,epst},{{0},{0},{z2[xtm1,epst]}}}
-tryztp1=Function @@ {{xtm1,epst},{{0},{0},{z2exp[xtm1,epst]}}}
-
-
-getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]
-
-
-
-hmat . ArrayFlatten[{{{{qqtm1},{rrtm1},{rutm1}}},{getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]},{bmat . getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]}}]//FullSimplify
-
-noCnstr=lucaEqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx};
-hmat=equationsToMatrix[noCnstr];
-{zf,hf}=symbolicAR[hmat]//Simplify;
-aMat=symbolicTransitionMatrix[hf]//Simplify;
-{evls,evcs}=Eigensystem[Transpose[aMat]];
-
-(*
-evls//.lucaSubs//N
-{0., 0., 0., 0.5, 3.77266, 0.267742}
-*)
-
-
-qmat=Join[zf,evcs[[{5}]]];
-
-{bmat,phimat,fmat}=symbolicComputeBPhiF[hmat,qmat]//FullSimplify;
-
-
-paperSubs={
-sigmap->Subscript[sigma,p],
-betap->Subscript[beta,p],
-rhop->Subscript[rho,p],
-rho$ru->Subscript[rho,u],
-phip->Subscript[phi,p],
-sigma$u->Subscript[sigma,u],
-qqtm1->Subscript[q,t-1],
-rutm1->Subscript[r,ut-1],
-rrtm1->Subscript[r,ut-1],
-epst->Subscript[epsilon,t],
-z2[___]->Subscript[z,t],
-z2exp[___]->Exptn[Subscript[z,t+1]],
-Union[Cases[fmat,Sqrt[___],Infinity]][[1]]->nu
-}
-
-(*
-TeXForm[fmat/.paperSubs]
-TeXForm[phimat/.paperSubs]
-TeXForm[fmat/.paperSubs]
-*)
-
-applyFormula=getXt[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt,tryztp1]//FullSimplify;
-
-nFormula=applyFormula//.lucaSubs//N//Simplify//Expand/.paperSubs;
-
-applyFormulaInf=getXtInf[{{qqtm1},{rrtm1},{rutm1}},bmat,phimat,psimat,fmat,tryzt, tryztp1]//FullSimplify;
-
-
-nFormulaInf=applyFormulaInf//.lucaSubs//N//Simplify//Expand/.paperSubs;
-*)
 
