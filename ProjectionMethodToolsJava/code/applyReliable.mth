@@ -27,8 +27,10 @@ nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
 bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]:=
 bmat . xtm1 + phimat . psimat . epsilon
 
-fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,zMats_List]:=
-Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,zMats]
+fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
+horizon_Integer,numCon_Integer]:=
+With[{zMats=genZVars[horizon,numCon]},
+Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,zMats]]
 
 onlyOneTimePeriod[lhsCnstrnt_?MatrixQ]:=
 Length[Union[Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity]]]===1
@@ -50,7 +52,8 @@ doVar[vn_String,num_Integer]:=
 Table[ToExpression[vn<>"$tp"<>ToString[ii]],{ii,1,num}]
 
 doVarSubs[vn_String,num_Integer]:=
-Table[ToExpression[vn<>"[Global`t+"<>ToString[ii]<>"]:>"<>vn<>"$tp"<>ToString[ii]],{ii,1,num}]
+If[num<2,{},
+Table[ToExpression[vn<>"[Global`t+"<>ToString[ii]<>"]:>"<>vn<>"$tp"<>ToString[ii]],{ii,2,num}]]
 
 genFutureDefs[vn_String,num_Integer]:=
 If[num<2,{},
@@ -66,14 +69,17 @@ cnstrntsPartAll[horizons_Integer,lhsCnstrnt_?MatrixQ,rhsCnstrnt_?MatrixQ]:=
 With[{eqvdPart=Flatten[Table[
 cnstrntsPart[lhsCnstrnt/.Global`t->Global`t+ii,rhsCnstrnt],{ii,horizons,0,-1}]],
 vars=Cases[lhsCnstrnt,xx_[Global`t+_.]:>ToString[xx],Infinity],
-zvars=Table[
-ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"],{forTime,0,horizons},{ii,Length[lhsCnstrnt]}],
+zvars=Flatten[genZVars[horizons,Length[lhsCnstrnt]]],
 leqns=genLeadEqns[lhsCnstrnt/.Global`t->Global`t+horizons]},
 With[{allSubs=Flatten[doVarSubs[#,horizons]&/@vars]},
-{allSubs,zvars,leqns,zvars-eqvdPart/.allSubs}]]/;
+Join[leqns,zvars-eqvdPart/.allSubs]]]/;
 Union[Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity]]==={0}
 
 
+genZVars[horizons_Integer,numConstr_Integer]:=
+Table[
+{ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
+{forTime,0,horizons},{ii,numConstr}]
 
 
 
@@ -92,7 +98,7 @@ lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] -
 
 
 
-{hmat,qmat,{bmat,phimat,fmat}}=augmentProjection[lucaEqns//.lucaSubs];
+{hmat,qmat,{bmat,phimat,fmat}}=linearizeSystemForOBC[lucaEqns//.lucaSubs];
 Print["take care of difference in projmethod order and equations to matrix"]
 Print["projectionmethod order for state before nonstate"]
 (*
@@ -102,9 +108,6 @@ psieps={{0},{1},{0}};
 psiz={{0},{0},{1}};
 
 
-nfp=nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps]//Chop;
-
-fp=fPart[phimat,fmat,psiz,{}]//Chop
 
 eqns00=InputForm[Flatten[fp+nfp]]
 
@@ -112,9 +115,16 @@ mMat={{phip},{0},{0}};
 
 cnstrntsPart[{{qq[t]}},{{0.02}}]
 
+(*
 nfp=nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps]//Chop;
 
-fp=fPart[phimat,fmat,psiz,{{{z10[t]}},{{z9[t]}},{{z8[t]}},{{z7[t]}},{{z6[t]}},{{z5[t]}},{{z4[t]}},{{z3[t]}},{{z2[t]}},{{z1[t]}},{{z0[t]}}}]//Chop
+fp=fPart[phimat,fmat,psiz,0,1]
+*)
 
 
+genSys[horizon_Integer]:=
+Join[Flatten[-{{qq[t]},{rr[t]},{ru[t]}}+nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps] + If[horizon===boo,0,fPart[phimat,fmat,psiz,horizon,1]]]//Chop,
+cnstrntsPartAll[horizon, {{qq[t]}}, {{0.02}}]]
 
+
+genSys[0]
