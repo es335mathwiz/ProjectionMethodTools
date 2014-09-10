@@ -47,6 +47,7 @@ getPiEtcForPhiWider::usage = "getPiEtcForPhiWider[thePhi_?NumberQ,theModel_Symbo
 Print["making xx global"]
 Global`xx::usage = "for displaying polynomial";
 Global`t::usage = "the time variable";
+Global`pow::usage ="so that pow can be used in codeGenSubs without long private name"
 (*benchMarkSubs::usage = "substitutions for benchmark case";*)
 newWeightedStochasticBasis::usage = "associate equations with model name";
 projEquations::usage = "model equations associated with symbol";
@@ -823,8 +824,11 @@ EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[C
 		Erfc[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erfc()"],
 		Erf[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erf()"],
 		Log[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".log()"],
+Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
+EquationValDrv[yy<>".divide("<>ToString[CForm[xx]]<>")"],
 		Power[EquationValDrv[xx_String],yy:(__?noVars)]:> EquationValDrv[xx<>".pow("<>ToString[CForm[yy]]<>")"],
-		Global`eps[xx_][Global`t]:>EquationValDrv[ToString[xx]<>"$Shock$tm1"]};
+		Global`eps[xx_][Global`t]:>EquationValDrv[ToString[xx]<>"$Shock$tm1"],
+Power->Global`pow};
 
 (*
 noVars[aThing___] :=
@@ -833,7 +837,7 @@ noVars[aThing___] :=
 
 Print["why not numbers?"]
 noVars[aThing___] :=
-    Cases[{aThing},EquationValDrv[___]|_Symbol[Global`t-1]|_Symbol[Global`t]|_Symbol[Global`t+1],Infinity]==={}
+    Cases[{aThing},EquationValDrv[___]|_Symbol[Global`t-1]|_Symbol[Global`t]|_Symbol[Global`t+1]|EquationValDrv,Infinity,Heads->True]==={}
 
 myDeleteFile[fileName_String] :=
     With[ {fns = FileNames[fileName]},
@@ -914,7 +918,7 @@ thePattern=xxL_Symbol[Global`t]-
 Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
 Global`eqvdIf[xxR>=yy,zz,ww]}]},
-Print["constraints explicitly involving future state or non state validated in general: augment model with dummy for now to check"];
+Print["constraints explicitly involving future state or non state not validated in general: augment model with dummy for now to check"];
 With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]},
 With[{
 	lsSubs=makeLaggedStateSubs[state],
@@ -971,8 +975,8 @@ Join[stateVars,nonStateVars]},
 With[{theLHS=cnstrPolys[[1]]},
 With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
 With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},
-With[{subbed=ReplacePart[origPolys,#]&@guts },
-PiecewiseExpand/@(subbed/.Global`eqvdIf->If)]]]]]]]]]
+With[{subbed=ReplacePart[origPolys,#]&@guts },Print["sbbed=",subbed,"guts",guts];
+PiecewiseExpand/@(subbed/.Global`eqvdIf->If)/.Global`eps[xx_][Global`t]:>ToExpression[ToString[xx]<>"$Shock"]]]]]]]]]]
 
 
 CreatePolynomials[results_?JavaObjectQ]:=
@@ -1205,7 +1209,10 @@ augEqns[eqNameList_List] :=
     "EquationValDrv sys="<>((eqNameList//.{yy_,xx_,zz___}:> {yy<>".augSys("<>xx<>")",zz})[[1]])<>";\n"
 
 
-modelTop = "import gov.frb.ma.msu.ProjectionMethodToolsJava.*;\n public class"
+modelTop = 
+"import gov.frb.ma.msu.ProjectionMethodToolsJava.*;\n"<>
+"import static java.lang.Math.pow;\n"<>
+"public class";
 modelNearTop = "extends DoEqns {\n";
 meFuncDef=" meFunc(){return(this);}\n"
 
@@ -1247,7 +1254,12 @@ useDoShocksDefs="double useShock(final int loc, final StochasticBasis theStochas
 modelPostParams = "\n
     public EquationValDrv updateValDrv(final StochasticBasis theStochasticBasis) throws ProjectionRuntimeException{";
 
-modelBottom = "return(sys);}}";
+modelBottom = "return(sys);}
+double Global_pow(double base,double exp){
+	return(pow(base,exp));}
+double Global_pow(double base,int exp){
+	return(pow(base,exp));}
+}";
 
 writeModel[modelName_String,
 	modelTop_String,shkDef_String,modelNearTop_String,
