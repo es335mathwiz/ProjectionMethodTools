@@ -114,8 +114,10 @@ lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
    rUnderBar -> 2/100, qLow -> -.5, qHigh -> .5, 
    ruLow -> -4*sigma$u/(1 - rho$ru), 
    ruHigh ->  4*sigma$u/(1 - rho$ru), integOrder -> {20}, 
-   sigma$u -> 0.02, theMean -> {0}, rho$ru -> 0.5, adj -> 1};
+   sigma$u -> 0.01, theMean -> {0}, rho$ru -> 0.5, adj -> 1};
 
+   (*modParams = {betap, phip, rhop, rho$ru, sigmap} //. lucaSubs // N;*)
+   modParams = {rUnderBar} //. lucaSubs // N;
 lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] - 
       sigmap*rr[t] + ru[t]),
    ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
@@ -158,6 +160,29 @@ fmat = {{(1 + phip*sigmap -
          Sqrt[4*betap*(-1 + rhop)*rhop + (1 + phip*sigmap)^2]))/(2*
        rhop), 0, 0}, {0, 0, 0}};
 
+genLucaMat[aBasis_?JavaObjectQ]:=
+Module[{sns=
+Flatten[Through[{gtStateVars,gtNonStateVars}[aBasis]]],
+outerBasis=Transpose[{doExportOrderedOuter[aBasis]}]},
+Print["aprel",sns,":",Length[sns],":",Length[sns]-4];
+With[{qCols=Length[outerBasis]},
+With[{qkArray = Array[qk, {3, qCols}]},
+With[{theProd = qkArray.outerBasis},
+With[{targ = (bmat.{{qq}, {rr}, {ru}} + 
+     phimat.{{0}, {0}, {adj}}.{{uu$Shock}}) + 
+   zero*(qq*rr + qq*uu$Shock + rr*uu$Shock + qq*rr*uu$Shock)},
+With[{goodQkArray = 
+ qkArray /. 
+  Flatten[Solve[
+    Thread[(tcl = 
+         Flatten[CoefficientList[targ, {qq, ru, uu$Shock}]]) == (acl =
+          Flatten[
+          CoefficientList[theProd, {"qq", "ru", "uu$Shock"}]])] /. 
+     zero -> 0, Flatten[qkArray]]]},
+With[{lucaMatSymb = 
+ Join[goodQkArray[[{1, 3, 2}]], ConstantArray[0, {Length[sns]-4 , qCols}]]},
+lucaMatSymb //. lucaSubs]]]]]]]
+
 
 
 Print["take care of difference in projmethod order and equations to matrix"]
@@ -165,8 +190,8 @@ Print["projectionmethod order for state before nonstate"]
 (*
 Print["must do same for bmat phimat fmat etc"]
 *)
-psieps={{0},{1},{0}};
-psiz={{0},{0},{1}};
+psiz={{0},{1},{0}};
+psieps={{0},{0},{1}};
 
 
 
@@ -189,24 +214,41 @@ Print["need to include symbolic parameters in specification"]
 genSysLagged[horizon_Integer]:=
 Join[Flatten[-{{qq[t]},{rr[t]},{ru[t]}}+(nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps] + If[horizon===boo,0,fPart[phimat,fmat,psiz,horizon,1]])]//Chop,
 cnstrntsPartAll[horizon, {{0.26774226536389173*qq[-1 + t] + 0.3086481523403434*ru[-1 + t] + 
-   0.6172963046806865*eps[uu][t]}}, {{0.02}}]]
+   0.6172963046806865*eps[uu][t]}}, {{rUnderBar}}]]
 
 genSys[horizon_Integer]:=
 Join[Flatten[-{{qq[t]},{rr[t]},{ru[t]}}+(nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps] + If[horizon===boo,0,fPart[phimat,fmat,psiz,horizon,1]])]//Chop,
-cnstrntsPartAll[horizon, {{qq[t]}}, {{0.02}}]]
+cnstrntsPartAll[horizon, {{qq[t]}}, {{rUnderBar}}]]
 
 genSysSubbed[horizon_Integer]:=
-Join[Flatten[{{qq[t]},{rr[t]},{ru[t]}}-((nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps] + If[horizon===boo,0,fPart[phimat,fmat,psiz,horizon,1]]/.makeCnstrntsSubs[{{qq[t]}},{{0.02}},horizon])/.internalizeSubs)]//Chop,
-cnstrntsPartAll[horizon, {{qq[t]}}, {{0.02}}]]
+Join[Flatten[{{qq[t]},{rr[t]},{ru[t]}}-((nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps] + If[horizon===boo,0,fPart[phimat,fmat,psiz,horizon,1]]/.makeCnstrntsSubs[{{qq[t]}},{{rUnderBar}},horizon])/.internalizeSubs)]//Chop,
+cnstrntsPartAll[horizon, {{qq[t]}}, {{rUnderBar}}]]
 
 
 genSysLaggedSubbed[horizon_Integer]:=
 Join[Flatten[{{qq[t]},{rr[t]},{ru[t]}}-((nonFPart[{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{eps[uu][t]}},bmat,phimat,psieps] + If[horizon===boo,0,fPart[phimat,fmat,psiz,horizon,1]]/.makeCnstrntsSubs[{{0.26774226536389173*qq[-1 + t] + 0.3086481523403434*ru[-1 + t] + 
-   0.6172963046806865*eps[uu][t]}},{{0.02}},horizon])/.internalizeSubs)]//Chop,
-cnstrntsPartAll[horizon, {{qq[t]}}, {{0.02}}]]//.lucaSubs
+   0.6172963046806865*eps[uu][t]}},{{rUnderBar}},horizon])/.internalizeSubs)]//Chop,
+cnstrntsPartAll[horizon, {{qq[t]}}, {{rUnderBar}}]]//.lucaSubs
 
 
-genSys[0]
+(*genSys[0]*)
+
+
+
+
+gatherByShocks[fourList_?MatrixQ]:=
+With[{theShocks=Union[fourList[[All,3]]]},
+Cases[fourList,{_,_,#,_}]&/@theShocks]
+
+
+gatherByRu[fourList_?MatrixQ]:=
+With[{theShocks=Union[fourList[[All,2]]]},
+Cases[fourList,{_,#,_,_}]&/@theShocks]
+
+
+gatherByQq[fourList_?MatrixQ]:=
+With[{theShocks=Union[fourList[[All,1]]]},
+Cases[fourList,{#,_,_,_}]&/@theShocks]
 
 
 

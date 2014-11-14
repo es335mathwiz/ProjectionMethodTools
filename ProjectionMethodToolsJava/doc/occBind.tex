@@ -4,6 +4,7 @@ Linear Rational Expectations Models}
 \author{Gary S. Anderson}
 \usepackage{datetime}
 \usepackage{amsmath}
+\usepackage{graphicx}
 \begin{document}
 \maketitle
 Consider systems of the form
@@ -15,7 +16,7 @@ Consider systems of the form
 \psi_\epsilon & \psi_z  
 \end{bmatrix}
   \begin{bmatrix}
-\epsilon_t \\\xpt{z_{t+s}(x_{t+s-1},\epsilon_t) }   
+\epsilon_t \\\xpt{z_{t}(x_{t-1},\epsilon_t) }   
   \end{bmatrix}
   \,\,\forall t \intertext{Solutions will take the form}
   x_t=B x_{t-1}+\sum_{s=0}^\infty F^s \phi \psi
@@ -30,7 +31,7 @@ Consider systems of the form
 \end{gather*}
 To consider inequality constraints of the form
 \begin{gather*}
-  x_t \ge \bar{m}
+  x_t \ge \bar{x}
 \end{gather*}
 we will determine a sequence of $z^i_t$ that 
 will allow us to
@@ -38,41 +39,122 @@ will allow us to
 We begin by solving a system where the constraints are honored only at time
  $t=0$.  To do this we set $\xpt{z_{t+s}}=0\, \forall s>0$\footnote{Generalize to linear combinations of variables. \begin{gather*}
 M x_t \ge m  
-\end{gather*}.   What about other behavior besides absorbing barriers.
+\end{gather*} 
+
+Should also consider other behavior besides absorbing barriers.
 }
 \newcommand{\forPhi}{\begin{bmatrix}
 \psi_\epsilon&I
 \end{bmatrix}}
 \newcommand{\phiMult}{\phi \psi}
-\newcommand{\bMult}{B x_{t-1} + \phiMult}
+\newcommand{\bMult}{B x_{-1} + \phiMult}
 
 We set 
 \begin{gather}\label{firstIneq}
-z_t(x_{t-1},\epsilon_t)=
+z_0^1(x_{-1},\epsilon_0)=
 \begin{cases}
-0&  B_1 x_{t-1} +\epsilon_t \ge \bar{x}_1  \\
-\bar{x}_1-(B x_{t-1}+\epsilon_t) & B_1 x_{t-1}+\epsilon_t < \bar{x}_1  
+0&  B x_{-1} +\epsilon_0 \ge \bar{x}  \\
+\bar{x}-(B x_{-1}+\epsilon_0) & B x_{-1}+\epsilon_0 < \bar{x}  
 \end{cases}\intertext{ and}
 \psi=\forPhi
 \end{gather}
-We can use equations \ref{firstIneq} to compute the expected value function $Z_t^1(x_{t})=E_{t}[z_{t+1}(x_t,\epsilon_{t+1})]$.  We will use this in 
-our next calculation as the value for $z_{t+1}$.  In so doing we will be able to
-capture the impact of imposing
-the constraint at time t+1 as well as time t.
 
-The next step, in general requires the solution of a nonlinear equation as $x_t$ appears in side the function $Z_t^1$.  We begin will apply a projection method to approximate the function that solves
+For example, consider the simple model
+
+
+\begin{gather*}
+q_{t} +\beta_p(1 - \rho_p)q_{t + 1} + \rho_pq_{t - 1} - \sigma_pr_{t} +
+     r_{ut}=0\\
+ r_{t} = \max (\bar{r}, \phi_pq_{t}) \\
+ r_{ut} = \rho_{ru} r_{ut - 1} + \eta \epsilon_{y,t}
+\end{gather*}
+
+Then 
+
+\begin{gather*}
+  x_t=
+  \begin{bmatrix}
+    q_t\\r_{t}\\r_{ut}
+  \end{bmatrix}
+\end{gather*}
+\begin{gather*}
+  H= \vcenter{\hbox{\includegraphics{../code/prettyHmat.pdf}}}\\
+\phi=   \vcenter{\hbox{\includegraphics{../code/prettyPhimat.pdf}}}\\
+\psi_z=   \vcenter{\hbox{\includegraphics{../code/prettyPsiZ.pdf}}}\\
+\psi_\epsilon=   \vcenter{\hbox{\includegraphics{../code/prettyPsiEps.pdf}}}\\
+\end{gather*}
+
+We can construct 
+
+ \begin{gather*}
+B=   \vcenter{\hbox{\includegraphics{../code/prettyBmat.pdf}}}
+ \end{gather*}
+
+Consequently we have
+
+ \begin{gather*}
+z_0^1(x_{-1},\epsilon_0)=   \vcenter{\hbox{\includegraphics[width=10.5cm]{../code/prettyZ1.pdf}}}
+ \end{gather*}
+
+
+ \begin{gather*}
+x_0^1(x_{-1},\epsilon_0)=   \vcenter{\hbox{\includegraphics[width=10.5cm]{../code/prettyXVals1.pdf}}}
+ \end{gather*}
+
+
+
+
+The next step, in general requires the solution of a nonlinear equation as $x_0$ appears in side the function $Z_0^1$ applied at time t=1.\footnote{Ultimately, we will  need to apply a projection method to approximate the function 
+that solves the nonlinear expression.  For our simple example model we can defer that aspect of our approximation.}
+We can use equations \ref{firstIneq} to compute the expected value function $Z_0^1(x_{-1})=E_{0}[z_0^1(x_{-1},\epsilon_0)]$.  We will use this function in 
+our next calculation as the value for $z_{1}$.  In so doing we will be able to
+capture the impact of imposing the constraint at time t=0 and t=1 but no further into the future.
+
+
+For our example we have
+
+ \begin{gather*}
+Z_0^1(x_{-1})=   \vcenter{\hbox{\includegraphics[width=10.5cm]{../code/prettyZ1EXP.pdf}}} \intertext{where}
+\mu=\vcenter{\hbox{\includegraphics{../code/prettyMuVal.pdf}}} 
+ \end{gather*}
+
+
+%\includegraphics{../code/Z0EXPGraph.pdf}
+
+
+%\includegraphics{../code/Z1EXPGraph.pdf}
+
+
+%\includegraphics{../code/Z2EXPGraph.pdf}
+
+
+
+
 
 \newcommand{\bForTwo}{\bMult
   \begin{bmatrix}
-\epsilon_t \\0
+\epsilon_0 \\0
   \end{bmatrix}+ F \phi  \psi  \begin{bmatrix}
-0 \\Z_t^1(x^2_{t}(x_{t-1}))   
+0 \\Z_0^1(x_0^2(x_{-1}))   
   \end{bmatrix} 
 }
+
+
+We now have
+\begin{gather*}
+x_0^2(x_{-1})=
+\left (
+\bForTwo
+\right )
+\end{gather*}
+
+
+
+
 \newcommand{\zForTwo}{
 \bMult
   \begin{bmatrix}
-\epsilon_t \\z_{t}(x_{t-1},\epsilon_t)    
+\epsilon_0 \\z_{t}(x_{t-1},\epsilon_0)    
   \end{bmatrix}+ F \phi   \begin{bmatrix}
 0 \\Z_t^1(x_{t})   
   \end{bmatrix}
@@ -80,7 +162,7 @@ The next step, in general requires the solution of a nonlinear equation as $x_t$
 
 \newcommand{\bForK}{\bMult
   \begin{bmatrix}
-\epsilon_t \\0
+\epsilon_0 \\0
   \end{bmatrix}+ \sum_{i=0}^{k-1} F^i \phi  \psi  \begin{bmatrix}
 0 \\Z_t^{i-1}(x_{t+i}(x_{t-1}))   
   \end{bmatrix} 
@@ -93,15 +175,6 @@ The next step, in general requires the solution of a nonlinear equation as $x_t$
 0 \\Z_t^k(x_{t})   
   \end{bmatrix}
 }
-
-
-We now have
-\begin{gather*}
-x_t(x_{t-1})=
-\left (
-\bForTwo
-\right )
-\end{gather*}
 
 We set 
 \begin{gather*}
@@ -124,10 +197,49 @@ z_t(x_{t-1},\epsilon_t)=
 \end{gather*}
 
 
+For our example,
+
+
+
+ \begin{gather*}
+F=   \vcenter{\hbox{\includegraphics{../code/prettyFmat.pdf}}}
+ \end{gather*}
+
+
+
+
+
+
+ \begin{gather*}
+z_0^2(x_{-1},\epsilon_0)=   \vcenter{\hbox{\includegraphics[width=10.5cm]{../code/prettyZ2.pdf}}}
+ \end{gather*}
+
+
+
+%  \begin{gather*}
+% Z_0^2(x_{-1})=   \vcenter{\hbox{\includegraphics{../code/prettyZ2EXP.pdf}}} \intertext{where}
+% \mu=\vcenter{\hbox{\includegraphics{../code/prettyMuVal.pdf}}} \intertext{where}
+%  \end{gather*}
+
+
+
+ \begin{gather*}
+x_0^2(x_{-1},\epsilon_0)=   \vcenter{\hbox{\includegraphics[width=10.5cm]{../code/prettyXVals2.pdf}}}
+ \end{gather*}
+
+
+The solution is nonlinear, but the nonlinear component dissapates rapidly as the values for $q_{-1+t}$ and $r_{-1+ut}$ deviate from the line 
+$1.14549 -15.3348 q_{-1+t} -17.6777 r_{-1+ut} =0 $.
+
+
+
+
+
+
 We now have
 
 \begin{gather*}
-x_t(x_{t-1})-
+x_0^2(x_{-1})-
 \left (
 \bForK
 \right )
@@ -154,6 +266,16 @@ z_t(x_{t-1},\epsilon)=
 \end{gather*}
 
 Consider the equations 
+
+\begin{gather*}
+q_{t} +\beta_p(1 - \rho_p)q_{t + 1} + \rho_pq_{t - 1} - \sigma_pr_{t} +
+     r_{ut}=0\\
+ r_{t} = \max (\bar{r}, \phi_pq_{t}) \\
+ r_{ut} = \rho_{ru} r_{ut - 1} + \eta \epsilon_{y,t}
+\end{gather*}
+
+
+
 \begin{gather*}
 q_{t} +\beta_p(1 - \rho_p)q_{t + 1} + \rho_pq_{t - 1} - \sigma_pr_{t} +
      r_{ut}=0\\
@@ -174,6 +296,31 @@ q_{t} +\beta_p(1 - \rho_p)q_{t + 1} + \rho_pq_{t - 1} - \sigma_pr_{t} +
    \end{array}
    \right)
 \end{gather*}
+
+Where
+\begin{gather*}
+  \nu=    \sqrt{4 \beta _p \left(\rho _p-1\right) \rho _p+\left(\phi _p \sigma
+    _p+1\right){}^2}
+\end{gather*}
+
+\newcommand{\tVec}{
+  \begin{bmatrix}
+    q_t\\r_{rt}\\r_{ut}
+  \end{bmatrix}}
+
+Some typical values of the parameters are:
+
+\begin{gather*}
+  betap -> 99/100, phip -> 1, \\
+rhop -> 1/2, sigmap -> 1, 
+  \bar{r} -> 2/100, \\
+q^L -> -.5, q^H -> .5, 
+  r_u^L -> -4 \sigma_u/(1 - \rho_{ru}), r_u^H->  4\sigma_u/(1 - \rho_{ru}),
+   I_N -> {10}, \sigma_u -> 0.02,\\
+ \mu -> {0},\rho_{ru} -> 0.5,
+   \eta -> 1
+\end{gather*}
+
 
 
 
@@ -205,31 +352,6 @@ q_{t} +\beta_p(1 - \rho_p)q_{t + 1} + \rho_pq_{t - 1} - \sigma_pr_{t} +
    \end{array}
    \right)
 \end{gather*}
-
-Where
-\begin{gather*}
-  \nu=    \sqrt{4 \beta _p \left(\rho _p-1\right) \rho _p+\left(\phi _p \sigma
-    _p+1\right){}^2}
-\end{gather*}
-
-\newcommand{\tVec}{
-  \begin{bmatrix}
-    q_t\\r_{rt}\\r_{ut}
-  \end{bmatrix}}
-
-Some typical values of the parameters are:
-
-\begin{gather*}
-  betap -> 99/100, phip -> 1, \\
-rhop -> 1/2, sigmap -> 1, 
-  \bar{r} -> 2/100, \\
-q^L -> -.5, q^H -> .5, 
-  r_u^L -> -4 \sigma_u/(1 - \rho_{ru}), r_u^H->  4\sigma_u/(1 - \rho_{ru}),
-   I_N -> {10}, \sigma_u -> 0.02,\\
- \mu -> {0},\rho_{ru} -> 0.5,
-   \eta -> 1
-\end{gather*}
-
 
 Applying the formula produces
 \begin{gather*}
@@ -282,5 +404,27 @@ Alternatively, for imposing the constraints throughout time one gets
    \end{array}
    \right)
 \end{gather*}
+\begin{itemize}
+\item timing
+\item transition to projection
+\item fixed point criterion
+\end{itemize}
+\section{Projection Method Occassionally Binding Constraints Implimentation}
+\label{sec:proj-meth-occass}
+\begin{itemize}
+\item mathematica code generates java code that is called to interact with the java program implementing the projection method.
+\item describe eqvaldrv
+\item how they generate equation
+\item describe if statement
+\item how if statement generates equations
+\item shift evaluation region to include curved part of solution
+\end{itemize}
+
+
+\appendix
+\section{ProjectionMethodToolsJava}
+\label{sec:proj}
+
+
 \end{document}
-p
+
