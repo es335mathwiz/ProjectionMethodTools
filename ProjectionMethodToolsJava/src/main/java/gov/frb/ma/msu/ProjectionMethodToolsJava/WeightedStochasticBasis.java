@@ -291,7 +291,7 @@ public class WeightedStochasticBasis extends StochasticBasis {
 		 		else if(isPerfectForesightQ()){
 		   return(new WeightedStochasticBasis(aState.incPowers(goalPowers),getTheNonState()));} else {
 			   return(new WeightedStochasticBasis(aState.incPowers(goalPowers),getTheNonState(),
-					   getTheGaussHermite().theOrders,getGaussHermiteMean(),getGaussHermiteStDev())
+					   getTheGaussHermite().getTheOrders(),getGaussHermiteMean(),getGaussHermiteStDev())
 					   );  }
 		   }
 
@@ -338,7 +338,7 @@ public class WeightedStochasticBasis extends StochasticBasis {
 		 		else if(isPerfectForesightQ()){
 		   return(new WeightedStochasticBasis(getTheState().incPowers(goalPowers),getTheNonState()));} else {
 			   return(new WeightedStochasticBasis(getTheState().incPowers(goalPowers),getTheNonState(),
-					   getTheGaussHermite().theOrders,getGaussHermiteMean(),getGaussHermiteStDev())
+					   getTheGaussHermite().getTheOrders(),getGaussHermiteMean(),getGaussHermiteStDev())
 					   );  }
 		   }   
 

@@ -103,7 +103,7 @@ catch (Exception ee){
 }
 
 
-public ProjectionResults incOrder(int [] theInc) throws Exception {
+private ProjectionResults incOrder(int [] theInc) throws Exception {
 	int ii;int []oldOrd=getOrders();
 	int numOrd=oldOrd.length;
 	int[] newOrd=new int[numOrd];

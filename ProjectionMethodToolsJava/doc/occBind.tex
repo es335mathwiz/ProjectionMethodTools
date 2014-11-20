@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+\usepackage[authoryear]{natbib}
 \title{A Solution Strategy for Occasionally Binding Constraints in Otherwise
 Linear Rational Expectations Models}
 \author{Gary S. Anderson}
@@ -18,7 +19,7 @@ Consider systems of the form
   \begin{bmatrix}
 \epsilon_t \\\xpt{z_{t}(x_{t-1},\epsilon_t) }   
   \end{bmatrix}
-  \,\,\forall t \intertext{Solutions will take the form}
+  \,\,\forall t \intertext{Solutions will take the form\cite{anderson10}}
   x_t=B x_{t-1}+\sum_{s=0}^\infty F^s \phi \psi
   \begin{bmatrix}
 \epsilon_t \\\xpt{z_{t+s}(x_{t+s-1},\epsilon_t)    }
@@ -84,7 +85,7 @@ Then
 \psi_\epsilon=   \vcenter{\hbox{\includegraphics{../code/prettyPsiEps.pdf}}}\\
 \end{gather*}
 
-We can construct 
+We can compute 
 
  \begin{gather*}
 B=   \vcenter{\hbox{\includegraphics{../code/prettyBmat.pdf}}}
@@ -425,6 +426,7 @@ Alternatively, for imposing the constraints throughout time one gets
 \section{ProjectionMethodToolsJava}
 \label{sec:proj}
 
-
+\bibliographystyle{plainnat}
+\bibliography{anderson}
 \end{document}
 

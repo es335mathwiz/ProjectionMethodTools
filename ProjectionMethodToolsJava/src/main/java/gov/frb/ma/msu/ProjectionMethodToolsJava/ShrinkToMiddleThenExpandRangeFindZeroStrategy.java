@@ -81,12 +81,12 @@ public class ShrinkToMiddleThenExpandRangeFindZeroStrategy extends
 			  {if(theCS.isPerfectForesightQ()){
 				   return(new WeightedStochasticBasis(theCS.getTheState().theMiddle(frac)));} else {
 					   return(new WeightedStochasticBasis(theCS.getTheState().theMiddle(frac),
-							   theCS.getTheGaussHermite().theOrders,theCS.getGaussHermiteMean(),theCS.getGaussHermiteStDev())
+							   theCS.getTheGaussHermite().getTheOrders(),theCS.getGaussHermiteMean(),theCS.getGaussHermiteStDev())
 							   );}}
 			 		else if(theCS.isPerfectForesightQ()){
 				   return(new WeightedStochasticBasis(theCS.getTheState().theMiddle(frac),theCS.getTheNonState()));} else {
 				   return(new WeightedStochasticBasis(theCS.getTheState().theMiddle(frac),theCS.getTheNonState(),
-						   theCS.getTheGaussHermite().theOrders,theCS.getGaussHermiteMean(),theCS.getGaussHermiteStDev())
+						   theCS.getTheGaussHermite().getTheOrders(),theCS.getGaussHermiteMean(),theCS.getGaussHermiteStDev())
 						   );  }
 			   }
 }

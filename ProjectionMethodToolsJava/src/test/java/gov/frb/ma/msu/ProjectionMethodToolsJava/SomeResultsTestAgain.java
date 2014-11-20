@@ -46,13 +46,13 @@ public class SomeResultsTestAgain extends TestCase {
 		super.tearDown();
 	}
 
-	public void testIncOrder() throws Exception{
-		do00000();	
-	int[] incArray={0, 1, 0, 0, 0};
-	ProjectionResults res00100 = gen00100(incArray);
-	incArray[3]=1;incArray[1]=0;
-	gen01100(incArray, res00100);
-	}
+//	public void testToOrder() throws Exception{
+//		do00000();	
+//	int[] incArray={0, 1, 0, 0, 0};
+//	ProjectionResults res00100 = gen00100(incArray);
+//	incArray[3]=1;incArray[1]=0;
+//	gen01100(incArray, res00100);
+//	}
 
 
 
@@ -74,7 +74,7 @@ public class SomeResultsTestAgain extends TestCase {
 
 
 	private ProjectionResults gen00100(int[] incArray) throws Exception {
-		ProjectionResults res00100=theRes.incOrder(incArray);
+		ProjectionResults res00100=theRes.toOrder(incArray);
 		theRes.collocateParamsRange(modEqns, easyParams, easyParams, 10);
 		assertTrue(res00100.isConvergedQ());
 		double[][] exp00100={{0., 0.}, {1.0941269673807148, 0.0638562252585503},  {0., 
@@ -92,7 +92,7 @@ public class SomeResultsTestAgain extends TestCase {
 
 
 	private void gen01100(int[] incArray, ProjectionResults res00100) throws Exception {
-		ProjectionResults res01100=res00100.incOrder(incArray);
+		ProjectionResults res01100=res00100.toOrder(incArray);
 		assertTrue(res01100.isConvergedQ());
 		double[][] exp01100={{0., 0., -0.01, 0.}, {1.0941269673807217, 0.06385622525855705, -3.4832674306423994e-16, 
 			-6.907369310278665e-17}, {0., 0., 0., 0.}, {0.8879191778357544, -0.12569463923745453, 
