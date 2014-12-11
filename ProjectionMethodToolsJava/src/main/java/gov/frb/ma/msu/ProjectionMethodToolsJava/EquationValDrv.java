@@ -204,7 +204,7 @@ public class EquationValDrv {
     			uu[ii][0]=rghtVal;
     			for(jj=0;jj<numCols;jj++){
     			du[ii][jj]=0;
-    		}     du[ii][0]=1;			
+    		}    // du[ii][0]=1;			
     		}
     	}
     	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));
@@ -228,7 +228,7 @@ public class EquationValDrv {
  			uu[ii][0]=lftVal;
  			for(jj=0;jj<numCols;jj++){
  			du[ii][jj]=0;
- 		}     du[ii][0]=1;			
+ 		}    // du[ii][0]=1;			
  		}
  	}
  	return(new EquationValDrv(new Matrix(uu),new Matrix(du)));

@@ -1033,6 +1033,8 @@ Cases[varVals,{_Symbol,_?NumberQ,_?NumberQ},Infinity]
 			
 GenerateModelCode[theModel_Symbol] :=
     With[ {eqns = projEquations[theModel],snsVars = getStateNonState[theModel]},
+    	myDeleteFile[ToString[theModel]<>".java"];
+        myDeleteFile[ToString[theModel]<>".class"];
         With[ {eqnsCode = doEqCodeSubs[ToString[theModel],eqns,snsVars]},
 (*Print["ingenmodcode:",eqnsCode,snsVars];*)
             {Map[ToString,snsVars,{-1}],eqnsCode}
@@ -1074,9 +1076,10 @@ FixedPoint[
 subOutEqvdIf[
 subOutDoInt[
 subOutPower[
-subOutPlusTimes[
+subOutPlus[
+	subOutTimes[
 subOutStateNonStateVars[
-	subOutEps[#]]]]]]&,eqns]]
+	subOutEps[#]]]]]]]&,eqns]]
 
 subOutEqValDrv[eqns_List]:=eqns/.EquationValDrv[xx_String]:>xx
 
@@ -1093,7 +1096,7 @@ aSymbol_Symbol[Global`t-1]:> EquationValDrv[ToString[aSymbol]<>"$tm1"]
 subOutExp[eqns_List]:=eqns/.
 E^EquationValDrv[xx_String]:> EquationValDrv[xx<>".exp()"]
 
-
+(*
 subOutPlusTimes[eqns_List]:=eqns//.{
 Plus[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> 
    Plus[EquationValDrv[xx<>".plus("<>yy<>")"],zz],
@@ -1107,20 +1110,22 @@ Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
    EquationValDrv[yy<>".divide("<>ToString[CForm[xx]]<>")"]
 }
 
-
+*)
 
 subOutPlus[eqns_List]:=eqns//.{
 Plus[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> 
    Plus[EquationValDrv[xx<>".plus("<>yy<>")"],zz],
 Plus[EquationValDrv[xx_String],yy_?NumberQ,zz___]:> 
-   Plus[EquationValDrv[xx<>".plus("<>ToString[yy]<>")"],zz]
+   Plus[EquationValDrv[xx<>".plus("<>ToString[CForm[yy]]<>")"],zz]
 }
 
 subOutTimes[eqns_List]:=eqns//.{
 Times[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> 
    Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
 Times[EquationValDrv[xx_String],yy_?NumberQ,zz___]:> 
-   Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
+   Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
+Times[EquationValDrv[xx_String],yy:(__?noVars),zz___]:> 
+   Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
 Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
    EquationValDrv[yy<>".divide("<>ToString[CForm[xx]]<>")"]
 }
@@ -1189,77 +1194,6 @@ subOutLog[eqns_List]:=eqns/.
 
 
 
-
-preParseSubs = {
-		Global`eps[xx_][Global`t]:>EquationValDrv[ToString[xx]<>"$Shock$tm1"],
-		(*Global`eps[_][t]->0,*)aSymbol_Symbol[Global`t+1]:> 
-	EquationValDrv[ToString[aSymbol]<>"$tp1"],aSymbol_Symbol[Global`t]:> EquationValDrv[ToString[aSymbol]<>"$t"],
-	aSymbol_Symbol[Global`t-1]:> EquationValDrv[ToString[aSymbol]<>"$tm1"],
-	E^EquationValDrv[xx_String]:> EquationValDrv[xx<>".exp()"],
-	Plus[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> Plus[EquationValDrv[xx<>".plus("<>yy<>")"],zz],
-	Plus[EquationValDrv[xx_String],yy_?NumberQ,zz___]:> Plus[EquationValDrv[xx<>".plus("<>ToString[yy]<>")"],zz],
-	Times[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
-	Times[EquationValDrv[xx_String],yy_?NumberQ,zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
-	Power[EquationValDrv[xx_String],yy_?NumberQ]:> EquationValDrv[xx<>".pow("<>ToString[yy]<>")"],
-		{yy___,EquationValDrv[xx_],zz___}:> {yy,ToString[Unique["eqn"]]<>"="<>xx,zz}};
-
-
-
-Print["define codegensubs"];
-
-
-codeGenSubs = {doInt[xx__]:>xx,(*Global`eps[_][Global`t]->0,*)Global`theDeriv[aSymbol_Symbol[Global`t+1],
-	bSymbol_Symbol[Global`t]]:> EquationValDrv[ToString[aSymbol]<>"$tp1$Drv$"<>ToString[bSymbol]<>"$t"],
-	Global`theDeriv[aSymbol_Symbol[Global`t],
-		bSymbol_Symbol[Global`t-1]]:> EquationValDrv[ToString[aSymbol]<>"$t$Drv$"<>ToString[bSymbol]<>"$tm1"],
-		Rational[xx_,yy_]:> N[xx/yy],aSymbol_Symbol[Global`t+1]:> EquationValDrv[ToString[aSymbol]<>"$tp1"],
-		aSymbol_Symbol[Global`t]:> EquationValDrv[ToString[aSymbol]<>"$t"],
-		aSymbol_Symbol[Global`t-1]:> EquationValDrv[ToString[aSymbol]<>"$tm1"],
-		E^EquationValDrv[xx_String]:> EquationValDrv[xx<>".exp()"],
-		Plus[EquationValDrv[xx_String],
-		EquationValDrv[yy_String],zz___]:> Plus[EquationValDrv[xx<>".plus("<>yy<>")"],zz],
-		Plus[EquationValDrv[xx_String],yy:(_?noVars),zz___]:> Plus[EquationValDrv[xx<>".plus("<>ToString[CForm[yy]]<>")"],zz],
-(*	need to find way to handle this case for plus and times where constant all alone without dimension information	Plus[xx:(_?noVars),yy:(_?noVars),zz___]:> Plus[EquationValDrv[ToString[CForm[xx]]<>".plus("<>ToString[CForm[yy]]<>")"],zz],*)
-	    Times[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[yy]<>")"],zz],
-		Times[EquationValDrv[xx_String],yy:(_?noVars),zz___]:> Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
-Global`eqvdIf[EquationValDrv[aa_String]>=
-EquationValDrv[bb_String],
-EquationValDrv[cc_String],
-EquationValDrv[dd_String]]:>
-EquationValDrv[aa<>".ge("<>bb<>").eqvdIf("<>cc<>","<>dd<>")"],
-Global`eqvdIf[EquationValDrv[aa_String]>=
-bb:(__?noVars),
-EquationValDrv[cc_String],
-EquationValDrv[dd_String]]:>
-EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
-Global`eqvdIf[EquationValDrv[aa_String]>=
-bb:(__?noVars),
-cc:(__?noVars),
-EquationValDrv[dd_String]]:>
-EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
-Global`eqvdIf[EquationValDrv[aa_String]>=
-bb:(__?noVars),
-EquationValDrv[cc_String],
-dd:(__?noVars)]:>
-EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
-Global`eqvdIf[EquationValDrv[aa_String]>=
-bb:(__?noVars),
-EquationValDrv[cc_String],
-EquationValDrv[dd:(__?noVars)]]:>
-EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
-		Erfc[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erfc()"],
-		Erf[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erf()"],
-		Log[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".log()"],
-Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
-EquationValDrv[yy<>".divide("<>ToString[CForm[xx]]<>")"],
-		Power[EquationValDrv[xx_String],yy:(__?noVars)]:> EquationValDrv[xx<>".pow("<>ToString[CForm[yy]]<>")"],
-		Global`eps[xx_][Global`t]:>EquationValDrv[ToString[xx]<>"$Shock$tm1"],
-Power->Global`pow,
-EquationValDrv[xx_String]:>xx};
-
-Print["done define codegensubs"];
-
-
 doEVDSum[Plus[EquationValDrv[ss_String]]] := ss;
 doEVDSum[Plus[EquationValDrv[ss_String], rr : EquationValDrv[_String] ..]] := 
  ss <> ".plus(" <> doEVDSum[Plus @@ {rr}] <> ")"
@@ -1277,24 +1211,20 @@ Print[" define newcodegensubs"];
 intTermOrNot[aTerm_]:=aTerm;
 intTermOrNot[aTerm_?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &)]:=doInt[aTerm]
 
-futureEqns[theEqns_List]:=With[{futEqns=Select[theEqns, Not[FreeQ[#, Global`t + 1]] &]},(*Print["futEqns",InputForm[{theEqns,Plus[xx___, yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
-		Plus[xx, doInt[Plus @@ {yy}], zz]}]];*)
-	With[{allGrouped=intTermOrNot/@Apart[theEqns](*theEqns/.Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
-		Plus[ doInt[Plus @@ {yy}], zz]*)},
-(*Print["allgrouped",intTermOrNot/@theEqns-allGrouped];*)
-	With[{notIntFut=intTermOrNot/@Apart[futEqns],intFut=futEqns/.Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
-		Plus[doInt[Plus @@ {yy}], zz]},(*Print["intFut"];*)
-(*Print["allgrouped diff",notIntFut,intFut];*)
+futureEqns[theEqns_List]:=With[{futEqns=Select[theEqns, Not[FreeQ[#, Global`t + 1]] &]},
+	With[{allGrouped=intTermOrNot/@Expand[theEqns]},
+	With[{intFut=futEqns/.Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
+		Plus[doInt[Plus @@ {yy}], zz]},
 	With[{forInts=Union[Cases[intFut,doInt[___],Infinity]]},With[{targ=Table[Unique["forInt"],{Length[forInts]}]},
-		With[{reps=Thread[forInts->targ]},(*Print["reps"];*)
+		With[{reps=Thread[forInts->targ]},
 		{ToString/@targ,First/@forInts,reps,intFut/.reps,allGrouped/.reps}]]]]]]
 
-getGrouped[eqns_List]:=intTermOrNot/@Apart[eqns]
+getGrouped[eqns_List]:=intTermOrNot/@Expand[eqns]
 Print["may not need subs here"]
 
 makeIntegSubs[theEqns_List]:=
-With[{apartEqns=Apart[theEqns]},
-With[{futEqns=Select[apartEqns, Not[FreeQ[#, Global`t + 1]] &]},
+With[{expandEqns=Expand[theEqns]},
+With[{futEqns=Select[expandEqns, Not[FreeQ[#, Global`t + 1]] &]},
 	With[{intFutSplitSum=(futEqns/.Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
 		Plus[doInt[Plus @@ {yy}], zz])},
 		With[{intFut=#/.yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &) :> 
@@ -1302,58 +1232,25 @@ With[{futEqns=Select[apartEqns, Not[FreeQ[#, Global`t + 1]] &]},
 	With[{forInts=Union[Cases[intFut,doInt[___],Infinity]]},
 		With[{targ=Table[Unique["forInt"],{Length[forInts]}]},
 		intFut(*/.Thread[forInts->targ]*)]]]]]]
-		
 
-fixDoEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
-    Module[ {futureStuff=futureEqns[eqns],forFutureSubs=makeIntegSubs[eqns]},
-        With[ {eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],
-            EquationValDrvEqns = makeParseSubs[futureStuff[[-1]]]},
-            With[ {theAugs = augEqns[eqNames],
-            	shkDef=defShocks[eqns],
-                theDefs = (StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2(*[[1]]*)<>";\n")&,
-                    {eqNames,EquationValDrvEqns}])<>"\n",
-                varDefs = makeVarDefs[eqns,svInfo]<>makeShockDefs[eqns]<>
-                makeDVarDefs[Union[Cases[eqns,Global`theDeriv[___],Infinity]]],
-            	thePrms = theParams[eqns,svInfo]},
-                With[ {prmDefs = StringJoin @@(defParamString /@thePrms),
-                	getDefs = StringJoin @@(getParamString /@thePrms),
-                	setDefs = StringJoin @@(setParamString /@thePrms),
-                	updateDefs=makeUpdateParams[thePrms]},
-                	With[{theIntDefs=forIntHeader<>forIntBody[futureStuff,eqns,varDefs]<>forIntFooter[eqns],
-                		shockEqnDefs=shockAssn[eqns]},
-                    	writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[theDefs],theAugs,
-                    	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
-                    	modelBottom,modelPostParams];
-                    	(JavaNew[modelName])
-                ]
-            ]
-        ]
-    ]]
 
 
 doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
     Module[ {futureStuff=futureEqns[eqns]},(*Print["future",eqns//InputForm];*)(*Print["fin futureEqns"];*)
         With[ {
             eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],EquationValDrvEqns = makeParseSubs[futureStuff[[-1]]]},
-(*Print["daSubs=",EquationValDrvEqns//FullForm];*)
             With[ {theAugs = augEqns[eqNames],shkDef=defShocks[eqns],
                 theDefs = (StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2(*[[1]]*)<>";\n")&,
                     {eqNames,EquationValDrvEqns}])<>"\n",
                 varDefs = makeVarDefs[eqns,svInfo]<>makeShockDefs[eqns]<>
                 makeDVarDefs[Union[Cases[eqns,Global`theDeriv[___],Infinity]]],
             thePrms = theParams[eqns,svInfo]},
-(*Print["doeqcodesubs02"];*)
                 With[ {prmDefs = StringJoin @@(defParamString /@thePrms),
                 	getDefs = StringJoin @@(getParamString /@thePrms),
                 	setDefs = StringJoin @@(setParamString /@thePrms),
                 	updateDefs=makeUpdateParams[thePrms]},
-Print["doeqcodesubs01",{prmDefs,getDefs,setDefs,updateDefs}//InputForm];
                 	With[{theIntDefs=forIntHeader<>forIntBody[futureStuff,eqns,varDefs]<>forIntFooter[eqns],
                 		shockEqnDefs=shockAssn[eqns]},
-Print["pre write",{forIntHeader,forIntBody[futureStuff,eqns,varDefs],forIntFooter[eqns]}//InputForm];
-Print["pre write again",{modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[theDefs],theAugs,
-                    	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
-                    	modelBottom,modelPostParams}//InputForm];
                     writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[theDefs],theAugs,
                     	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
                     	modelBottom,modelPostParams];
@@ -1364,32 +1261,6 @@ Print["pre write again",{modelName,modelTop,shkDef,modelNearTop,starCaretToE[var
         ]
     ]]
 
-
-debugEqCode[modelName_String,eqns_List,svInfo_List] :=
-    Module[ {futureStuff=futureEqns[eqns]},(*Print["future",eqns//InputForm];*)
-        With[ {svInfoReady = Map[ToString,svInfo,{-1}],
-            eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],EquationValDrvEqns = ((futureStuff[[-1]])//.preParseSubs)//.codeGenSubs},(*Print["doeqcodesubs03"];*)
-            With[ {theAugs = augEqns[eqNames],shkDef=defShocks[eqns],
-                theDefs = (StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2[[1]]<>";\n")&,
-                    {eqNames,EquationValDrvEqns}])<>"\n",
-                varDefs = makeVarDefs[eqns,svInfo]<>makeShockDefs[eqns]<>
-                makeDVarDefs[Union[Cases[eqns,Global`theDeriv[___],Infinity]]],
-            thePrms = theParams[eqns,svInfo]},(*Print["doeqcodesubs02"];*)
-                With[ {prmDefs = StringJoin @@(defParamString /@thePrms),
-                	getDefs = StringJoin @@(getParamString /@thePrms),
-                	setDefs = StringJoin @@(setParamString /@thePrms),
-                	updateDefs=makeUpdateParams[thePrms]},
-(*Print["doeqcodesubs01",{prmDefs,getDefs,setDefs,updateDefs}//InputForm];*)
-                	With[{theIntDefs=forIntHeader<>forIntBody[futureStuff,eqns,varDefs]<>forIntFooter[eqns],
-                		shockEqnDefs=shockAssn[eqns]},
-(*Print["pre write",{forIntHeader,forIntBody[futureStuff,eqns,varDefs],forIntFooter[eqns]}//InputForm];*)
-                    {modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[theDefs],theAugs,
-                    	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
-                    	modelBottom,modelPostParams}
-                ]
-            ]
-        ]
-    ]]
     
     makeUpdateParams[thePrms_List]:=
     "public void updateParams(double[] paramVec){\n" <>
@@ -1605,7 +1476,7 @@ defShocks[theEqns_List]:=With[{theShocks=getShocks[theEqns]},
 	
 forIntBody[theParts_List,theEqns_List,varDefs_String]:=With[{},
 	With[{numShocks=Length[shockVars[theEqns]]},
-	With[{close=closerInt[theParts[[1]],(theParts[[2]]//.preParseSubs)//.codeGenSubs]},
+	With[{close=closerInt[theParts[[1]],makeParseSubs[theParts[[2]]]]},
 (*Print["inbody",{theParts,codeGenSubs,theEqns,varDefs,close}//InputForm];*)
 	(StringJoin @@ MapThread[makeFuncForIntegral[#1,#2,numShocks,theEqns,varDefs]&,{theParts[[1]],close}])
 	]]]
@@ -1613,7 +1484,7 @@ forIntBody[theParts_List,theEqns_List,varDefs_String]:=With[{},
 	forSubsForIntBody[theEqns_List,varDefs_String]:=With[{theParts=futureEqns[theEqns]},
 (*Print["subinbody",{theEqns,varDefs,theParts}//InputForm];*)
 	With[{numShocks=Length[shockVars[theEqns]]},
-	With[{close=closerInt[theParts[[1]],(theParts[[2]]//.preParseSubs)//.codeGenSubs]},
+	With[{close=closerInt[theParts[[1]],makeParseSubs[theParts[[2]]]]},
 	(StringJoin @@ MapThread[makeFuncForIntegral[#1,#2,numShocks,theEqns,varDefs]&,{theParts[[1]],close}])
 	]]]
 	
