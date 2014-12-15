@@ -13,7 +13,7 @@ lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
 
 
 
-
+(*
 fzComp[xt_?MatrixQ,xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1Exp_?MatrixQ]:=
 Identity[
 Identity[
@@ -23,7 +23,28 @@ Flatten[xt-
         phimat .(psieps . epst - 
            psiz.{{zt}}) - 
         fmat .phimat . 
-         psiz . ztp1Exp)] ==0],Flatten[{{xt[[2,1]]-rUnderBar >=0} ,{zt[[1,1]]*(xt[[2,1]]-rUnderBar)==0},{zt[[1,1]]>=0}}]]]]
+         psiz . ztp1Exp)] ==0],
+Flatten[
+{xt[[2,1]]-rUnderBar >=0 ,
+zt[[1,1]]*(xt[[2,1]]-rUnderBar)==0,
+zt[[1,1]]>=0
+}]]]]
+*)
+
+myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
+
+fzComp[xt_?MatrixQ,xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1Exp_?MatrixQ]:=
+With[{theComp=(bmat .xtm1 + 
+        phimat .(psieps . epst - 
+           psiz.zt) - 
+        fmat .phimat . 
+         psiz . ztp1Exp)},Print["dims",Dimensions[theComp]];
+With[{zZap=Solve[myN[((theComp[[2,1]]//.lucaSubs))] == rUnderBar,zt[[1,1]]]//Flatten},Print[zZap];
+Join[Thread[
+Flatten[xt-theComp] ==0],
+{(discrep[t] - (theComp[[2,1]] - rUnderBar)/.zt[[1,1]]->0) == 0,
+zt[[1,1]]-eqvdIf[discrep[t]>=0,0,
+zt[[1,1]]/.zZap]==0}]]]
 
 
 unCon0 = fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$Shock}},{{zt0}},{{0}}]
@@ -43,27 +64,15 @@ Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs]];
 
 
 
-myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
 
 
 
 
-moEqns={-0.6172963046806865*uu$Shock - 0.5354845307277833*zt0 - 
-   0.2677422653638917*qq[-1 + t] + qq[t] - 0.30864815234034326*ru[-1 + t] == 0.,
- -0.6172963046806865*uu$Shock + 0.4645154692722171*zt0 - 
- 0.2677422653638917*qq[-1 + t] + rr[t] - 0.30864815234034326*ru[-1 + t] == 0., - 1.*uu$Shock - 0.5*ru[-1 + t] + ru[t] == 0,
-discrep[t]- ((0.6172963046806865*uu$Shock  + 
- 0.2677422653638917*qq[-1 + t] + 0.30864815234034326*ru[-1 + t])-0.02  ) == 0.,
-zt0 == Piecewise[{{0,discrep[t]>=0}},discrep[t]/0.4645154692722171]
-};
+
 
 sysSubs={uu$Shock->eps[uu][t],zt0->(sqrtZt0[t])};
-unCon0A=Join[First/@unCon0[[Range[3]]]//.lucaSubs//myN,{
-zt0 -eqvdIf[((0.6172963046806865*uu$Shock  + 
- 0.2677422653638917*qq[-1 + t] + 0.30864815234034326*ru[-1 + t])-0.02  )>=0,0,
-((0.6172963046806865*uu$Shock  + 
- 0.2677422653638917*qq[-1 + t] + 0.30864815234034326*ru[-1 + t])-0.02  )/0.4645154692722171]
-}]/.sysSubs;
+unCon0A=(((First/@unCon0)//.lucaSubs)//myN)/.sysSubs;
+
 
 
 
@@ -106,7 +115,7 @@ simp = JavaNew[
 
 res0$0$0 = 
   ComputeInitialCollocationWeights[lucaBasis, 
-   ConstantArray[1, {4, 1}], modEqns00, simp];
+   ConstantArray[1, {5, 1}], modEqns00, simp];
 res0$0$0[isConvergedQ[]]
 
 boo = res0$0$0[toOrder[{1, 1, 1}]];
@@ -156,12 +165,13 @@ Export["prettyPsiEps.pdf",
 Export["prettyMuVal.pdf", muVal];
 
 
+(*
 unCon1 = (fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$Shock}},{{zt1}},{{z1ExpRHS/.{qq[t-1]->qq[t],ru[t-1]->ru[t]}}}]//myN)//.lucaSubs//FullSimplify;
 Print["solving unCon1"]
 
 
 
-(*
+
 
 
 

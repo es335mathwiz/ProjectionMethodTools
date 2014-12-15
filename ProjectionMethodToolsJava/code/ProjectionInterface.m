@@ -861,10 +861,10 @@ GetCnstrnsReplaceVariables[theMod_,
 thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
 With[{eqns=projEquations[theMod],
-thePattern=xxL_Symbol[Global`t]-
+thePattern=xxL_Symbol[Global`t] +sgn_.*
 Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-Global`eqvdIf[xxR>=yy,zz,ww]}]},
+sgn*Global`eqvdIf[xxR>=yy,zz,ww]}]},
 Print["constraints explicitly involving future state or non state not validated in general: augment model with dummy for now to check"];
 With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,thePolys,{state,nonState}]},
 With[{
@@ -881,10 +881,10 @@ GetCnstrnsTp1Subs[theMod_,
 thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
 With[{eqns=projEquations[theMod],
-thePattern=xxL_Symbol[Global`t]-
+thePattern=xxL_Symbol[Global`t]+sgn_.*
 Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-Global`eqvdIf[xxR>=yy,zz,ww]}]},
+sgn*Global`eqvdIf[xxR>=yy,zz,ww]}]},
 Print["constraints explicitly involving future state or non state not implemented yet: augment model with dummy for now"];
 With[{},
 makeNextStateSubs[thePolys,state]]]]]
