@@ -284,6 +284,20 @@ public class EquationValDrv {
     	int numRows=du.length;int numCols=du[0].length;
     	int ii;int jj;
     	for(ii=0;ii<numRows;ii++){
+       		if(uu[ii][0]>4){
+    			uu[ii][0]=2;
+        		for(jj=0;jj<numCols;jj++){
+        			du[ii][jj]=0;
+        			
+        		}
+    		}
+    		else if(uu[ii][0]<-4){
+    			uu[ii][0]=0;
+        		for(jj=0;jj<numCols;jj++){
+        			du[ii][jj]=0;
+        			
+        		}
+    		} else
     		try {
 				uu[ii][0]=1-org.apache.commons.math.special.Erf.erf(uu[ii][0]);
 			} catch (MathException e) {
@@ -305,6 +319,20 @@ public class EquationValDrv {
     	int numRows=du.length;int numCols=du[0].length;
     	int ii;int jj;
     	for(ii=0;ii<numRows;ii++){
+    		if(uu[ii][0]>4){
+    			uu[ii][0]=1;
+        		for(jj=0;jj<numCols;jj++){
+        			du[ii][jj]=0;
+        			
+        		}
+    		}
+    		else if(uu[ii][0]<-4){
+    			uu[ii][0]=-1;
+        		for(jj=0;jj<numCols;jj++){
+        			du[ii][jj]=0;
+        			
+        		}
+    		} else
     		try {
 				uu[ii][0]=org.apache.commons.math.special.Erf.erf(uu[ii][0]);
 			} catch (MathException e) {
@@ -392,6 +420,50 @@ public class EquationValDrv {
     			}
     		}
     		uu[ii][0]=myPow(uu[ii][0],aVal);
+    	}
+    	chkNan(uu,"pow:uu");
+    	chkNan(du,"pow:du");
+    	EquationValDrv theRes = new EquationValDrv(new Matrix(uu),new Matrix(du));
+    	return(theRes);
+    }
+
+    public EquationValDrv powValBase(double aVal) throws ProjectionRuntimeException{
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	int numRows=uu.length;int numCols=du[0].length;
+    	int ii;
+    	int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		for(jj=0;jj<numCols;jj++){
+    			if(uu[ii][0]>zeroThreshold){
+    				du[ii][jj]=myPow(aVal,uu[ii][0])*java.lang.Math.log(aVal)*du[ii][jj];
+    			} else {
+    				du[ii][jj]=myPow(aVal,zeroThreshold);
+    			}
+    		}
+    		uu[ii][0]=myPow(aVal,uu[ii][0]);
+    	}
+    	chkNan(uu,"pow:uu");
+    	chkNan(du,"pow:du");
+    	EquationValDrv theRes = new EquationValDrv(new Matrix(uu),new Matrix(du));
+    	return(theRes);
+    }
+    
+    public EquationValDrv powValBase(int aVal) throws ProjectionRuntimeException{
+    	double [][] du=theJac.getArrayCopy();
+    	double [][] uu=theVal.getArrayCopy();
+    	int numRows=uu.length;int numCols=du[0].length;
+    	int ii;
+    	int jj;
+    	for(ii=0;ii<numRows;ii++){
+    		for(jj=0;jj<numCols;jj++){
+    			if(uu[ii][0]>zeroThreshold){
+    				du[ii][jj]=myPow(aVal,uu[ii][0])*java.lang.Math.log(aVal)*du[ii][jj];
+    			} else {
+    				du[ii][jj]=myPow(aVal,zeroThreshold);
+    			}
+    		}
+    		uu[ii][0]=myPow(aVal,uu[ii][0]);
     	}
     	chkNan(uu,"pow:uu");
     	chkNan(du,"pow:du");

@@ -1,11 +1,11 @@
-Needs["JLink`"]; Needs["ProjectionInterface`"]; 
+Needs["JLink`"]; Needs["OccasionallyBindingConstraints`"]; 
 Get["prepPackages.mth"]; Get["applyReliable.mth"];
 <<JavaGraphics`
 
 lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
   rUnderBar -> 2/100, qLow -> -1/2, qHigh -> 1/2, 
   ruLow -> -4*sigma$u/(1 - rho$ru), ruHigh ->  4*sigma$u/(1 - rho$ru),
-   integOrder -> {50}, sigma$u -> 2/100, theMean -> {0}, rho$ru -> 1/2,
+   integOrder -> {50}, sigma$u ->2/100, theMean -> {0}, rho$ru -> 1/2,
    adj -> 1}; 
 
 
@@ -13,33 +13,16 @@ lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
 
 
 
-(*
-fzComp[xt_?MatrixQ,xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1Exp_?MatrixQ]:=
-Identity[
-Identity[
-Join[Thread[
-Flatten[xt-
-(bmat .xtm1 + 
-        phimat .(psieps . epst - 
-           psiz.{{zt}}) - 
-        fmat .phimat . 
-         psiz . ztp1Exp)] ==0],
-Flatten[
-{xt[[2,1]]-rUnderBar >=0 ,
-zt[[1,1]]*(xt[[2,1]]-rUnderBar)==0,
-zt[[1,1]]>=0
-}]]]]
-*)
 
 myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
 
 fzComp[xt_?MatrixQ,xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1Exp_?MatrixQ]:=
 With[{theComp=(bmat .xtm1 + 
-        phimat .(psieps . epst - 
-           psiz.zt) - 
+        phimat .(psieps . epst +
+           psiz.zt) + 
         fmat .phimat . 
          psiz . ztp1Exp)},Print["dims",Dimensions[theComp]];
-With[{zZap=Solve[myN[((theComp[[2,1]]//.lucaSubs))] == rUnderBar,zt[[1,1]]]//Flatten},Print[zZap];
+With[{zZap=Solve[myN[((theComp[[2,1]]//.lucaSubs))] == rUnderBar,zt[[1,1]]]//Flatten},Print[zZap//InputForm];
 Join[Thread[
 Flatten[xt-theComp] ==0],
 {(discrep[t] - (theComp[[2,1]] - rUnderBar)/.zt[[1,1]]->0) == 0,
@@ -56,34 +39,127 @@ unCon0 = fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$
 forSimp = Union[Cases[bmat, Sqrt[___], Infinity]][[1]];
 latexSubs = Join[N[lucaSubs],{(*forSimp -> \[Nu],*) betap -> Subscript[\[Beta], p], 
    phip -> Subscript[\[Phi], p], rhop -> Subscript[\[Rho], p], 
-   rho$ru -> Subscript[\[Rho], ru], sigmap -> Subscript[\[Sigma], p]}];
+   rho$ru -> Subscript[\[Rho], ru], sigmap -> Subscript[\[Sigma], p],
+xx_[yy:t+_.]->Subscript[xx,yy],zt0->Subscript[z,0],
+uu$Shock->Subscript[\[Epsilon],t],
+Subscript[discrep,t]->\[Delta],eqvdIf->\[CurlyTheta],
+Subscript[ru,y:t+_.]->Subscript[Subscript[r,u],y]}];
 Export["prettyHmat.pdf", MatrixForm[hmat //. latexSubs]];
 Export["prettyBmat.pdf", MatrixForm[bmat //. latexSubs]];
 Export["prettyPhimat.pdf", MatrixForm[phimat //. latexSubs]];
 Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs]];
+Export["prettyCons0.pdf", MatrixForm[unCon0//. latexSubs]];
 
 
 
 
 
 
+Print["got to zt0Subs"]
+
+zt0Subs=Flatten[Solve[unCon0[[-1]],zt0]]/.eqvdIf->If
+discrepSubs=Flatten[Solve[unCon0[[-2]],discrep[t]]]/.eqvdIf->If
+
+z1RHS=zt0//.Join[zt0Subs,discrepSubs]//.lucaSubs//myN//FullSimplify//Chop;
+r1RHS=(rr[t]-unCon0[[2,1]])//.Join[zt0Subs,discrepSubs]//.lucaSubs//myN//FullSimplify//Chop
+ru1RHS=(ru[t]-unCon0[[3,1]])//.Join[zt0Subs,discrepSubs]//.lucaSubs//myN//FullSimplify//Chop
+q1RHS=(qq[t]-unCon0[[1,1]])//.Join[zt0Subs,discrepSubs]//.lucaSubs//myN//FullSimplify//Chop
+
+Export["prettyZ1.pdf", MatrixForm[z1RHS//myN//Simplify/. latexSubs]]
+Export["prettyR1.pdf", MatrixForm[r1RHS//myN//Simplify/. latexSubs]]
+Export["prettyQ1.pdf", MatrixForm[q1RHS//myN//Simplify/. latexSubs]]
+Print["about to compute expectation"]
+
+z1ExpRHS = 
+  FullSimplify[
+   PiecewiseExpand[
+    Expectation[z1RHS //. lucaSubs, 
+     uu$Shock \[Distributed] 
+      NormalDistribution[0, sigma$u /. lucaSubs]]]];
+
+q1ExpRHS = 
+  FullSimplify[
+   PiecewiseExpand[
+    Expectation[q1RHS //. lucaSubs, 
+     uu$Shock \[Distributed] 
+      NormalDistribution[0, sigma$u /. lucaSubs]]]];
+
+r1ExpRHS = 
+  FullSimplify[
+   PiecewiseExpand[
+    Expectation[r1RHS //. lucaSubs, 
+     uu$Shock \[Distributed] 
+      NormalDistribution[0, sigma$u /. lucaSubs]]]];
+
+
+ru1ExpRHS = 
+  FullSimplify[
+   PiecewiseExpand[
+    Expectation[ru1RHS //. lucaSubs, 
+     uu$Shock \[Distributed] 
+      NormalDistribution[0, sigma$u /. lucaSubs]]]];
 
 
 
-sysSubs={uu$Shock->eps[uu][t],zt0->(sqrtZt0[t])};
-unCon0A=(((First/@unCon0)//.lucaSubs)//myN)/.sysSubs;
+erfcFound=Union[Cases[z1ExpRHS, Erfc[___], Infinity]];
+erfFound=Union[Cases[z1ExpRHS, Erf[___], Infinity]];
 
 
 
 
-
-newWeightedStochasticBasis[lucaMod00, unCon0A];
-{{stateVar, nonStateVar, theShock}, modEqns00} = 
-  GenerateModelCode[lucaMod00];
-
-modEqns00[updateParams[{rUnderBar} //. lucaSubs]]
+erfSubs = If[Length[erfcFound]>0,(muVal=erfcFound[[1]])-> \[Mu],
+If[Length[erfFound]>0,(muVal=erfFound[[1]])-> \[Mu]]]
 
 
+
+
+Export["prettyZ1EXP.pdf", 
+  MatrixForm[z1ExpRHS/. erfSubs /. latexSubs  // Expand]];
+Export["prettyQ1EXP.pdf", 
+  MatrixForm[q1ExpRHS/. erfSubs /. latexSubs  // Expand]];
+Export["prettyR1EXP.pdf", 
+  MatrixForm[r1ExpRHS/. erfSubs /. latexSubs  // Expand]];
+Export["prettyRu1EXP.pdf", 
+  MatrixForm[ru1ExpRHS/. erfSubs /. latexSubs  // Expand]];
+Export["prettyPsiEps.pdf", 
+ MatrixForm[psieps]]; Export["prettyPsiZ.pdf", 
+ MatrixForm[psiz]]; Export["prettyPsiEps.pdf", MatrixForm[psieps]];
+Export["prettyMuVal.pdf", muVal];
+
+Print["got to end uncommented"]
+
+Print["compute values to sub into system"]
+xtm1={{qq[t-1]},{rr[t-1]},{ru[t-1]}};
+xt={{q1RHS},{r1RHS},{ru1RHS}};
+xtp1=bmat . xt;
+xVec=Join[xtm1,xt,xtp1];
+resid0=hmat.xVec//FullSimplify;
+Export["prettyResid0.pdf", 
+  MatrixForm[resid0/. latexSubs]];
+
+
+
+Print["solving unCon1"]
+
+unCon1 = (fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$Shock}},{{zt1}},{{z1ExpRHS/.{qq[t-1]->qq[t],ru[t-1]->ru[t]}}}]//myN)//.lucaSubs;
+
+
+Print["got to zt1Subs"]
+
+zt1Subs=Flatten[Solve[unCon1[[-1]],zt1]]/.eqvdIf->If
+discrepSubs=Flatten[Solve[unCon1[[-2]],discrep[t]]]/.eqvdIf->If
+
+z2RHS=zt1/.Join[zt1Subs,discrepSubs]/.lucaSubs//myN//FullSimplify//Chop;
+
+
+
+sysSubs={uu$Shock->eps[uu][t],zt1->(sqrtZt1[t])};
+unCon1A=Chop[((((First/@unCon1/.rUnderBar->RUB)//.lucaSubs)//myN)/.sysSubs)//ExpandAll];
+
+
+newWeightedStochasticBasis[lucaMod01, unCon1A];
+{{stateVar, nonStateVar, theShock}, modEqns01} = 
+  GenerateModelCode[lucaMod01];
 
 polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} /. lucaSubs;
 initPower = {0, 0}; shockPower = {0};
@@ -92,35 +168,53 @@ lucaBasis =
     theMean //. lucaSubs, {sigma$u} //. lucaSubs, 
    integOrder //. lucaSubs, shockPower, nonStateVar];
 
-
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
 
-modEqns00[updateParams[{rUnderBar} //. lucaSubs]]
-
-
-
-polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} /. lucaSubs;
-initPower = {0, 0}; shockPower = {0};
-lucaBasis = 
-  GenerateBasis[stateVar, polyRange //. lucaSubs, initPower, theShock,
-    theMean //. lucaSubs, {sigma$u} //. lucaSubs, 
-   integOrder //. lucaSubs, shockPower, nonStateVar];
-
-
-
-simp = JavaNew[
-   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
-
+modEqns01[updateParams[{rUnderBar}//.lucaSubs//myN]]
 
 res0$0$0 = 
   ComputeInitialCollocationWeights[lucaBasis, 
-   ConstantArray[1, {5, 1}], modEqns00, simp];
+   ConstantArray[1, {5, 1}], modEqns01, simp];
 res0$0$0[isConvergedQ[]]
 
-boo = res0$0$0[toOrder[{1, 1, 1}]];
+
+
+
+
+boo = res0$0$0[toOrder[{5, 5, 1}]];
 If[boo[isConvergedQ[]], 
- TableForm[polys = Expand[CreatePolynomials[lucaMod00, boo]]] // Chop]
+ TableForm[polys = Expand[CreatePolynomials[lucaMod01, boo]]] // Chop]
+
+z2RHSNew=z2RHS/.discrepSubs/.{qq[t]->polys[[1]],ru[t]->polys[[2]],qq[t-1]->qq,ru[t-1]->ru}//Simplify
+
+
+ha = {z2RHSNew/.uu$Shock->.5 ,{qq, qLow, qHigh}, {ru, ruLow, ruHigh}} //. lucaSubs // myN
+Plot3D @@ ha
+
+
+(*
+
+TableForm[
+ realpolys = 
+  (unCon1A-{qq[t],rr[t],ru[t],discrep[t],sqrtZt1[t]}/.RUBSubs) //. {qq[t]->polys[[1]],ru[t]->polys[[2]],sqrtZt1[t] -> polys[[-1]], discrep[t] -> polys[[3]], 
+       qq[t - 1] -> qq, ru[t - 1] -> ru, eps[uu][t] -> uu$Shock, 
+       RUB -> (rUnderBar /. lucaSubs)} // PiecewiseExpand // 
+    FullSimplify // Chop]
+
+
+ha = {Refine[realpolys /. {eqvdIf -> If, uu$Shock -> .3}, 
+     ru (9244.088993391524` - 22.564464476522847` uu$Shock) + 
+       18542.067217310458` uu$Shock + 
+       qq (7473.433046029645` - 20.753048327204862` uu$Shock + 
+          ru (-9.182406958128745` + 1.` uu$Shock)) > 
+      4904.8338539675005`], {qq, qLow, qHigh}, {ru, ruLow, 
+     ruHigh}} //. lucaSubs // myN
+
+Plot3D @@ ha
+Print["end solving 1"]
+*)
+(*
 boo = boo[toOrder[{5, 5, 1}]]; boo[isConvergedQ[]]
 If[boo[isConvergedQ[]], 
   polys2$2$0 = Expand[CreatePolynomials[lucaMod00, boo]] // Chop]
@@ -153,7 +247,9 @@ z1ExpRHS =
       NormalDistribution[0, sigma$u /. lucaSubs]]]];
 
 erfSubs = (muVal = 
-    Cases[z1ExpRHS, Erfc[___], Infinity][[1]]) -> \[Mu]
+    Cases[z1ExpRHS, Erf[___], Infinity][[1]]) -> \[Mu]
+erfSubs = Join[erfSubs,(muVal = 
+    Cases[z1ExpRHS, Erfc[___], Infinity][[1]]) -> \[Mu]]
 
 
 
@@ -164,12 +260,9 @@ Export["prettyPsiEps.pdf",
  MatrixForm[psiz]]; Export["prettyPsiEps.pdf", MatrixForm[psieps]];
 Export["prettyMuVal.pdf", muVal];
 
+*)
 
 (*
-unCon1 = (fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$Shock}},{{zt1}},{{z1ExpRHS/.{qq[t-1]->qq[t],ru[t-1]->ru[t]}}}]//myN)//.lucaSubs//FullSimplify;
-Print["solving unCon1"]
-
-
 
 
 
@@ -369,3 +462,123 @@ Export["z1PolyGraph.pdf",
 
 *)
 
+
+
+
+(*
+sysSubs={uu$Shock->eps[uu][t],zt0->(sqrtZt0[t])};
+unCon0A=(((First/@unCon0/.rUnderBar->RUB)/.RUBSubs)//.lucaSubs//myN)/.sysSubs;
+
+RUBSubs={RUB->0.02};
+
+
+
+newWeightedStochasticBasis[lucaMod00, unCon0A];
+{{stateVar, nonStateVar, theShock}, modEqns00} = 
+  GenerateModelCode[lucaMod00];
+
+
+
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} /. lucaSubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. lucaSubs, initPower, theShock,
+    theMean //. lucaSubs, {sigma$u} //. lucaSubs, 
+   integOrder //. lucaSubs, shockPower, nonStateVar];
+
+
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+
+
+
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} /. lucaSubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. lucaSubs, initPower, theShock,
+    theMean //. lucaSubs, {sigma$u} //. lucaSubs, 
+   integOrder //. lucaSubs, shockPower, nonStateVar];
+
+
+
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+modEqns00[updateParams[{rUnderBar}//.lucaSubs]]
+
+
+
+res0$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {5, 1}], modEqns00, simp];
+res0$0$0[isConvergedQ[]]
+
+
+
+boo = res0$0$0[toOrder[{1, 1, 1}]];
+
+
+
+Export["wtsCons0.pdf", MatrixForm[wts0=boo[getResWeights[]]//Chop]];
+ordPolys0=Map[ToExpression,ProjectionInterface`Private`getOrderedOuter[boo[getTheWeightedStochasticBasis[]]],{-1}];
+Export["prettyOrdPolys0.pdf", MatrixForm[ordPolys0/. latexSubs]];
+
+
+
+
+
+nowPolys=wts0 . Transpose[{ordPolys0}]//Expand//Chop
+
+Export["prettyPolys0.pdf", MatrixForm[nowPolys/. latexSubs]];
+
+unCon0A[[Range[3]]]/.Flatten[
+Solve[Thread[unCon0A[[{4,5}]]==0],{discrep[t],sqrtZt0[t]}]]/.eqvdIf->If
+*)
+
+(*
+
+
+If[boo[isConvergedQ[]], 
+ TableForm[polys = Expand[CreatePolynomials[lucaMod00, boo]]] // Chop]
+
+
+
+
+
+TableForm[
+realpolys= unCon0A //. {eqvdIf->If,
+sqrtZt0[t] -> (unCon0A[[-1]]-polys[[-1]]), discrep[t] -> polys[[3]], 
+      qq[t - 1] -> qq, ru[t - 1] -> ru, eps[uu][t] -> uu$Shock, 
+      RUB -> (rUnderBar /.RUBSubs)} // PiecewiseExpand  // Chop]
+
+boo = boo[toOrder[{5, 5, 1}]]; boo[isConvergedQ[]]
+If[boo[isConvergedQ[]], 
+  polys2$2$0 = Expand[CreatePolynomials[lucaMod00, boo]] // Chop]
+
+
+
+TableForm[
+realpolys$5$5$1= (unCon0A/.RUBSubs) //. {sqrtZt0[t] -> polys2$2$0[[-1]], discrep[t] -> polys2$2$0[[3]], 
+      qq[t - 1] -> qq, ru[t - 1] -> ru, eps[uu][t] -> uu$Shock
+      } // PiecewiseExpand // 
+   FullSimplify // Chop]
+
+
+
+z1Subs=sqrtZt0[t] -> polys2$2$0[[-1]];
+
+z1RHS=polys2$2$0[[-1]]/.{
+     discrep[t] -> polys2$2$0[[3]], qq[t - 1] -> qq, ru[t - 1] -> ru, 
+     eps[uu][t] -> uu$Shock} // PiecewiseExpand // 
+  FullSimplify // Chop;
+r1RHS=rr[t]-unCon0A[[2]]//.{z1Subs, 
+     discrep[t] -> polys2$2$0[[3]], qq[t - 1] -> qq, ru[t - 1] -> ru, 
+     eps[uu][t] -> uu$Shock} // PiecewiseExpand // 
+  FullSimplify // Chop;
+q1RHS=qq[t]-unCon0A[[1]]//.{z1Subs, 
+     discrep[t] -> polys2$2$0[[3]], qq[t - 1] -> qq, ru[t - 1] -> ru, 
+     eps[uu][t] -> uu$Shock} // PiecewiseExpand // 
+  FullSimplify // Chop;
+
+*)
