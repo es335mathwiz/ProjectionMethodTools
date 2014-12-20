@@ -17,7 +17,7 @@ Print["need code to compute psimat"]
 
 
 
-linearizeSystemForOBC[eqns_List]:=
+numericLinearizeSystemForOBC[eqns_List]:=
 Module[{noCnstr=eqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx},zf,hr,
 bmat,phimat,fmat},Print[noCnstr];
 With[{hmat=equationsToMatrix[noCnstr]},Print[hmat];
@@ -123,11 +123,43 @@ lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] -
    ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
    rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]}
 
-
-
+lucaEqnsCons=ReplacePart[lucaEqns,3->
+rr[t] - eqvdIf[phip*qq[t] >= rUnderBar,rUnderBar, phip*qq[t]]]
 (*
 {hmat,qmat,{bmat,phimat,fmat}}=linearizeSystemForOBC[lucaEqns//.lucaSubs];
+
+
+
+
+
+{hmatCons,qmatCons,{bmatCons,phimatCons,fmatCons}}=linearizeSystemForOBC[lucaEqnsCons//.lucaSubs];
+
+
+hmatCons=equationsToMatrix[
+lucaEqnsCons/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx}]//FullSimplify;
+{zfCons,hfCons}=symbolicAR[hmatCons];
+amatCons=symbolicTransitionMatrix[hfCons];
+{evlsCons,evcsCons}=Eigensystem[Transpose[amat]];
+qmatCons=Join[zfCons,evcsCons[[{4}]]];
+{bmatCons,phimatCons,fmatCons}=symbolicComputeBPhiF[hmatCons,qmatCons]//FullSimplify;
+
 *)
+hmatCons={{-rhop, 0, 0, 1, sigmap, -1, betap*(-1 + rhop), 0, 0}, 
+ {0, 0, -rho$ru, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0, 0}};
+
+
+{bmatCons,phimatCons,fmatCons}={{{(-1 + Sqrt[1 + 4*betap*(-1 + rhop)*rhop])/(2*betap*(-1 + rhop)), 0, 
+   (2*rho$ru)/(1 + Sqrt[1 + 4*betap*(-1 + rhop)*rhop] + 
+     2*betap*(-1 + rhop)*rho$ru)}, {0, 0, 0}, {0, 0, rho$ru}}, 
+ {{2/(1 + Sqrt[1 + 4*betap*(-1 + rhop)*rhop]), 
+   2/(1 + Sqrt[1 + 4*betap*(-1 + rhop)*rhop] + 2*betap*(-1 + rhop)*rho$ru), 
+   (-2*sigmap)/(1 + Sqrt[1 + 4*betap*(-1 + rhop)*rhop])}, {0, 0, 1}, 
+  {0, 1, 0}}, 
+ {{(-2*betap*(-1 + rhop))/(1 + Sqrt[1 + 4*betap*(-1 + rhop)*rhop]), 0, 0}, 
+  {0, 0, 0}, {0, 0, 0}}};
+
+
+
 hmat = {{-rhop, 0, 0, 1, sigmap, -1, -(betap*(1 - rhop)), 0, 0}, {0, 
     0, 0, -phip, 1, 0, 0, 0, 0}, {0, 0, -rho$ru, 0, 0, 1, 0, 0, 0}};
 bmat = {{(2*rhop)/(1 + phip*sigmap + 

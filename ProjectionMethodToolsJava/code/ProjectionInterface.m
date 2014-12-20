@@ -788,7 +788,7 @@ noVars[aThing___]:=FreeQ[{aThing},EquationValDrv[___]|
 	_Symbol[Global`t-1]|
 	_Symbol[Global`t]|
 	_Symbol[Global`t+1]|
-	EquationValDrv|Power]
+	EquationValDrv]
 
 
 
@@ -971,8 +971,8 @@ subOutStateNonStateVars[
 	subOutEps[#]]]]]]]]&,eqns]]
 		
 *)
-subOutEqValDrv[eqns_List]:=eqns/.{EquationValDrv[xx_String]:>xx,
-Power->Global`pow}
+subOutEqValDrv[eqns_List]:=StringReplace[eqns/.{EquationValDrv[xx_String]:>xx,
+Power->Global`pow},"Power"->"Global_pow"]
 
 
 subOutEps[eqns_List]:=eqns/.
@@ -1007,6 +1007,8 @@ subOutPlus[eqns_List]:=eqns//.{
 Plus[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> 
    Plus[EquationValDrv[xx<>".plus("<>yy<>")"],zz],
 Plus[EquationValDrv[xx_String],yy_?noVars,zz___]:> 
+   Plus[EquationValDrv[xx<>".plus("<>ToString[CForm[yy]]<>")"],zz],
+Plus[EquationValDrv[xx_String],yy_?noVars,zz___]:> 
    Plus[EquationValDrv[xx<>".plus("<>ToString[CForm[yy]]<>")"],zz]
 }
 
@@ -1016,7 +1018,9 @@ Times[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:>
 Times[EquationValDrv[xx_String],yy_?noVars,zz___]:> 
    Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
 Times[EquationValDrv[xx_String],yy:(__?noVars),zz___]:> 
-   Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],
+   Times[EquationValDrv[xx<>".times("<>ToString[CForm[yy]]<>")"],zz],(*
+Times[xx:(__?noVars),yy:(__?noVars),zz___]:> 
+   Times[ToString[CForm[xx * yy]],zz],*)
 Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
    EquationValDrv[yy<>".divide("<>ToString[CForm[xx]]<>")"]
 }
@@ -1025,8 +1029,7 @@ subOutPower[eqns_List]:=eqns//.{
 Power[EquationValDrv[xx_String],yy_?noVars]:> 
    EquationValDrv[xx<>".pow("<>ToString[CForm[yy]]<>")"],
 Power[EquationValDrv[xx_String],yy:(__?noVars)]:> EquationValDrv[xx<>".pow("<>ToString[CForm[yy]]<>")"],
-Power[yy:(__?noVars),EquationValDrv[xx_String]]:> EquationValDrv[xx<>".powValBase("<>ToString[CForm[yy]]<>")"](*,
-Power->Global`pow*)
+Power[yy:(__?noVars),EquationValDrv[xx_String]]:> EquationValDrv[xx<>".powValBase("<>ToString[CForm[yy]]<>")"]
 }
 
 subOutUniqueEqnName[eqns_List]:=
@@ -1069,7 +1072,12 @@ Global`eqvdIf[EquationValDrv[aa_String]>=
    bb:(__?noVars),
    EquationValDrv[cc_String],
    EquationValDrv[dd:(__?noVars)]]:>
-      EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"]
+      EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[EquationValDrv[aa_String]>=
+   bb:(__?noVars),
+   cc:(__?noVars),
+   dd:(__?noVars)]:>
+      EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
 }
 
 subOutErf[eqns_List]:=eqns/.{
