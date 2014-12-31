@@ -32,7 +32,11 @@ bmat . xtm1 + phimat . psimat . epsilon
 
 fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
 horizon_Integer,numCon_Integer]:=
-With[{zMats=genZVars[horizon,numCon]},
+fPart[phimat,fmat,psiz,horizon,numCon,0]
+
+fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
+horizon_Integer,numCon_Integer,offset_Integer]:=
+With[{zMats=genZVars[horizon,numCon,offset]},
 Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,zMats]]
 
 fPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
@@ -103,8 +107,14 @@ Union[Cases[lhsCnstrnt,_[Global`t+ss_.]->ss,Infinity]]==={0}*)
 
 
 genZVars[horizons_Integer,numConstr_Integer]:=
+genZVars[horizons,numConstr,0]:=
 Table[
 {ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
+{forTime,0,horizons},{ii,numConstr}]
+
+genZVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+Table[
+{ToExpression["zzz$"<>ToString[forTime-offset]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
 {forTime,0,horizons},{ii,numConstr}]
 
 

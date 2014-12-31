@@ -1,3 +1,111 @@
+Get["paperFocus.mth"]
+
+(*one non zero z*)
+nfp$0$0=nonFPart[xxtm1={{qtm1},{rtm1},{rutm1}},{{eps}},bmat,phimat,psieps]//numIt//Chop;
+fp$0$0=fPart[phimat,fmat,psiz,0,1]//numIt;
+x$0$0=nfp$0$0+fp$0$0
+
+x$0$1=nonFPart[x$0$0,{{0}},bmat,phimat,psieps]//numIt//Chop;
+hmat . Join[xxtm1,x$0$0,x$0$1]//numIt//Expand
+
+
+(*two non zero z's*)
+nfp$1$0=nonFPart[xxtm1={{qtm1},{rtm1},{rutm1}},{{eps}},bmat,phimat,psieps]//numIt//Chop;
+fp$1$0=fPart[phimat,fmat,psiz,1,1]//numIt;
+x$1$0=nfp$1$0+fp$1$0
+
+nfp$1$1=nonFPart[x$1$0,{{0}},bmat,phimat,psieps]//numIt//Chop;
+fp$1$1=fPart[phimat,fmat,psiz,0,1]/.zzz$0$1[t]->zzz$1$1[t]//numIt;
+x$1$1=nfp$1$1+fp$1$1;
+x$1$2=nonFPart[x$1$1,{{0}},bmat,phimat,psieps]//numIt//Chop;
+hmat . Join[xxtm1,x$1$0,x$1$1]//numIt//Expand
+hmat . Join[x$1$0,x$1$1,x$1$2]//numIt//Expand
+
+
+
+
+
+
+(*three non zero z's*)
+nfp$2$0=nonFPart[xxtm1={{qtm1},{rtm1},{rutm1}},{{eps}},bmat,phimat,psieps]//numIt//Chop;
+fp$2$0=fPart[phimat,fmat,psiz,2,1]//numIt;
+x$2$0=nfp$2$0+fp$2$0
+
+nfp$2$1=nonFPart[x$2$0,{{0}},bmat,phimat,psieps]//numIt//Chop;
+fp$2$1=fPart[phimat,fmat,psiz,1,1]/.{zzz$1$1[t]->zzz$2$1[t],zzz$0$1[t]->zzz$1$1[t]}//numIt;
+x$2$1=nfp$2$1+fp$2$1;
+nfp$2$2=nonFPart[x$2$1,{{0}},bmat,phimat,psieps]//numIt//Chop;
+fp$2$2=fPart[phimat,fmat,psiz,0,1]/.{zzz$0$1[t]->zzz$2$1[t]}//numIt;
+x$2$2=nfp$2$2+fp$2$2;
+
+nfp$2$3=nonFPart[x$2$2,{{0}},bmat,phimat,psieps]//numIt//Chop;
+x$2$3=nfp$2$3;
+hmat . Join[xxtm1,x$2$0,x$2$1]//numIt//Expand
+hmat . Join[x$2$0,x$2$1,x$2$2]//numIt//Expand
+hmat . Join[x$2$1,x$2$2,x$2$3]//numIt//Expand
+
+
+(*solve for constraint in second equation using x$0$0 *)
+(* one period constraint*)
+soln$1=Solve[
+{qt==x$0$0[[1,1]],rut==x$0$0[[3,1]],rUnderBar==x$0$0[[2,1]]}//numIt,
+{qt,rut,zzz$0$1[t]}]
+
+
+(* two period constraint*)
+
+zSub$2=(Cases[soln$1,HoldPattern[zzz$0$1[t]->_],Infinity]/.
+{zzz$0$1[t]->zzz$1$1[t],qtm1->qt,rutm1->rut,eps->0});
+xSubbed=x$1$0/.zSub$2//Expand
+soln$2=Solve[
+{qt==xSubbed[[1,1]],rut==xSubbed[[3,1]],rUnderBar==xSubbed[[2,1]]}//numIt,
+{qt,rut,zzz$0$1[t]}]
+
+x$1$1=nfp$1$1+fp$1$1;
+x$1$2=nonFPart[x$1$1,{{0}},bmat,phimat,psieps]//numIt//Chop;
+x$1$3=nonFPart[x$1$2,{{0}},bmat,phimat,psieps]//numIt//Chop;
+
+xReSubbed$1=(Join[xxtm1,x$1$0,x$1$1]/.zSub$2)/.soln$2[[1]];
+((hmat . xReSubbed$1//numIt//Expand) -(psiz . {{ zzz$0$1[t]}}/.soln$2[[1]]) -( psieps . {{eps}}))//numIt//Chop
+
+xReSubbed$2=(Join[x$1$0,x$1$1,x$1$2]/.zSub$2)/.soln$2[[1]];
+((hmat . xReSubbed$2//numIt//Expand) -((psiz . ({{ zzz$0$1[t]}}/.soln$1[[1]])/.{qtm1->xReSubbed$1[[4,1]],rutm1->xReSubbed$1[[6,1]],eps->0}) +( psieps . {{0}})))//numIt//Chop
+
+xReSubbed$3=(Join[x$1$1,x$1$2,x$1$3]/.zSub$2)/.soln$2[[1]];
+(hmat . xReSubbed$3//numIt//Expand) 
+
+
+
+
+(* three period constraint*)
+
+
+zSub$2=(Cases[soln$1,HoldPattern[zzz$0$1[t]->_],Infinity]/.
+{zzz$0$1[t]->zzz$1$1[t],qtm1->qt,rutm1->rut,eps->0});
+xSubbed=x$1$0/.zSub$2//Expand
+soln$2=Solve[
+{qt==xSubbed[[1,1]],rut==xSubbed[[3,1]],rUnderBar==xSubbed[[2,1]]}//numIt,
+{qt,rut,zzz$0$1[t]}]
+
+x$1$1=nfp$1$1+fp$1$1;
+x$1$2=nonFPart[x$1$1,{{0}},bmat,phimat,psieps]//numIt//Chop;
+x$1$3=nonFPart[x$1$2,{{0}},bmat,phimat,psieps]//numIt//Chop;
+
+xReSubbed$1=(Join[xxtm1,x$1$0,x$1$1]/.zSub$2)/.soln$2[[1]];
+((hmat . xReSubbed$1//numIt//Expand) -(psiz . {{ zzz$0$1[t]}}/.soln$2[[1]]) -( psieps . {{eps}}))//numIt//Chop
+
+xReSubbed$2=(Join[x$1$0,x$1$1,x$1$2]/.zSub$2)/.soln$2[[1]];
+((hmat . xReSubbed$2//numIt//Expand) -((psiz . ({{ zzz$0$1[t]}}/.soln$1[[1]])/.{qtm1->xReSubbed$1[[4,1]],rutm1->xReSubbed$1[[6,1]],eps->0}) +( psieps . {{0}})))//numIt//Chop
+
+xReSubbed$3=(Join[x$1$1,x$1$2,x$1$3]/.zSub$2)/.soln$2[[1]];
+(hmat . xReSubbed$3//numIt//Expand) 
+
+
+
+
+
+
+(*
 
 unCon0 = fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$Shock}},{{zt0}},{{0}}]/.eqvdIf[xx_,yy_,zz_]:>eqvdIf[xx,zz,zz]
 
@@ -96,6 +204,7 @@ Export["prettyAlwaysResid0.pdf",
 
 
 
+
 Print["solving unCon1"]
 RUB=2/100;
 
@@ -174,11 +283,11 @@ Print["compute values to sub into system"]
 xtm1={{qq},{rr},{ru}};
 xt={{q2RHS},{r2RHS},{ru2RHS}};
 xtp1={{q1ExpRHS},{r1ExpRHS},{ru1ExpRHS}}/.{qq[t-1]->q2RHS,rr[t-1]->r2RHS,ru[t-1]->ru2RHS};
-xtp2=bmat . ({{q1ExpRHS},{r1ExpRHS},{ru1ExpRHS}}/.{qq[t-1]->q2RHS,rr[t-1]->r2RHS,ru[t-1]->ru2RHS});
+xtp2=bmatCons . ({{q1ExpRHS},{r1ExpRHS},{ru1ExpRHS}}/.{qq[t-1]->q2RHS,rr[t-1]->r2RHS,ru[t-1]->ru2RHS});
 xVec=Join[xtm1,xt,xtp1];
 xVecTp1=Join[xt,xtp1,xtp2];
 resid1=(hmat.xVec//.mySubs)- (psieps*uu$Shock + psiz * z1RHS)//Expand//Chop;
-resid1Tp1=(hmat.xVecTp1//.mySubs) - (psieps . {{uu$Shock}}+ psiz . {{z2RHS}})//Expand//Chop//FullSimplify;
+resid1Tp1=(hmat.xVecTp1//.mySubs) - (psieps . {{0}}+ psiz . {{z2RHS}})//Expand//Chop//FullSimplify;
 Export["prettyAlwaysResid0.pdf", 
   MatrixForm[resid0/. latexSubs]];
 
@@ -224,8 +333,100 @@ ru2ExpRHS =
 
 
 
+{zsub,xtVal}=compZ0[Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{0}}]//.lucaSubs//myN//Expand//Chop
 
-(*
+
+
+{zsub0,eqns0}=fzIterComp[
+Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{0}}]//.lucaSubs//myN//Expand//Chop
+
+
+
+{zsub1,eqns1}=fzIterComp[
+Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{zz/.zsub0/.{eps->0,qtm1->qt,rtm1->rt,rutm1->rut}}}]//.lucaSubs//myN//Expand//Chop
+
+
+{zsub1,eqns1}=fzIterComp[
+Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz2}},{{zz1}}]//.lucaSubs//myN//Expand//Chop
+
+
+
+{zsub2,eqns2}=fzIterComp[
+Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{zz/.zsub1/.{qtm1->qt,rtm1->rt,rutm1->rut}}}]//.lucaSubs//myN//Expand//Chop
+
+
+
+
+{zsub3,eqns3}=fzIterComp[
+Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{zz/.zsub2/.{qtm1->qt,rtm1->rt,rutm1->rut}}}]//.lucaSubs//myN//Expand//Chop
+
+
+ha=NestList[doIter,{{zz->0},{}},340];
+
+
+someVecs={{qt},{0.02},{rut}}/.#[[1]]&/@ha;
+
+
+
+xtm1Val$1={{qtm1},{rtm1},{rutm1}};
+ztVal$1={{zz}}/.ha[[2,1]]//numIt;
+ztp1Val$1={{0}};
+ztp2Val$1={{0}};
+xtVal$1=bmat . xtm1Val$1 + phimat .( psiz . ztVal$1 +psieps . {{eps}} +
+fmat . phimat . psiz .ztp1Val$1)//numIt;
+xtp1Val$1=bmat . xtVal$1 + phimat .( psiz . ztp1Val$1 )//numIt;
+xtp2Val$1=bmat . xtp1Val$1 + phimat .( psiz . ztp2Val$1 )//numIt;
+hmat . Join[xtm1Val$1,xtVal$1,xtp1Val$1] -
+((psiz . ztVal$1)  +(psieps . {{eps}}))//numIt;
+hmat . Join[xtVal$1,xtp1Val$1,xtp2Val$1] -
+((psiz . ztp1Val$1)  +(psieps . {{0}}))//numIt;
+
+
+
+
+xtm1Val$2={{qtm1},{rtm1},{rutm1}};
+ztVal$2={{zz}}/.ha[[3,1]]//numIt;
+ztp1Val$2={{zz}}/.ha[[2,1]]/.
+{eps->0,qtm1->xtVal$2[[1,1]],rutm1->xtVal$2[[3,1]]}//numIt;
+ztp2Val$2={{0}};
+xtVal$2=bmat . xtm1Val$2 + phimat .( psiz . ztVal$2 +psieps . {{eps}} +
+fmat . phimat . psiz .ztp1Val$2)//numIt
+xtp1Val$2=bmat . xtVal$2 + phimat .( psiz . ztp1Val$2 )//numIt;
+xtp2Val$2=bmat . xtp1Val$2 + phimat .( psiz . ztp2Val$2 )//numIt;
+hmat . Join[xtm1Val$2,xtVal$2,xtp1Val$2] -
+((psiz . ztVal$2)  +(psieps . {{eps}}))//numIt
+hmat . Join[xtVal$2,xtp1Val$2,xtp2Val$2] -
+((psiz . ztp1Val$2)  +(psieps . {{0}}))//numIt
+
+
+
+someVecs[[2]],bmat. someVecs[[2]]//.
+((lucaSubs//myN//Expand//Chop)  - (psiz . {{zz}}/.ha[[2,1]]//.lucaSubs//myN//Expand)  -(psieps . {{eps}}))//Chop
+
+
+(hmat .Join[{{qtm1},{rtm1},{rutm1}},someVecs[[3]],
+(bmat. someVecs[[3]]//.
+lucaSubs//myN//Expand//Chop)+
+phimat . psiz . {{zz}}/.ha[[2,1]]]/.{qtm1->someVecs[[3,1,1]]/.eps->0,rutm1->someVecs[[3,3,1]]/.eps->0}//.lucaSubs//myN//Expand//Chop)
+
+
+
+
+
+
+someVecs[[2]]
+{zsub0,xtVal0}=compZ0[Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{0}}]//.lucaSubs//myN//Expand//Chop
+
+
+{zsub1,xtVal1}=compZ0[Transpose[{{qtm1,rtm1,rutm1}}],
+{{eps}},{{zz}},{{(zz/.zsub0)/.{qtm1->qt,rtm1->rt,rutm1->rut}}}]//.lucaSubs//myN//Expand//Chop
 
 
 
@@ -241,10 +442,19 @@ Plot3D @@ ba
 
 
 duh= {(resid0/.{qq[t-1]->qq,ru[t-1]->ru})/.uu$Shock->.0 ,{qq, qLow, qHigh}, {ru, ruLow, ruHigh}} //. mySubs // myN;Plot3D @@ duh
-*)
+
+
+formula verification
+
+
+
+
+
 
 doPlots[rb_?NumberQ]:=
 Module[{},
 ba= {(z1RHS/.{qq[t-1]->qq,ru[t-1]->ru})/.uu$Shock->rb ,{qq, qLow, qHigh}, {ru, ruLow, ruHigh}} //. mySubs // myN;plt1=(Plot3D @@ ba);
 ha = {z2RHSNew/.uu$Shock->rb ,{qq, qLow, qHigh}, {ru, ruLow, ruHigh}} //. mySubs // myN;(plt2=Plot3D @@ ha);
 Show[GraphicsGrid[{{plt1,plt2}}]]]
+
+*)

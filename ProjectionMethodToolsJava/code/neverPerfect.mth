@@ -178,7 +178,7 @@ xtp2=bmat . ({{q1ExpRHS},{r1ExpRHS},{ru1ExpRHS}}/.{qq[t-1]->q2RHS,rr[t-1]->r2RHS
 xVec=Join[xtm1,xt,xtp1];
 xVecTp1=Join[xt,xtp1,xtp2];
 resid1=(hmat.xVec//.mySubs)//Expand//Chop//FullSimplify;
-resid1Tp1=(hmat.xVecTp1//.mySubs) - (psieps . {{uu$Shock}}+ psiz . {{z2RHS}})//Expand//Chop//FullSimplify;
+resid1Tp1=(hmat.xVecTp1//.mySubs) - (psieps . {{0}}+ psiz . {{z2RHS}})//Expand//Chop//FullSimplify;
 Export["prettyNeverResid0.pdf", 
   MatrixForm[resid0/. latexSubs]];
 
