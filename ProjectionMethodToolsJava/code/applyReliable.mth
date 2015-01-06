@@ -42,10 +42,7 @@ Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,
 Reverse[zMats]]]
 
 redoGenZVars[horizons_Integer,numConstr_Integer]:=
-genZVars[horizons,numConstr,0]:=
-Table[
-{ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
-{forTime,0,horizons},{ii,numConstr}]
+redoGenZVars[horizons,numConstr,0]
 
 redoGenZVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
 Table[
