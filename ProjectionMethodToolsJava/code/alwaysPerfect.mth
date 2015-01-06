@@ -24,8 +24,15 @@ theZs=Flatten[redoGenZVars[numNonZeroZ-1,1]]},
 With[{eqns=Thread[((genPath[numNonZeroZ]//numIt)[[thePos,1]])==0.02]},
 {eqns,Solve @@ {eqns,theZs,Reals}}]]
 
-
+tryZFormula[theTime_Integer]:=
+With[{notShk=( {{-1,0,0}} . MatrixPower[bmatCons,theTime+1] . 
+Transpose[{{qtm1,rrtm1,rutm1}}])//numIt,
+shk=( {{-1,0,0}}.MatrixPower[bmatCons,theTime] .phimatCons.{{0},{1},{0}} eps )//numIt},
+{notShk,shk}]
 (*
+
+MatrixPower[fmat,theTime] .phimat .psiz .
+
 (*soln01=Solve[((genPath[1]//numIt)[[5,1]])==0.02,
 zzz$0$1[t]]//Expand
 soln02=Solve[
@@ -36,7 +43,7 @@ Thread[((genPath[3]//numIt)[[{5,8,11},1]])==0.02],
 {zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}]//Expand
 *)
 
-
+pth40=genPath[40,2];
 
 (*one non zero z*)
 nfp$0$0=nonFPart[xxtm1={{qtm1},{rtm1},{rutm1}},{{eps}},bmat,phimat,psieps]//numIt//Chop;

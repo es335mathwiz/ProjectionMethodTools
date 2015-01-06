@@ -71,6 +71,10 @@ Export["prettyHmat.pdf", MatrixForm[hmat //. latexSubs]];
 Export["prettyBmat.pdf", MatrixForm[bmat //. latexSubs]];
 Export["prettyPhimat.pdf", MatrixForm[phimat //. latexSubs]];
 Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs]];
+Export["prettyHmatCons.pdf", MatrixForm[hmatCons //. latexSubs]];
+Export["prettyBmatCons.pdf", MatrixForm[bmatCons //. latexSubs]];
+Export["prettyPhimatCons.pdf", MatrixForm[phimatCons //. latexSubs]];
+Export["prettyFmatCons.pdf", MatrixForm[fmatCons //. latexSubs]];
 
 applyBmat[xtm1_?MatrixQ,bmat_?MatrixQ,num_?NumberQ]:=
 ArrayFlatten[Transpose[{NestList[bmat . #&,xtm1,num]}]]
