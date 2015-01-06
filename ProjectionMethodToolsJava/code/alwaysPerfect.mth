@@ -45,6 +45,16 @@ hmat . Join[x$2$0,x$2$1,x$2$2]//numIt//Expand
 hmat . Join[x$2$1,x$2$2,x$2$3]//numIt//Expand
 
 
+genPath[numNonZeroZs_Integer]:=
+With[{xtm1={{qtm1},{rtm1},{rutm1}},
+rawFParts=Reverse[(redoFPart[phimat,fmat,psiz,#,1,0] &/@Range[0,numNonZeroZs-1])//numIt]},
+With[{bgn=(nonFPart[xtm1,
+{{eps}},bmat,phimat,psieps]+rawFParts[[1]])//numIt},
+Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,psieps]+#2//numIt)&,
+bgn,Drop[rawFParts,1]]]]]
+
+(* close but no cigar hmat .  genPath[2] //numIt*)
+
 (*solve for constraint in second equation using x$0$0 *)
 (* one period constraint*)
 soln$1=Solve[
@@ -106,6 +116,26 @@ xReSubbed$3=(Join[x$1$1,x$1$2,x$1$3]/.zSub$2)/.soln$2[[1]];
 
 
 (*
+
+
+augPath[{}]=augPath[]:=
+With[{xtm1={{qtm1},{rtm1},{rutm1}}},
+With[{nfp=
+nonFPart[xtm1,{{eps}},bmat,phimat,psieps]//
+numIt//Chop,
+fp=fPart[phimat,fmat,psiz,0,1]//numIt},
+With[{xt=nfp+fp},
+xt]]]
+
+
+augPath[pathNow_?MatrixQ]:=
+
+With[{theFParts=(fPart[phimat,fmat,psiz,#,1,0]&/@Range[numCons-1,0,-1])//numIt},
+theFParts]
+
+
+
+
 
 unCon0 = fzComp[ {{qq[t]},{rr[t]},{ru[t]}},{{qq[t-1]},{rr[t-1]},{ru[t-1]}},{{uu$Shock}},{{zt0}},{{0}}]/.eqvdIf[xx_,yy_,zz_]:>eqvdIf[xx,zz,zz]
 
