@@ -53,6 +53,15 @@ With[{bgn=(nonFPart[xtm1,
 Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,psieps]+#2//numIt)&,
 bgn,Drop[rawFParts,1]]]]]
 
+
+
+genPath[numNonZeroZs_Integer,padZeroZs_Integer]:=
+With[{startPath=genPath[numNonZeroZs]},
+With[{tailPath=NestList[((nonFPart[#,
+{{0}},bmat,phimat,psieps])//numIt)&,startPath[[{-3,-2,-1}]],padZeroZs]},
+Join[startPath,Join@@Drop[tailPath,1]]]]
+
+
 (* close but no cigar hmat .  genPath[2] //numIt*)
 
 (*solve for constraint in second equation using x$0$0 *)
