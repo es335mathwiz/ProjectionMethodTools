@@ -41,6 +41,21 @@ With[{zMats=redoGenZVars[horizon,numCon,offset]},
 Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,
 Reverse[zMats]]]
 
+
+genXVars[horizons_Integer,numConstr_Integer]:=
+genXVars[horizons,numConstr,0]
+
+genXVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+Table[
+{ToExpression["qq$"<>theStrMod[forTime,ii]],ToExpression["ru$"<>theStrMod[forTime,ii]]},
+{forTime,0-offset,horizons},{ii,numConstr,1,-1}]
+
+theStrMod[forTime_Integer,ii_Integer]:=
+ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"
+
+
+
+
 redoGenZVars[horizons_Integer,numConstr_Integer]:=
 redoGenZVars[horizons,numConstr,0]
 
