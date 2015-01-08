@@ -81,7 +81,7 @@ zSubs=
 MapThread[(#1->
 #2[[-1]][#3[[1]],#3[[2]],0])&,
 {Drop[zVarNames,-1],zSubNow,xVars}]
-},Print[{xSubs,modVarEqns,newModVarEqns}];
+},
 With[{theEqn=((Append[modVarEqns,
 ((thePath)[[5,1]])==0.02]/.zSubs)//.xSubs)//Expand},
 With[{solveArgs=Append[Flatten[xVars[[-1]]],zVarNames[[-1]]]},
@@ -96,6 +96,70 @@ Function @@
 Function @@ 
 ({{qtm1,rutm1,eps},zVarNames[[-1]]
 }/.soln//Expand)
+}]]]]]]]]/;
+Length[zSubNow]>0
+
+doExp[theArg_,dstrbtn_]:=
+Expectation[theArg,eps \[Distributed] dstrbtn]//Expand
+
+
+doRecurExp[{},dstrbtn_]:=
+With[{fullPath=genPathNoT[1]},
+With[{theEqn=((fullPath)[[5]])==0.02},
+With[{soln=(Solve[theEqn,zzz$0$1,Reals][[1]])},
+{
+{
+Function @@ ({{qtm1,rutm1,eps},
+doExp[fullPath[[4,1]]/.soln,dstrbtn]}//Expand),
+Function @@ ({{qtm1,rutm1,eps},
+doExp[fullPath[[6,1]]/.soln,dstrbtn]}//Expand),
+Function @@ ({{qtm1,rutm1,eps},
+doExp[(zzz$0$1/.soln),dstrbtn]}//Expand)
+}
+}/.ridTSubs]]]
+
+
+doRecurExp[zSubNow:{{(_Function)..}..},dstrbtn_]:=
+With[{numZs=Length[zSubNow]},
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]},
+With[{thePath=(genPathNoT[numZs+1]/.ridTSubs),
+xVars=Drop[Flatten[genXVars[numZs,1],1],1]},
+With[{
+modVarEqns=
+{xVars[[-1,1]]==thePath[[thePos[[-1,1]],1]],
+xVars[[-1,2]]==thePath[[thePos[[-1,2]],1]]},
+xSubs=Flatten[{
+MapThread[(#1[[1]]->
+#2[[1]][#3[[1]],#3[[2]],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVars,1]}],
+MapThread[(#1[[2]]->
+#2[[2]][#3[[1]],#3[[2]],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVars,1]}]
+}
+],
+zSubs=
+MapThread[(#1->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xVars}]
+},
+With[{theEqn=((Append[modVarEqns,
+((thePath)[[5,1]])==0.02]/.zSubs)//.xSubs)//Expand},
+With[{solveArgs=Append[Flatten[xVars[[-1]]],zVarNames[[-1]]]},
+With[{(soln=Solve[theEqn,solveArgs,Reals][[1]])},
+Append[zSubNow,{
+Function @@ 
+({{qtm1,rutm1,eps},
+doExp[xVars[[-1,1]]
+/.soln//Expand,dstrbtn]}),
+Function @@ 
+({{qtm1,rutm1,eps},
+doExp[xVars[[-1,2]]
+/.soln//Expand,dstrbtn]}),
+Function @@ 
+({{qtm1,rutm1,eps},
+doExp[zVarNames[[-1]]
+/.soln//Expand,dstrbtn]})
 }]]]]]]]]/;
 Length[zSubNow]>0
 
