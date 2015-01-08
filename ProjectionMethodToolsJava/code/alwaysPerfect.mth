@@ -24,6 +24,16 @@ theZs=Flatten[redoGenZVars[numNonZeroZ-1,1]]},
 With[{eqns=Thread[((genPath[numNonZeroZ]//numIt)[[thePos,1]])==0.02]},
 {eqns,Solve @@ {eqns,theZs,Reals}}]]
 
+
+genZAlwaysPathEqnsExps[numNonZeroZ_Integer,dstrbtn_]:=
+With[{thePos=2+3*Range[numNonZeroZ],
+theZs=Flatten[redoGenZVars[numNonZeroZ-1,1]],
+theZExps=Flatten[redoGenZExpVars[numNonZeroZ-1,1]]},
+With[{expEqns=MapThread[#2==Expectation[#1,dstrbtn]&,
+{theZs,theZExps}]},
+With[{eqns=Thread[((genPath[numNonZeroZ]//numIt)[[thePos,1]])==0.02]},
+{eqns,Solve @@ {Join[expEqns,eqns],theZs,theZExps,Reals}}]]]
+
 tryZFormula[theTime_Integer]:=
 With[{notShk=( {{-1,0,0}} . MatrixPower[bmatCons,theTime+1] . 
 Transpose[{{qtm1,rrtm1,rutm1}}])//numIt,
@@ -40,27 +50,24 @@ With[{zVarNames=Flatten[redoGenZVars[Length[zSubNow],1]]/.ridTSubs,
 thePos=Reverse[{1,3}+#&/@(3*Range[Length[zSubNow]])]},
 With[{thePath=(genPathNoT[Length[zSubNow]+1]/.ridTSubs),
 xVars=Table[{Unique["qq"],Unique["ru"]},{Length[zSubNow]}]},
-With[{xSubs=Flatten[
-MapThread[({#1[[1]]->thePath[[#2[[1]],1]],#1[[2]]->thePath[[#2[[2]],1]]})&,
+With[{modVarEqns=Flatten[
+MapThread[({#1[[1]]==thePath[[#2[[1]],1]],#1[[2]]==thePath[[#2[[2]],1]]})&,
 {xVars,thePos}]],
 zSubs=
-MapThread[(#1->
+MapThread[(#1==
 #2[#3[[1]],#3[[2]],0])&,
 {Drop[zVarNames,-1],zSubNow,xVars}]},
 With[{zEqns=zSubs/.Rule->Equal},
-With[{
-thePathSubbed=((thePath/.xSubs)//.zSubs)},Print[{thePath,zSubs,xSubs}//InputForm];
-With[{modVarEqns=xSubs/.Rule->Equal},
 With[{theEqn=Append[Join[modVarEqns,zEqns],
 ((thePath)[[5,1]])==0.02]},
-With[{solveArgs=Join[Flatten[xVars],zVarNames]},Print[{"sa",solveArgs}];
-With[{(soln=Solve[theEqn,solveArgs][[1]])},
-Append[zSubNow,Function @@ ({{qtm1,rutm1,eps},zVarNames[[-1]]/.soln}//Expand)]]]]]]]]]]/;
+With[{solveArgs=Join[Flatten[xVars],zVarNames]},
+With[{(soln=Solve[theEqn,solveArgs,Reals][[1]])},
+Append[zSubNow,Function @@ ({{qtm1,rutm1,eps},zVarNames[[-1]]/.soln}//Expand)]]]]]]]]/;
 Length[zSubNow]>0
 
 doRecur[{}]:=
 With[{theEqn=((genPathNoT[1])[[5]])==0.02},
-With[{soln=(Solve[theEqn,zzz$0$1][[1]])},
+With[{soln=(Solve[theEqn,zzz$0$1,Reals][[1]])},
 {Function @@ ({{qtm1,rutm1,eps},zzz$0$1/.soln}//Expand)}/.ridTSubs]]
 
 

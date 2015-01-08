@@ -49,6 +49,14 @@ Table[
 {ToExpression["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
 {forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
+redoGenZExpVars[horizons_Integer,numConstr_Integer]:=
+redoGenZExpVars[horizons,numConstr,0]
+
+redoGenZExpVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+Table[
+{ToExpression["zzzExp$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
+{forTime,0-offset,horizons},{ii,numConstr,1,-1}]
+
 
 
 
