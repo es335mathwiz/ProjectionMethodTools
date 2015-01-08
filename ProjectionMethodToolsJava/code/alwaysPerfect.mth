@@ -45,9 +45,16 @@ ridTSubs=xx_[t]->xx;
 genPathNoT[len_Integer]:=genPath[len]/.ridTSubs
 
 doRecur[{}]:=
-With[{theEqn=((genPathNoT[1])[[5]])==0.02},
+With[{fullPath=genPathNoT[1]},
+With[{theEqn=((fullPath)[[5]])==0.02},
 With[{soln=(Solve[theEqn,zzz$0$1,Reals][[1]])},
-{{Function @@ ({{qtm1,rutm1,eps},zzz$0$1/.soln}//Expand)}}/.ridTSubs]]
+{
+{
+Function @@ ({{qtm1,rutm1,eps},fullPath[[4,1]]/.soln}//Expand),
+Function @@ ({{qtm1,rutm1,eps},fullPath[[6,1]]/.soln}//Expand),
+Function @@ ({{qtm1,rutm1,eps},zzz$0$1/.soln}//Expand)
+}
+}/.ridTSubs]]]
 
 
 
