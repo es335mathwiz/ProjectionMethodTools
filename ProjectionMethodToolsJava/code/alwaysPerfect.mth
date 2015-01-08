@@ -68,8 +68,14 @@ With[{theEqn=Append[modVarEqns,
 ((thePath)[[5,1]])==0.02]/.zSubs},
 With[{solveArgs=Append[Flatten[xVars],zVarNames[[-1]]]},
 With[{(soln=Solve[theEqn,solveArgs,Reals][[1]])},
-Append[zSubNow,{Function @@ 
-({{qtm1,rutm1,eps},zVarNames[[-1]]/.soln}//Expand)}]]]]]]]]/;
+Append[zSubNow,{
+Function @@ 
+({{qtm1,rutm1,eps},zVarNames[[-1]]
+}/.soln//Expand),
+Function @@ 
+({{qtm1,rutm1,eps},zVarNames[[-1]]
+}/.soln//Expand)
+}]]]]]]]]/;
 Length[zSubNow]>0
 
 
