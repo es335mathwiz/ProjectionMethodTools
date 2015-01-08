@@ -64,9 +64,10 @@ With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
 thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]},
 With[{thePath=(genPathNoT[numZs+1]/.ridTSubs),
 xVars=Drop[Flatten[genXVars[numZs,1],1],1]},
-With[{modVarEqns=Flatten[
-MapThread[({#1[[1]]==thePath[[#2[[1]],1]],#1[[2]]==thePath[[#2[[2]],1]]})&,
-{xVars,thePos}]][[{-1,-2}]],
+With[{
+modVarEqns=
+{xVars[[-1,1]]==thePath[[thePos[[-1,1]],1]],
+xVars[[-1,2]]==thePath[[thePos[[-1,2]],1]]},
 xSubs=Flatten[{
 MapThread[(#1[[1]]->
 #2[[1]][#3[[1]],#3[[2]],0])&,
@@ -80,7 +81,7 @@ zSubs=
 MapThread[(#1->
 #2[[-1]][#3[[1]],#3[[2]],0])&,
 {Drop[zVarNames,-1],zSubNow,xVars}]
-},Print[xSubs];
+},Print[{xSubs,modVarEqns,newModVarEqns}];
 With[{theEqn=((Append[modVarEqns,
 ((thePath)[[5,1]])==0.02]/.zSubs)//.xSubs)//Expand},
 With[{solveArgs=Append[Flatten[xVars[[-1]]],zVarNames[[-1]]]},
