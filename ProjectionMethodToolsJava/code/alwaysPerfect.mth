@@ -42,7 +42,7 @@ With[{thePath=(genPathNoT[Length[zSubNow]+1]/.ridTSubs),
 xVars=Table[{Unique["qq"],Unique["ru"]},{Length[zSubNow]}]},
 With[{xSubs=Flatten[
 MapThread[({#1[[1]]->thePath[[#2[[1]],1]],#1[[2]]->thePath[[#2[[2]],1]]})&,
-{xVars,Reverse[thePos]}]],
+{xVars,thePos}]],
 zSubs=
 MapThread[(#1->
 #2[#3[[1]],#3[[2]],0])&,
@@ -55,7 +55,7 @@ With[{theEqn=Append[Join[modVarEqns,zEqns],
 ((thePath)[[5,1]])==0.02]},
 With[{solveArgs=Join[Flatten[xVars],zVarNames]},Print[{"sa",solveArgs}];
 With[{(soln=Solve[theEqn,solveArgs][[1]])},
-Append[zSubNow,Function @@ ({{qtm1,rutm1,eps},zzz$1$1/.soln}//Expand)]]]]]]]]]]/;
+Append[zSubNow,Function @@ ({{qtm1,rutm1,eps},zVarNames[[-1]]/.soln}//Expand)]]]]]]]]]]/;
 Length[zSubNow]>0
 
 doRecur[{}]:=
