@@ -47,11 +47,11 @@ genPathNoT[len_Integer]:=genPath[len]/.ridTSubs
 doRecur[{}]:=
 With[{theEqn=((genPathNoT[1])[[5]])==0.02},
 With[{soln=(Solve[theEqn,zzz$0$1,Reals][[1]])},
-{Function @@ ({{qtm1,rutm1,eps},zzz$0$1/.soln}//Expand)}/.ridTSubs]]
+{{Function @@ ({{qtm1,rutm1,eps},zzz$0$1/.soln}//Expand)}}/.ridTSubs]]
 
 
 
-doRecur[zSubNow:{(_Function)..}]:=
+doRecur[zSubNow:{{(_Function)..}..}]:=
 With[{numZs=Length[zSubNow]},
 With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
 thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]},
@@ -62,14 +62,14 @@ MapThread[({#1[[1]]==thePath[[#2[[1]],1]],#1[[2]]==thePath[[#2[[2]],1]]})&,
 {xVars,thePos}]],
 zSubs=
 MapThread[(#1->
-#2[#3[[1]],#3[[2]],0])&,
+#2[[-1]][#3[[1]],#3[[2]],0])&,
 {Drop[zVarNames,-1],zSubNow,xVars}]},
 With[{theEqn=Append[modVarEqns,
 ((thePath)[[5,1]])==0.02]/.zSubs},
 With[{solveArgs=Append[Flatten[xVars],zVarNames[[-1]]]},
 With[{(soln=Solve[theEqn,solveArgs,Reals][[1]])},
-Append[zSubNow,Function @@ 
-({{qtm1,rutm1,eps},zVarNames[[-1]]/.soln}//Expand)]]]]]]]]/;
+Append[zSubNow,{Function @@ 
+({{qtm1,rutm1,eps},zVarNames[[-1]]/.soln}//Expand)}]]]]]]]]/;
 Length[zSubNow]>0
 
 
