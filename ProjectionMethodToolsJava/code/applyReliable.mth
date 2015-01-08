@@ -47,11 +47,12 @@ genXVars[horizons,numConstr,0]
 
 genXVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
 Table[
-{ToExpression["qq$"<>theStrMod[forTime,ii]],ToExpression["ru$"<>theStrMod[forTime,ii]]},
+{ToExpression["qq$"<>theStrModNoT[forTime,ii]],
+ToExpression["ru$"<>theStrModNoT[forTime,ii]]},
 {forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
-theStrMod[forTime_Integer,ii_Integer]:=
-ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"
+theStrModNoT[forTime_Integer,ii_Integer]:=
+ToString[forTime]<>"$"<>ToString[ii]
 
 
 
