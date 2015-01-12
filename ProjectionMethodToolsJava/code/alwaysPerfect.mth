@@ -1044,3 +1044,40 @@ Show[GraphicsGrid[{{plt1,plt2}}]]]
 *)
 
 
+
+
+chkDoRecurIneqAlways[{}]:=
+Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+With[{
+thePath=genPath[1]/.
+{qtm1->qq[t-1],rtm1->rr[t-1],rutm1->ru[t-1],eps->eps[ru][t]}},
+With[{zZap=
+(zzz$0$1[t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zzz$0$1[t]]])//Expand},
+With[{theEqn={
+qq[t]-(thePath[[4,1]]),
+ru[t]-(thePath[[6,1]]),
+discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
+zzz$0$1[t]-(eqvdIf[discrep[t]>=0,zZap//Expand,zZap//Expand]//Expand)}},
+newWeightedStochasticBasis[modClass,theEqn];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modClass];
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {4, 1}], modClass, simp];
+to$551 = resZ10$0$0[toOrder[{5, 5, 1}]];
+If[Not[to$551[isConvergedQ[]]],Throw["projection polynomial computation did not converge"]];
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop;
+{{
+Function @@ ({{qq,ru,ru$Shock},polys[[1]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[2]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
+}}]]]]
