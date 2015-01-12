@@ -199,7 +199,7 @@ Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
 
 doRecurIneqNever[{}]:=
 Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
-lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+lucaBasis,simp,resZ10$0$0,to$551,modClass=Unique["modClass"]},
 With[{(*solnVars={qq[t],ru[t],discrep[t],zzz$0$1[t]},*)
 fullPath=genPath[1]/.{qtm1->qq[t-1],rtm1->rr[t-1],rutm1->ru[t-1],eps->eps[ru][t]}},
 With[{zZap=(zzz$0$1[t]/.Flatten[Solve[fullPath[[5,1]]==rUnderBar//numIt,zzz$0$1[t]]])//Expand},
@@ -235,6 +235,43 @@ Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
 }}]]]]]]
 
 doRecurIneqAlways[{}]:=
+Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+With[{
+thePath=genPath[1]/.
+{qtm1->qq[t-1],rtm1->rr[t-1],rutm1->ru[t-1],eps->eps[ru][t]}},
+With[{zZap=
+(zzz$0$1[t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zzz$0$1[t]]])//Expand},
+With[{theEqn={
+qq[t]-(thePath[[4,1]]),
+ru[t]-(thePath[[6,1]]),
+discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
+zzz$0$1[t]-(eqvdIf[discrep[t]>=0,zZap//Expand,zZap//Expand]//Expand)}},
+newWeightedStochasticBasis[modClass,theEqn];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modClass];
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {4, 1}], modClass, simp];
+to$551 = resZ10$0$0[toOrder[{5, 5, 1}]];
+If[Not[to$551[isConvergedQ[]]],Throw["projection polynomial computation did not converge"]];
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop;
+{{
+Function @@ ({{qq,ru,ru$Shock},polys[[1]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[2]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
+}}]]]]
+
+
+chkDoRecurIneqAlways[{}]:=
 Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
 With[{(*solnVars={qq[t],ru[t],discrep[t],zzz$0$1[t]},*)
@@ -273,71 +310,6 @@ Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
 
 
 
-ceToPiecewise[aVar_Symbol,solns_List]:=
-With[{relevant=Cases[solns,HoldPattern[aVar->aVal_]->aVal]},
-relevant]
-
-doRecurIneqNever[zSubNow:{{(_Function)..}..}]:=
-Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
-lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
-With[{numZs=Length[zSubNow]},
-With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
-thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]},
-With[{thePath=genPath[numZs+1]/.{qtm1->qq[t-1],rtm1->rr[t-1],rutm1->ru[t-1],eps->eps[ru][t]},
-xVars=Through[#[t]]&/@Drop[Flatten[genXVars[numZs,1],1],1]},
-With[{zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand},Print[{zZap}];
-With[{(*theIneq={
-(zVarNames[[-1]]-(eqvdIf[discrep[t]>0,0,0])//Expand)==0,
-discrep==(thePath[[5,1]]/.zVarNames[[-1]]->0)-0.02},*)
-modVarEqns=
-{xVars[[-1,1]]==thePath[[thePos[[-1,1]],1]],
-xVars[[-1,2]]==thePath[[thePos[[-1,2]],1]]},
-xSubs=Flatten[{
-MapThread[(#1[[1]]->
-#2[[1]][#3[[1]],#3[[2]],0])&,
-{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVars,1]}],
-MapThread[(#1[[2]]->
-#2[[2]][#3[[1]],#3[[2]],0])&,
-{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVars,1]}]
-}
-],
-zSubs=
-MapThread[(#1[t]->
-#2[[-1]][#3[[1]],#3[[2]],0])&,
-{Drop[zVarNames,-1],zSubNow,xVars}]
-},
-With[{(*theEqn=((Join[modVarEqns,theIneq]/.zSubs)//.xSubs)//Expand*)},Print[theEqn];
-With[{zZap=(zVarNames[[-1]][t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zVarNames[[-1]][t]]])//Expand},
-With[{theEqn={qq[t]-(thePath[[4,1]]),rr[t]-(thePath[[5,1]]),ru[t]-(thePath[[6,1]]),
-discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
-zVarNames[[-1]][t]-(eqvdIf[discrep[t]>=0,0,0]//Expand)}},
-Print["theEqn=",theEqn,zSubs];
-newWeightedStochasticBasis[modClass,(theEqn/.zSubs)//Expand];
-{{stateVar, nonStateVar, theShock}, modClass} = 
-  GenerateModelCode[modClass];
-polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
-initPower = {0, 0}; shockPower = {0};
-lucaBasis = 
-  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
-    theMean //. mySubs, {sigma$u} //. mySubs, 
-   integOrder //. mySubs, shockPower, nonStateVar];
-simp = JavaNew[
-   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
-resZ10$0$0 = 
-  ComputeInitialCollocationWeights[lucaBasis, 
-   ConstantArray[1, {5, 1}], modClass, simp];
-Print["resZ10$0$0 converged?",resZ10$0$0[isConvergedQ[]]];
-to$551 = resZ10$0$0[toOrder[{5, 5, 1}]];
-Print["to$551 converged?",to$551[isConvergedQ[]]];
-If[to$551[isConvergedQ[]], 
-polys = Expand[CreatePolynomials[modClass,to$551]] // Chop];
-Append[zSubNow,
-{
-Function @@ ({{qq,ru,ru$Shock},polys[[1]]}//Expand),
-Function @@ ({{qq,ru,ru$Shock},polys[[2]]}//Expand),
-Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
-}]]]]]]]]]]/;
-Length[zSubNow]>0
 
 doRecurIneqAlways[zSubNow:{{(_Function)..}..}]:=
 Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
@@ -402,6 +374,141 @@ Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[1]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[2]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[-1]]}//Expand)
 }]]]]]]]]]]]/;
+Length[zSubNow]>0
+
+chkDoRecurIneqAlways[zSubNow:{{(_Function)..}..}]:=
+Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+With[{numZs=Length[zSubNow]},
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+thePos=Reverse[{1,3}+#&/@(3*Range[numZs])],
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],1]},
+With[{xVars=Through[#[t]]&/@xVarsNoT},
+With[{thePath=genPath[numZs+1]/.
+{qtm1->(xVars[[-1,1]]/.t->t-1),rtm1->rr[t-1],
+rutm1->(xVars[[-1,2]]/.t->t-1),eps->eps[ru][t]}},
+With[{zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand},Print[{zZap}];
+With[{(*theIneq={
+(zVarNames[[-1]]-(eqvdIf[discrep[t]>0,zZap//Expand,zZap//Expand])//Expand)==0,
+discrep==(thePath[[5,1]]/.zVarNames[[-1]]->0)-0.02},*)
+modVarEqns=
+{xVars[[-1,1]]==thePath[[thePos[[-1,1]],1]],
+xVars[[-1,2]]==thePath[[thePos[[-1,2]],1]]},
+xSubs=Flatten[{
+MapThread[(#1[[1]]->
+#2[[1]][#3[[1]][t],#3[[2]][t],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVarsNoT,1]}],
+MapThread[(#1[[2]]->
+#2[[2]][#3[[1]][t],#3[[2]][t],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVarsNoT,1]}]
+}
+],
+zSubs=
+MapThread[(#1[t]->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xVars}]
+},
+With[{(*theEqn=((Join[modVarEqns,theIneq]/.zSubs)//.xSubs)//Expand*)},Print[theEqn,xSubs,zSubs];
+With[{zZap=(zVarNames[[-1]][t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zVarNames[[-1]][t]]])//Expand},
+With[{theEqn=({xVars[[-1,1]]-(thePath[[4,1]]),rr[t]-(thePath[[5,1]]),xVars[[-1,2]]-(thePath[[6,1]]),
+discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
+zVarNames[[-1]][t]-(eqvdIf[discrep[t]>=0,zZap//Expand,zZap//Expand]//Expand)}//.Join[xSubs,zSubs])//Expand},
+Print["theEqn=",{theEqn,zSubs,xSubs}//InputForm];
+newWeightedStochasticBasis[modClass,(theEqn/.zSubs)//Expand];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modClass];
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {5, 1}], modClass, simp];
+Print["resZ10$0$0 converged?",resZ10$0$0[isConvergedQ[]]];
+to$551 = resZ10$0$0[toOrder[{5, 5, 1}]];
+Print["to$551 converged?",to$551[isConvergedQ[]]];
+If[to$551[isConvergedQ[]], 
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop];
+Append[zSubNow,
+{
+Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[1]]}//Expand),
+Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[2]]}//Expand),
+Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[-1]]}//Expand)
+}]]]]]]]]]]]/;
+Length[zSubNow]>0
+
+
+ceToPiecewise[aVar_Symbol,solns_List]:=
+With[{relevant=Cases[solns,HoldPattern[aVar->aVal_]->aVal]},
+relevant]
+
+
+
+
+doRecurIneqNever[zSubNow:{{(_Function)..}..}]:=
+Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+With[{numZs=Length[zSubNow]},
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]},
+With[{thePath=genPath[numZs+1]/.{qtm1->qq[t-1],rtm1->rr[t-1],rutm1->ru[t-1],eps->eps[ru][t]},
+xVars=Through[#[t]]&/@Drop[Flatten[genXVars[numZs,1],1],1]},
+With[{zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand},Print[{zZap}];
+With[{(*theIneq={
+(zVarNames[[-1]]-(eqvdIf[discrep[t]>0,0,0])//Expand)==0,
+discrep==(thePath[[5,1]]/.zVarNames[[-1]]->0)-0.02},*)
+modVarEqns=
+{xVars[[-1,1]]==thePath[[thePos[[-1,1]],1]],
+xVars[[-1,2]]==thePath[[thePos[[-1,2]],1]]},
+xSubs=Flatten[{
+MapThread[(#1[[1]]->
+#2[[1]][#3[[1]],#3[[2]],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVars,1]}],
+MapThread[(#1[[2]]->
+#2[[2]][#3[[1]],#3[[2]],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVars,1]}]
+}
+],
+zSubs=
+MapThread[(#1[t]->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xVars}]
+},
+With[{(*theEqn=((Join[modVarEqns,theIneq]/.zSubs)//.xSubs)//Expand*)},Print[theEqn];
+With[{zZap=(zVarNames[[-1]][t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zVarNames[[-1]][t]]])//Expand},
+With[{theEqn={qq[t]-(thePath[[4,1]]),rr[t]-(thePath[[5,1]]),ru[t]-(thePath[[6,1]]),
+discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
+zVarNames[[-1]][t]-(eqvdIf[discrep[t]>=0,0,0]//Expand)}},
+Print["theEqn=",theEqn,zSubs];
+newWeightedStochasticBasis[modClass,(theEqn/.zSubs)//Expand];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modClass];
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {5, 1}], modClass, simp];
+Print["resZ10$0$0 converged?",resZ10$0$0[isConvergedQ[]]];
+to$551 = resZ10$0$0[toOrder[{5, 5, 1}]];
+Print["to$551 converged?",to$551[isConvergedQ[]]];
+If[to$551[isConvergedQ[]], 
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop];
+Append[zSubNow,
+{
+Function @@ ({{qq,ru,ru$Shock},polys[[1]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[2]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
+}]]]]]]]]]]/;
 Length[zSubNow]>0
 
 
