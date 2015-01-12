@@ -298,7 +298,6 @@ MapThread[(#1[t]->
 #2[[-1]][#3[[1]],#3[[2]],0])&,
 {Drop[zVarNames,-1],zSubNow,xVars}]
 },
-With[{},
 With[{zZap=(zVarNames[[-1]][t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zVarNames[[-1]][t]]])//Expand},
 With[{theEqn=({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]]),
 discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
@@ -319,14 +318,14 @@ resZ10$0$0 =
    ConstantArray[1, {4, 1}], modClass, simp];
 to$551 = resZ10$0$0[toOrder[{5, 5, 1}]];
 Print["to$551 converged?",to$551[isConvergedQ[]]];
-If[to$551[isConvergedQ[]], 
-polys = Expand[CreatePolynomials[modClass,to$551]] // Chop];
+If[Not[to$551[isConvergedQ[]]], Throw["projection polynomial computation did not converge"]];
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop;
 Append[zSubNow,
 {
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[1]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[2]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[-1]]}//Expand)
-}]]]]]]]]]]]/;
+}]]]]]]]]]]/;
 Length[zSubNow]>0
 
 
