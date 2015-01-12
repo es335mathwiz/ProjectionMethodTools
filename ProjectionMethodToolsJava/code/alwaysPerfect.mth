@@ -303,10 +303,10 @@ MapThread[(#1[t]->
 },
 With[{},
 With[{zZap=(zVarNames[[-1]][t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zVarNames[[-1]][t]]])//Expand},
-With[{theEqn=({xVars[[-1,1]]-(thePath[[4,1]]),(*rr[t]-(thePath[[5,1]]),*)xVars[[-1,2]]-(thePath[[6,1]]),
+With[{theEqn=({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]]),
 discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
 zVarNames[[-1]][t]-(eqvdIf[discrep[t]>=0,zZap//Expand,zZap//Expand]//Expand)}//.Join[xSubs,zSubs])//Expand},
-newWeightedStochasticBasis[modClass,(theEqn/.zSubs)//Expand];
+newWeightedStochasticBasis[modClass,(theEqn)//Expand];
 {{stateVar, nonStateVar, theShock}, modClass} = 
   GenerateModelCode[modClass];
 polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
