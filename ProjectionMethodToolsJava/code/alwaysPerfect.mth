@@ -1,6 +1,6 @@
 Get["paperFocus.mth"]
 
-
+(*
 
 genPath[numNonZeroZs_Integer]:=
 With[{xtm1={{qtm1},{rtm1},{rutm1}},
@@ -17,7 +17,7 @@ With[{startPath=genPath[numNonZeroZs]},
 With[{tailPath=NestList[((nonFPart[#,
 {{0}},bmat,phimat,psieps])//numIt)&,startPath[[{-3,-2,-1}]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
-
+*)
 genZAlwaysPathEqns[numNonZeroZ_Integer]:=
 With[{thePos=2+3*Range[numNonZeroZ],
 theZs=Flatten[redoGenZVars[numNonZeroZ-1,1]]},
@@ -41,8 +41,6 @@ shk=( {{-1,0,0}}.MatrixPower[bmatCons,theTime] .phimatCons.{{0},{1},{0}} eps )//
 {notShk,shk}]
 
 
-ridTSubs=xx_[t]->xx;
-genPathNoT[len_Integer]:=genPath[len]/.ridTSubs
 
 (*
 renamed to always below delete soon
@@ -328,6 +326,105 @@ Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[-1]]}//Expand)
 }]]]]]]]]]]/;
 Length[zSubNow]>0
 
+(*
+
+doRecurIneqOcc[{}]:=
+Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+With[{
+thePath=genPath[1]/.
+{qtm1->qq[t-1],rtm1->rr[t-1],rutm1->ru[t-1],eps->eps[ru][t]}},
+With[{zZap=
+(zzz$0$1[t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zzz$0$1[t]]])//Expand},
+With[{theEqn={
+qq[t]-(thePath[[4,1]]),
+ru[t]-(thePath[[6,1]]),
+discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
+zzz$0$1[t]-(eqvdIf[discrep[t]>=0,0,zZap//Expand]//Expand)}},
+newWeightedStochasticBasis[modClass,theEqn];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modClass];
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {4, 1}], modClass, simp];
+If[Not[resZ10$0$0[isConvergedQ[]]],Throw["projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[{3,3,1}]];
+If[Not[to$551[isConvergedQ[]]],Throw["projection polynomial computation did not converge"]];
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop;
+{{
+Function @@ ({{qq,ru,ru$Shock},polys[[1]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[2]]}//Expand),
+Function @@ ({{qq,ru,ru$Shock},polys[[-1]]}//Expand)
+}}]]]]
+
+
+doRecurIneqOcc[zSubNow:{{(_Function)..}..}]:=
+Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"]},
+With[{numZs=Length[zSubNow]},
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+thePos=Reverse[{1,3}+#&/@(3*Range[numZs])],
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],1]},
+With[{xVars=Through[#[t]]&/@xVarsNoT},
+With[{thePath=genPath[numZs+1]/.
+{qtm1->(xVars[[-1,1]]/.t->t-1),rtm1->rr[t-1],
+rutm1->(xVars[[-1,2]]/.t->t-1),eps->eps[ru][t]}},
+With[{zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand},
+With[{
+xSubs=Flatten[{
+MapThread[(#1[[1]]->
+#2[[1]][#3[[1]][t],#3[[2]][t],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVarsNoT,1]}],
+MapThread[(#1[[2]]->
+#2[[2]][#3[[1]][t],#3[[2]][t],0])&,
+{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVarsNoT,1]}]
+}
+],
+zSubs=
+MapThread[(#1[t]->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xVars}]
+},
+With[{zZap=(zVarNames[[-1]][t]/.Flatten[Solve[thePath[[5,1]]==rUnderBar//numIt,zVarNames[[-1]][t]]])//Expand},
+With[{theEqn=({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]]),
+discrep[t]-((thePath[[5,1]]/.zzz$0$1[t]->0)-rUnderBar//numIt),
+zVarNames[[-1]][t]-(eqvdIf[discrep[t]>=0,0,zZap//Expand]//Expand)}//.Join[xSubs,zSubs])//Expand},
+newWeightedStochasticBasis[modClass,(theEqn)//Expand];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modClass];
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} //. mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {4, 1}], modClass, simp];
+If[Not[resZ10$0$0[isConvergedQ[]]],Throw["projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[{2, 2, 1}]];
+Print["to$551 converged?",to$551[isConvergedQ[]]];
+If[Not[to$551[isConvergedQ[]]], Throw["projection polynomial computation did not converge"]];
+polys = Expand[CreatePolynomials[modClass,to$551]] // Chop;
+Append[zSubNow,
+{
+Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[1]]}//Expand),
+Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[2]]}//Expand),
+Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],ru$Shock},polys[[-1]]}//Expand)
+}]]]]]]]]]]/;
+Length[zSubNow]>0
+
+*)
 
 
 ceToPiecewise[aVar_Symbol,solns_List]:=
