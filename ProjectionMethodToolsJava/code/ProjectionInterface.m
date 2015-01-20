@@ -6,7 +6,7 @@ BeginPackage["ProjectionInterface`", { "JLink`"}]
 (* Exported symbols added here with SymbolName::usage *) 
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
-
+genPath::usage="genPath[num_Integer]"
 (*
 genPolysFromBasis::usage="genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?MatrixQ]"
 *)
@@ -928,7 +928,7 @@ initRanges,initPowers]
 GenerateBasis[stateVars_List,stateRanges_?MatrixQ,statePowers_List,
 	shockVars_List,shockMeans_?VectorQ,shockStDevs_?VectorQ,intOrders_?VectorQ,shockPowers_List,nonStateVars_List]:=
 JavaNew["gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis",
-	stateVars,stateRanges,statePowers,shockVars,shockMeans,shockStDevs,intOrders,shockPowers,nonStateVars]
+	stateVars,stateRanges//N,statePowers,shockVars,shockMeans//N,shockStDevs//N,intOrders,shockPowers,nonStateVars]
 
 GenerateBasis[projRes_?JavaObjectQ]:=
 With[{theWSB=projRes[getTheWeightedStochasticBasis[]]},
@@ -1053,7 +1053,7 @@ Global`theDeriv[aSymbol_Symbol[Global`t],bSymbol_Symbol[Global`t-1]]:>
 
 subOutRational[eqns_List]:=eqns/.Rational[xx_,yy_]:> N[xx/yy]
 
-
+(*
 subOutEqvdIf[eqns_List]:=eqns/.{
 Global`eqvdIf[EquationValDrv[aa_String]>=
    EquationValDrv[bb_String],
@@ -1084,6 +1084,41 @@ Global`eqvdIf[EquationValDrv[aa_String]>=
    cc:(__?noVars),
    dd:(__?noVars)]:>
       EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
+}
+*)
+rightCondStr[cond_Symbol]:=Switch[cond,GreaterEqual,".ge(",Greater,".gt(",LessEqual,".le(",Less,".lt("]
+
+
+subOutEqvdIf[eqns_List]:=eqns/.{
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   EquationValDrv[bb_String]],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>bb<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   cc:(__?noVars),
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   dd:(__?noVars)]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd:(__?noVars)]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   cc:(__?noVars),
+   dd:(__?noVars)]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
 }
 
 
@@ -1841,7 +1876,8 @@ If[to$551[isConvergedQ[]],Print["converged 03"],Throw["projection polynomial com
 {oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
 discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
 polys=Expand[((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t],Global`rr[Global`t],Global`zzz$0$1[Global`t]}-oldSys)/.MapThread[#1->#2&,zSubs]))/.Global`eqvdIf->If/.discrepSub]/.
-{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};Print["polys=",polys];
+{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];
+Print["repEqns=",InputForm[repEqns]];Print[InputForm[getOrderedOuterString[to$551]]];
 {{
 Function @@ ({{Global`qq,Global`ru,Global`ru$Shock},PiecewiseExpand[Expand[polys[[1]]]]}),
 Function @@ ({{Global`qq,Global`ru,Global`ru$Shock},PiecewiseExpand[Expand[polys[[2]]]]}),
@@ -1870,35 +1906,37 @@ lucaBasis,simp,resZ10$0$0,modSymb=Unique["modSymb"],modClass=Unique["modClass"]}
 With[{numZs=Length[zSubNow]},
 With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
 thePos=Reverse[{1,3}+#&/@(3*Range[numZs])],
-xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],1]},Print["zvn=",zVarNames];
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},Print["zvn=",zVarNames];
 With[{xVars=Through[#[Global`t]]&/@xVarsNoT},
 With[{thePath=genPath[numZs+1]/.
-{Global`qtm1->(xVars[[-1,1]]/.t->t-1),Global`rtm1->Global`rr[Global`t-1],
-Global`rutm1->(xVars[[-1,2]]/.t->t-1),Global`eps->Global`eps[Global`ru][Global`t]}},
+{Global`qtm1->(xVars[[-1,1]]/.Global`t->Global`t-1),Global`rtm1->Global`rr[Global`t-1],
+Global`rutm1->(xVars[[-1,2]]/.Global`t->Global`t-1),Global`eps->Global`eps[Global`ru][Global`t]}},
 With[{(*zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand*)},
 With[{
-xSubs=Flatten[{
-MapThread[(#1[[1]]->
-#2[[1]][#3[[1]][Global`t],#3[[2]][Global`t],0])&,
-{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVarsNoT,1]}],
-MapThread[(#1[[2]]->
-#2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0])&,
-{Drop[xVars,-1],Drop[zSubNow,1],Drop[xVarsNoT,1]}]
-}
-],
+xTp1Vals=MapThread[{
+#2[[1]][#3[[1]][Global`t],#3[[2]][Global`t],0],
+#2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
+{Drop[xVars,-1],Drop[zSubNow,0],Drop[xVarsNoT,1]}]
+},
+With[{
 zSubs=
 MapThread[(#1[Global`t]->
 #2[[-1]][#3[[1]],#3[[2]],0])&,
-{Drop[zVarNames,-1],zSubNow,xVars}]
+{Drop[zVarNames,-1],zSubNow,xTp1Vals}]
 },
+With[{zEqns=subOutPiecewise[zSubs/.HoldPattern[xx_->yy_]->xx  -(yy)]},
 With[{zZap=(zVarNames[[-1]][Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnderBar//Global`numIt,zVarNames[[-1]][Global`t]]])//Expand},
-With[{theEqn=({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]]),
-Global`discrep[Global`t]-((thePath[[5,1]]/.Global`zzz$0$1[Global`t]->0)-Global`rUnderBar//Global`numIt),
-zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}//.Join[xSubs,zSubs])//Expand},
-newWeightedStochasticBasis[modSymb,(theEqn)//Expand];
+With[{theEqns=Join[
+	({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]])})//Expand,
+{Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
+zEqns,
+{zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}//Expand]},
+Print["theEqn=",theEqn//InputForm];
+newWeightedStochasticBasis[modSymb,(theEqns)//Expand];
 {{stateVar, nonStateVar, theShock}, modClass} = 
   GenerateModelCode[modSymb];
 polyRange = {{Global`qLow, Global`qHigh}, {Global`ruLow, Global`ruHigh}} //. Global`mySubs;
+Print["here",InputForm[{theEqns,zZap,zEqns,zSubs}]];
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
@@ -1908,19 +1946,20 @@ simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
 resZ10$0$0 = 
   ComputeInitialCollocationWeights[lucaBasis, 
-   ConstantArray[1, {4, 1}], modClass, simp];
-If[resZ10$0$0[isConvergedQ[]],Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
+   ConstantArray[1, {Length[theEqns], 1}], modClass, simp];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
 to$551 = resZ10$0$0[toOrder[{1,1,1}]];
-If[resZ10$0$0[isConvergedQ[]],Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
 to$551 = resZ10$0$0[toOrder[{2,2,1}]];
-If[to$551[isConvergedQ[]],Print["converged 03"],Throw["projection polynomial computation did not converge"]];
+If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 polys = Expand[CreatePolynomials[modSymb,to$551]] // Chop;
+Print["the Polys=",InputForm[{polys,CreatePolynomials[to$551]}]];
 Append[zSubNow,
 {
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[1]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[2]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[-1]]}//Expand)
-}]]]]]]]]]]/;
+}]]]]]]]]]]]]/;
 Length[zSubNow]>0
 
 
@@ -1983,18 +2022,22 @@ With[{origPolys=CreatePolynomials[results],
 basis=results[getTheWeightedStochasticBasis[]]},
 With[{nonStateVars=gtNonStateVars[basis],
 stateVars=gtStateVarsNoShocks[basis]},
+With[{lhsVars=lhsAMod[stateVars,nonStateVars]},
 With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
-origPolys,{stateVars,nonStateVars}]},
+origPolys,{stateVars,nonStateVars}],justRHS=projEquations[aMod]-lhsVars,
+stateSubs=MapThread[#1->#2&,{lhsVars,origPolys}]},
 If[cnstrPolys==={{},{}},origPolys,
 With[{vNames=ToExpression/@
 Join[stateVars,nonStateVars]},
-With[{theLHS=cnstrPolys[[1]]},
+With[{theLHS=cnstrPolys[[1]],ridZSubs=MapThread[#1->#2&,cnstrPolys]},
 With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
 With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},
-With[{subbed=ReplacePart[origPolys,#]&@guts },(*Print["sbbed=",subbed,"guts",guts];*)
-PiecewiseExpand/@(subbed/.Global`eqvdIf->If)/.Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"]]]]]]]]]]
+With[{subbed=(ReplacePart[justRHS,#]&@guts )//.ridZSubs},(*Print["sbbed=",subbed,"guts",guts];*)Print["stateSubs=",stateSubs];
+PiecewiseExpand/@((((subbed/.Global`eqvdIf->If)/.Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"])/.
+xx_[Global`t-1]->xx)/.stateSubs)//FullSimplify]]]]]]]]]]
 
-
+lhsAMod[stateVars_List,nonStateVars_List]:=
+		With[{lhs=Through[(ToExpression/@Join[stateVars,nonStateVars])[Global`t]]},lhs]
 
 redoCreatePolynomials[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=projEquations[aMod],
@@ -2036,9 +2079,9 @@ thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
 With[{eqns=projEquations[theMod],
 thePattern=xxL_Symbol[Global`t] +sgn_.*
-Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
+Global`eqvdIf[cond_Symbol[xxR_,yy_],zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-(-1)*sgn*Global`eqvdIf[xxR>=yy,zz,ww]}]},
+(-1)*sgn*Global`eqvdIf[cond[xxR,yy],zz,ww]}]},
 Print["constraints explicitly involving future state or non state not validated in general: augment model with dummy for now to check"];
 With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,eqns,{state,nonState}]},
 With[{
@@ -2048,8 +2091,12 @@ With[{
 	nxtsSubs=makeNextStateSubs[eqns,state],
 	nxtnsSubs=makeNextNonStateSubs[eqns,state,nonState],
 	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},(*Print["all=",{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];*)
-	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.Join[lsSubs(*,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}]]]]]
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},(*Print["all=",
+		{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
+			Join[lsSubs(*,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]},
+			{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];*)
+	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
+		Join[lsSubs(*,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}]]]]]
 
 
 GetCnstrnsTp1Subs[theMod_,
@@ -2057,9 +2104,9 @@ thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
 With[{eqns=projEquations[theMod],
 thePattern=xxL_Symbol[Global`t]+sgn_.*
-Global`eqvdIf[xxR_>=yy_,zz_,ww_]},
+Global`eqvdIf[cond_Symbol[xxR_,yy_],zz_,ww_]},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-sgn*Global`eqvdIf[xxR>=yy,zz,ww]}]},
+sgn*Global`eqvdIf[cond[xxR,yy],zz,ww]}]},
 Print["constraints explicitly involving future state or non state not implemented yet: augment model with dummy for now"];
 With[{},
 makeNextStateSubs[thePolys,state]]]]]
