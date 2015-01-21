@@ -2091,12 +2091,12 @@ With[{
 	nxtsSubs=makeNextStateSubs[eqns,state],
 	nxtnsSubs=makeNextNonStateSubs[eqns,state,nonState],
 	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},(*Print["all=",
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},Print["all=",
 		{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
-			Join[lsSubs(*,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]},
-			{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];*)
+			Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]},
+			{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];
 	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
-		Join[lsSubs(*,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}]]]]]
+		Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}]]]]]
 
 
 GetCnstrnsTp1Subs[theMod_,
