@@ -1099,6 +1099,13 @@ Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
    EquationValDrv[cc_String],
    EquationValDrv[dd_String]]:>
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[Or[cond1_[EquationValDrv[aa1_String],bb1:(__?noVars)],cond2_Symbol[EquationValDrv[aa2_String],bb2:(__?noVars)]],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[
+      	aa1<>rightCondStr[cond1]<>ToString[CForm[bb1]]<>").or("<>
+      	aa2<>rightCondStr[cond2]<>ToString[CForm[bb2]]<>")"<>
+      	").eqvdIf("<>cc<>","<>dd<>")"],
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    bb:(__?noVars)],
    cc:(__?noVars),
@@ -1121,12 +1128,25 @@ Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
 }
 
-
-
-subOutPiecewise[eqns_List]:=eqns/.{
-	Piecewise[{{xxVal_,xxCond_}},yyVal_]:>Global`eqvdIf[xxCond,xxVal,yyVal]
+subOutConds[eqns_List]:=eqns/.{
+	Global`eqvdIf[Or[condPrs__],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[
+    "toughStuffHere"<> StringJoin @@ (ToString/@{condPrs})<>
+      	"endTough).eqvdIf("<>cc<>","<>dd<>")"]
 }
 
+doPreEqvdIfPrs[firstPrs:{{_,_}..},elseVal_]:=
+Fold[Global`eqvdIf[#2[[2]],#2[[1]],#1]&,elseVal,firstPrs]
+
+subOutPiecewise[eqns_List]:=eqns//.HoldPattern[Piecewise[firstPrs:{{_,_}..},elseVal_]]:>doPreEqvdIfPrs[firstPrs,elseVal]
+
+
+(*/.{
+	Piecewise[{{xxVal_,xxCond_}},yyVal_]:>Global`eqvdIf[xxCond,xxVal,yyVal]
+}
+*)
 subOutErf[eqns_List]:=eqns/.{
 		Erfc[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erfc()"],
 		Erf[EquationValDrv[xx_String]]:> EquationValDrv[xx<>".erf()"]

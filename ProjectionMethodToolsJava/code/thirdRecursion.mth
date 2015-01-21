@@ -1,6 +1,6 @@
 Needs["ProjectionInterface`"]
 Get["paperFocus.mth"]
-
+(*
 zSubNow=Nest[doRecurIneqOcc,{},2];
 numZs=Length[zSubNow];
 zVarNames=Flatten[redoGenZVars[numZs,1]]/.ProjectionInterface`Private`ridTSubs;
@@ -52,4 +52,47 @@ to$551 = resZ10$0$0[toOrder[{1,1,1}]];
 If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
 to$551 = resZ10$0$0[toOrder[{2,2,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
+
+*)
+(*
+
+to Test or and and
+
+*)
+
+try[eqns_List]:=
+Module[{},
+ProjectionInterface`Private`subOutEqvdIf[
+ProjectionInterface`Private`subOutConds[
+ProjectionInterface`Private`subOutDoInt[
+ProjectionInterface`Private`subOutErf[
+ProjectionInterface`Private`subOutPower[
+ProjectionInterface`Private`subOutPlus[
+ProjectionInterface`Private`subOutTimes[
+ProjectionInterface`Private`subOutRational[
+ProjectionInterface`Private`subOutStateNonStateVars[
+	ProjectionInterface`Private`subOutEps[ProjectionInterface`Private`subOutPiecewise[#]]]]]]]]]]]&[eqns]]
+
+
+ProjectionInterface`Private`subOutConds[eqns_List]:=eqns/.{
+	Global`eqvdIf[Or[condPrs__],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[
+    "(toughStuffHere"<> doConds[condPrs]<>StringJoin @@ (ToString/@{condPrs})<>
+      	"endTough).eqvdIf("<>cc<>","<>dd<>")"]
+}
+
+
+doConds[theConds_]:=Module[{},
+Print["before"];
+Print[FullForm[theConds]];
+Print[FullForm[Head[theConds]]];
+Print[FullForm[Length[theConds]]];
+Print["after"];
+"num elems="<>ToString[Length[List @@condPrs]]]
+
+exper={eqvdIf[aa[t] >bb[t]|| cc[t]>=uu[t],hh[t],zz[t]]}
+
+
 

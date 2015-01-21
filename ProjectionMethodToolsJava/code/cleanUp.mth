@@ -52,15 +52,15 @@ to$551 = resZ10$0$0[toOrder[{1,1,1}]];
 If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
 to$551 = resZ10$0$0[toOrder[{2,2,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
+(*
+
+doPreEqvdIfPrs[firstPrs:{{_,_}..},elseVal_]:=
+Fold[Global`eqvdIf[#2[[2]],#2[[1]],#1]&,elseVal,firstPrs]
 
 
+HoldPattern[Piecewise[firstPrs:{{_,_}..},elseVal_]]:>doPreEqvdIfPrs[firstPrs,elseVal]
 
-
-
-
-
-
-
+*)
 theRes=resZ10$0$0[toOrder[{7,7,1}]]
 modSymbNow=modSymb
 zSubNow=doRecurIneqOcc[{}];
