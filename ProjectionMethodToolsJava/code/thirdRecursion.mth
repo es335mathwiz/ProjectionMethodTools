@@ -1,6 +1,8 @@
 Needs["ProjectionInterface`"]
-Get["paperFocus.mth"]
 (*
+Get["ProjectionInterface`"]
+Get["paperFocus.mth"]
+
 zSubNow=Nest[doRecurIneqOcc,{},2];
 numZs=Length[zSubNow];
 zVarNames=Flatten[redoGenZVars[numZs,1]]/.ProjectionInterface`Private`ridTSubs;
@@ -54,12 +56,12 @@ to$551 = resZ10$0$0[toOrder[{2,2,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 
 *)
-(*
+n(*
 
 to Test or and and
 
 *)
-
+(*
 try[eqns_List]:=
 Module[{},
 ProjectionInterface`Private`subOutEqvdIf[
@@ -89,10 +91,52 @@ Print["before"];
 Print[FullForm[theConds]];
 Print[FullForm[Head[theConds]]];
 Print[FullForm[Length[theConds]]];
+
 Print["after"];
 "num elems="<>ToString[Length[List @@condPrs]]]
 
+
+
+
+
+
+doConds[theConds_]:=Module[{},
+Print["before"];
+Print[FullForm[theConds]];
+Print[FullForm[Head[theConds]]];
+Print[FullForm[theConds/.moreSubs]];
+Print["after"];
+"num elems="<>ToString[Length[List @@condPrs]]]
+
+
+
+moreSubs=Or[cond1_[EquationValDrv[aa1_String],bb1:(__?Projection`Interface`Private`noVars)],cond2_Symbol[EquationValDrv[aa2_String],bb2:(__?Projection`Interface`Private`noVars)]]:>
+      EquationValDrv[
+      	"("<>aa1<>rightCondStr[cond1]<>ToString[CForm[bb1]]<>").or("<>
+      	aa2<>rightCondStr[cond2]<>ToString[CForm[bb2]]<>")"]
+
+Get["cleanUp.mth"]
+
+use 
+
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
+
+*)
+
+
+
 exper={eqvdIf[aa[t] >bb[t]|| cc[t]>=uu[t],hh[t],zz[t]]}
+exper1={eqvdIf[aa[t] >3|| cc[t]>=6,hh[t],zz[t]]}
+exper2={eqvdIf[aa[t] >bb[t]||aa[t] >yy[t]|| cc[t]>=uu[t],hh[t],zz[t]]}
+exper5={eqvdIf[aa[t] >bb[t]&&aa[t] >yy[t]&& cc[t]>=uu[t],hh[t],zz[t]]}
+exper6={eqvdIf[aa[t] >bb[t],eqvdIf[hh[t]<7,jj[t],zz[t]],zz[t]]}
+(*
+not yet implemented noVars t vars in conditions
 
+exper3={eqvdIf[aa >3|| zz>=6,hh[t],zz[t]]}
+exper4={eqvdIf[3 < aa|| zz>=6,hh[t],zz[t]]}
 
-
+*)

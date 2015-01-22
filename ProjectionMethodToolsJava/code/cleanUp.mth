@@ -89,6 +89,7 @@ rrVal=(((((rr[t]-theEqns[[4]])/.discrepSub)//.betterForZSub)/.xLagSub)/.shockSub
 
 hProd=Flatten[(hmat//numIt).(pathNow=(((genPath[1,1]/.betterForZSub)/.shockSub)/.Thread[{qq,ru}->xVarsNoT[[-1]]])/.shockSub)]
 
+Print["verify first recursion"]
 Transpose[{rrVal/.nodePtSubs,hProd/.nodePtSubs}//Chop]
 
 

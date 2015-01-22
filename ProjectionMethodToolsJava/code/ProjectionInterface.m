@@ -11,7 +11,7 @@ genPath::usage="genPath[num_Integer]"
 genPolysFromBasis::usage="genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?MatrixQ]"
 *)
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
-
+tryNow::usage=""
 CreateRHSPolynomials::usage="CreateRHSPolynomials[aMod_,results_?JavaObjectQ]"
 eqvdif::usage="eqvdif placeholder for EquationValDrv in substitutions";
 EquationValDrv::usage="java class for projection";
@@ -948,11 +948,10 @@ GenerateBasis[stateVars,stateRanges,statePowers,
 	
 	
 Print["define preparsesubs"];
-
-makeParseSubs[eqns_List]:=
-subOutEqValDrv[
+tryNow[eqns_List]:=
 FixedPoint[
 subOutEqvdIf[
+subOutConds[
 subOutDoInt[
 subOutErf[
 subOutPower[
@@ -960,7 +959,85 @@ subOutPlus[
 subOutTimes[
 subOutRational[
 subOutStateNonStateVars[
-	subOutEps[subOutPiecewise[#]]]]]]]]]]&,eqns]]
+	subOutEps[subOutPiecewise[#]]]]]]]]]]]&,eqns]
+
+(*?FreeQ[#,Global`eqvdIf]&*)
+subOutConds[eqns_List]:=Module[{},
+	eqns//.{
+		Global`eqvdIf[cond_Symbol/;Or[cond===Or,cond===And][condPrs__/;FreeQ[List@condPrs,Global`eqvdIf[___]]],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[
+    doConds[(List[condPrs]),cond]<>
+      	").eqvdIf("<>cc<>","<>dd<>")"]
+}
+]
+
+
+condSubs={
+(*	cond_[aa:(__?noVars),bb:(__?noVars)]:>ToString[CForm[aa]]<>rightCondStr[cond]<>ToString[CForm[bb]]<>")",  need to generate logical value same for whole grid*)
+	cond_[aa:(__?noVars),EquationValDrv[bb_String]]:>bb<>invertCondStr[cond]<>ToString[CForm[aa]]<>")",
+	cond_[EquationValDrv[aa_String],bb:(__?noVars)]:>aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>")",
+	cond_[EquationValDrv[aa_String],EquationValDrv[bb_String]]:>aa<>rightCondStr[cond]<>bb<>")"
+}
+
+doConds[theConds_,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},Print["doConds:",logicStr[theLogic],lStr,condsList];
+With[{nvStr=(#/.xx_/;And[Head[xx]=!=String,ProjectionInterface`Private`noVars[xx]]:>ToString[CForm[xx]])&/@condsList},
+Fold[(#1<>logicStr[theLogic]<>(#2/.condSubs)<>")")&,nvStr[[1]]/.condSubs,Drop[nvStr,1]]]]
+
+logicStr[cond_Symbol]:=Module[{},Print["here",cond];Switch[cond,Or,".or(",And,".and("]]
+
+rightCondStr[cond_Symbol]:=Switch[cond,GreaterEqual,".ge(",Greater,".gt(",LessEqual,".le(",Less,".lt("]
+invertCondStr[cond_Symbol]:=Switch[cond,GreaterEqual,".lt(",Greater,".le(",LessEqual,".gt(",Less,".ge("]
+
+subOutEqvdIf[eqns_List]:=eqns/.{
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   EquationValDrv[bb_String]],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>bb<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   cc:(__?noVars),
+   EquationValDrv[dd_String]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   dd:(__?noVars)]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd:(__?noVars)]]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
+   bb:(__?noVars)],
+   cc:(__?noVars),
+   dd:(__?noVars)]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
+}
+
+
+	
+	
+makeParseSubs[eqns_List]:=
+subOutEqValDrv[
+FixedPoint[
+subOutEqvdIf[
+subOutConds[
+subOutDoInt[
+subOutErf[
+subOutPower[
+subOutPlus[
+subOutTimes[
+subOutRational[
+subOutStateNonStateVars[
+	subOutEps[subOutPiecewise[#]]]]]]]]]]]&,eqns]]
 	
 (*
 makeParseSubs[eqns_List]:=
@@ -1086,56 +1163,6 @@ Global`eqvdIf[EquationValDrv[aa_String]>=
       EquationValDrv[aa<>".ge("<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
 }
 *)
-rightCondStr[cond_Symbol]:=Switch[cond,GreaterEqual,".ge(",Greater,".gt(",LessEqual,".le(",Less,".lt("]
-
-
-subOutEqvdIf[eqns_List]:=eqns/.{
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
-   EquationValDrv[bb_String]],
-   EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>bb<>").eqvdIf("<>cc<>","<>dd<>")"],
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
-   EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
-Global`eqvdIf[Or[cond1_[EquationValDrv[aa1_String],bb1:(__?noVars)],cond2_Symbol[EquationValDrv[aa2_String],bb2:(__?noVars)]],
-   EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
-      EquationValDrv[
-      	aa1<>rightCondStr[cond1]<>ToString[CForm[bb1]]<>").or("<>
-      	aa2<>rightCondStr[cond2]<>ToString[CForm[bb2]]<>")"<>
-      	").eqvdIf("<>cc<>","<>dd<>")"],
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
-   bb:(__?noVars)],
-   cc:(__?noVars),
-   EquationValDrv[dd_String]]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
-   bb:(__?noVars)],
-   EquationValDrv[cc_String],
-   dd:(__?noVars)]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
-   bb:(__?noVars)],
-   EquationValDrv[cc_String],
-   EquationValDrv[dd:(__?noVars)]]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
-   bb:(__?noVars)],
-   cc:(__?noVars),
-   dd:(__?noVars)]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
-}
-
-subOutConds[eqns_List]:=eqns/.{
-	Global`eqvdIf[Or[condPrs__],
-   EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
-      EquationValDrv[
-    "toughStuffHere"<> StringJoin @@ (ToString/@{condPrs})<>
-      	"endTough).eqvdIf("<>cc<>","<>dd<>")"]
-}
 
 doPreEqvdIfPrs[firstPrs:{{_,_}..},elseVal_]:=
 Fold[Global`eqvdIf[#2[[2]],#2[[1]],#1]&,elseVal,firstPrs]
