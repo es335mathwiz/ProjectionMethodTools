@@ -794,7 +794,7 @@ noVars[aThing___]:=FreeQ[{aThing},EquationValDrv[___]|
 	_Symbol[Global`t-1]|
 	_Symbol[Global`t]|
 	_Symbol[Global`t+1]|
-	EquationValDrv]
+	EquationValDrv]/;Not[Head[aThing]===String]
 
 
 
@@ -984,9 +984,13 @@ Module[{aVal=xx//.subNow},
 	Print["aPeek:",{aVal,xx}//FullForm];
 	aVal]
 
-subNow={
-	cond_Symbol[condPrs:(_?onlyCompare[EquationValDrv[_String],EquationValDrv[_String]])..]/;onlyAndOr[cond]:>
-    condPairs[doConds[(List[condPrs]),cond]]
+subNow={cond_Symbol[EquationValDrv[aa_String],
+   EquationValDrv[bb_String]]/;onlyCompare[cond]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>bb<>")"],
+	cond_Symbol[condPrs:(_?onlyCompare[EquationValDrv[_String]|_?noVars,EquationValDrv[_String]|_?noVars])..]/;onlyAndOr[cond]:>
+    condPairs[doConds[(List[condPrs]),cond]],
+    	cond_Symbol[condPrs:(EquationValDrv[_String])..]/;onlyAndOr[cond]:>
+    condPairs[doStrConds[(List[condPrs]),cond]]
 }
 
 
@@ -1000,7 +1004,7 @@ sub1={(*
       	").eqvdIf("<>cc<>","<>dd<>")"]
 *)}
 *)
-sub2={
+sub2={(*
 	cond_Symbol[condPrs__?noEvdOrAnd]/;onlyAndOr[cond]:>
     condPairs[doConds[(List[condPrs]),cond]],
     condPairs[condPairs[inner_String],outer_String]:>
@@ -1023,7 +1027,8 @@ sub2={
    Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb_?noVars], 
    	EquationValDrv[cc_String],EquationValDrv[dd_String]]/;onlyCompare[cond]:>
       	      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"]/;onlyCompare[cond]
-}
+*)}
+(*
 sub2a={   Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb_], 
    	EquationValDrv[cc_String],EquationValDrv[dd_String]]:>
       	      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"]/;onlyCompare[cond]}
@@ -1033,7 +1038,7 @@ sub3={
 }
 sub4={		Global`eqvdIf[cond_Symbol[condPrs__],___]:>Global`eqvdIf["ahitsub3"]
 }
-(*
+*)(*
 
 doSub2[xx_]:=aPeek//@xx
 aPeek[xx_]:=
@@ -1058,11 +1063,21 @@ toStringButNotHead[yy_]:=yy//.condSubs
 
 doConds[theConds_?noEvdOrAnd,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},
 	Print["doConds:",logicStr[theLogic],lStr,condsList];
-With[{nvStr=#/.xx_/;And[Head[xx]=!=String,ProjectionInterface`Private`noVars[xx]]:>toStringButNotHead/@condsList},
+With[{nvStr=(*#/.xx_/;And[Head[xx]=!=String,ProjectionInterface`Private`noVars[xx]]:>*)toStringButNotHead/@condsList},
+	Print["nvStr=",nvStr,toStringButNotHead/@condsList];
 With[{theRes=Fold[((#1/.{condPairs[str_String],{condPairs[str_String]}}:>str)<>logicStr[theLogic]<>(#2//.condSubs)<>")")&,
 	(nvStr[[1]]//.condSubs)/.{condPairs[str_String],{condPairs[str_String]}}:>str,Drop[nvStr,1]]},
 	Print["doConds:theRes=",theRes];
 	theRes]]]
+
+
+doStrConds[theConds_?noEvdOrAnd,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},
+	Print["doStrConds:",logicStr[theLogic],lStr,condsList];
+With[{theRes=Fold[(#1<>logicStr[theLogic]<>(#2[[1]])<>")")&,
+	condsList[[1,1]],Drop[condsList,1]]},
+	Print["doStrConds:theRes=",theRes];
+	theRes]]
+
 
 logicStr[cond_Symbol]:=Module[{},(*Print["here",cond];*)
 	Switch[cond,Or,".or(",And,".and("]]
