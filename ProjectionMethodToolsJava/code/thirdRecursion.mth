@@ -1,5 +1,11 @@
 Needs["ProjectionInterface`"]
+
 (*
+get the exper1-11 to work then get projEquations[modSymb][[{-2}]] to work after using the commands commented out here.
+
+the code below can find the eqvdif's that don't work
+
+
 Get["ProjectionInterface`"]
 Get["paperFocus.mth"]
 
@@ -56,7 +62,7 @@ to$551 = resZ10$0$0[toOrder[{2,2,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 
 *)
-n(*
+(*
 
 to Test or and and
 
@@ -116,27 +122,135 @@ moreSubs=Or[cond1_[EquationValDrv[aa1_String],bb1:(__?Projection`Interface`Priva
       	aa2<>rightCondStr[cond2]<>ToString[CForm[bb2]]<>")"]
 
 Get["cleanUp.mth"]
+tough=projEquations[modSymb][[{-2}]];
+patch=eqvdIf[Part[tough,Sequence @@{1, 1, 2, 1, 1, 1, 3, 2, 1,1}],xx[t],yy[t]]
 
-use 
 
-Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
-   EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
+usePos[aPos_List]:=
+With[{fixPos=Drop[aPos,-1]},
+With[{anEqvdIf= Part[tough,Sequence @@ fixPos]},
+anEqvdIf]];
+ps=Position[tough,eqvdIf];
+allEqvdIf=usePos/@ps;
+
+tryParse=ProjectionInterface`Private`makeParseSubs[{#}]&/@ allEqvdIf;
+baddies=Flatten[Position[Head/@ tryParse,StringReplace]]
+goodies=Drop[Flatten[Position[Head/@ tryParse,List]],1]
+rankBad=Ordering[Depth/@allEqvdIf[[baddies]]]
+
+ProjectionInterface`Private`makeParseSubs[{#}]&/@ allEqvdIf[[goodies]];
 
 *)
 
 
-
+Print["loadexper"]
 exper={eqvdIf[aa[t] >bb[t]|| cc[t]>=uu[t],hh[t],zz[t]]}
 exper1={eqvdIf[aa[t] >3|| cc[t]>=6,hh[t],zz[t]]}
 exper2={eqvdIf[aa[t] >bb[t]||aa[t] >yy[t]|| cc[t]>=uu[t],hh[t],zz[t]]}
 exper5={eqvdIf[aa[t] >bb[t]&&aa[t] >yy[t]&& cc[t]>=uu[t],hh[t],zz[t]]}
 exper6={eqvdIf[aa[t] >bb[t],eqvdIf[hh[t]<7,jj[t],zz[t]],zz[t]]}
+
+exper6={eqvdIf[aa[t] >bb[t],eqvdIf[hh[t]<7,jj[t],zz[t]],zz[t]]}
+exper8a={eqvdIf[hh[t]<7,jj[t],zz[t]] }
+exper8={
+eqvdIf[
+  zz[t] < 5 &&  aa[t] >bb[t] || 
+eqvdIf[hh[t]<7,jj[t],zz[t]] > 0,uu[t],mm[t]]}
+
+exper7={eqvdIf[eqvdIf[hh[t]<7,jj[t],zz[t]]>2,zz[t],mm[t]]}
+
+
+exper9={eqvdIf[eqvdIf[hh[t]<7||hh[t]<5,jj[t],zz[t]]>2,zz[t],mm[t]]}
+
+exper10={eqvdIf[xx[t] >= yu[t] && zz[t]>= 0.0544931 && ii[t] < 0.110556,
+ zz[t],mm[t]]}
+
+
+exper11={eqvdIf[0. + 0.9925354505172941*ru$2$1[t] + 
+    qq$2$1[t]^2*(0.025447032619601767 - 0.2660792634951235*ru$2$1[t])*
+     ru$2$1[t] + qq$2$1[t]*(0.7923562931863108 + 
+      (-0.01596475580970681 + 0.07952197693625324*ru$2$1[t])*ru$2$1[t]) >= 
+   0.11718523008558254 && 0. + 0.3186818968283193*ru$2$1[t] + 
+    qq$2$1[t]^2*(-0.009520173718515313 + (0.09415296835856601 - 
+        0.3549018815606867*ru$2$1[t])*ru$2$1[t]) + 
+    qq$2$1[t]*(0.12888220523755786 + (-0.05104465576400206 + 
+        0.07952197693626922*ru$2$1[t])*ru$2$1[t]) >= 0.054493114419686774 && 
+  0. + 0.6140668292202985*ru$2$1[t] + qq$2$1[t]^2*(-0.009520173718515313 + 
+      (0.09415296835856601 - 0.3549018815606867*ru$2$1[t])*ru$2$1[t]) + 
+    qq$2$1[t]*(0.12888220523755786 + (-0.05104465576400206 + 
+        0.07952197693626922*ru$2$1[t])*ru$2$1[t]) < 0.11055640844530105, xx[t], 
+ yy[t]]}
+
+
+
+
+ridDdSubs={
+eqvdIf[cond_Symbol[xx_,yy_],
+zz_,ww_/;FreeQ[ww,eqvdIf]]:>
+eqvdIf[cond[xx,yy],zz,dd]
+}
+ridCcSubs={
+eqvdIf[cond_Symbol[xx_,yy_],
+zz_/;FreeQ[zz,eqvdIf],ww_]:>
+eqvdIf[cond[xx,yy],cc,ww]
+}
+
+ridYySubs={
+eqvdIf[cond_Symbol[xx_,yy_/;noEvdOrAnd[yy,eqvdIf]],
+zz_,ww_]:>
+eqvdIf[cond[xx,bb],zz,ww]
+}
+ridXxSubs={
+eqvdIf[cond_Symbol[xx_/;noEvdOrAnd[xx,eqvdIf],yy_],
+zz_,ww_]:>
+eqvdIf[cond[aa,yy],zz,ww]
+
+}
+
+noEvdOrAnd[xx_]:=FreeQ[xx,eqvdIf|Or|And]
+
+ridAndOrSubs={
+eqvdIf[Or[xx__/;noEvdOrAnd[xx,eqvdIf]],
+zz_,ww_]:>
+eqvdIf[Or[aaForOr],zz,ww],
+eqvdIf[And[xx__/;noEvdOrAnd[xx,eqvdIf]],
+zz_,ww_]:>
+eqvdIf[Or[aaForOr],zz,ww]
+}
+
+
+doRid[anEq_]:=(((((anEq//.ridDdSubs)//.ridCcSubs)//.ridYySubs)//.ridXxSubs)/.ridAndOrSubs)
+
+strctrSubs={
+eqvdIf[xx_?ok,yy_,zz_]->eqvdIf["xStr",yy,zz],
+eqvdIf[xx_,yy_?ok,zz_]->eqvdIf[xx,"yStr",zz],
+eqvdIf[xx_?ok,yy_,zz_]->eqvdIf[xx,yy,"zStr"]
+}
+ok=ProjectionInterface`Private`noEvdOrAnd
+
+
+ps=Position[tough,eqvdIf];
 (*
 not yet implemented noVars t vars in conditions
 
 exper3={eqvdIf[aa >3|| zz>=6,hh[t],zz[t]]}
 exper4={eqvdIf[3 < aa|| zz>=6,hh[t],zz[t]]}
+
+
+Cases[boo,eqvdIf[cond_Symbol[xx_/;FreeQ[xx,eqvdIf],yy_/;FreeQ[yy,eqvdIf]],zz_/;FreeQ[zz,eqvdIf],ww_/;FreeQ[ww,eqvdIf]]->eqvdIf[cond[$a,$b]],Infinity]
+
+(*
+
+eqvdIf[cond_Symbol[xx_/;FreeQ[xx,eqvdIf],yy_/;FreeQ[yy,eqvdIf]],
+zz_/;FreeQ[zz,eqvdIf],ww_/;FreeQ[ww,eqvdIf]]->
+eqvdIf[cond[aa,bb],cc,dd],
+eqvdIf[cond_Symbol[xx_/;FreeQ[xx,eqvdIf],yy_/;FreeQ[yy,eqvdIf]],
+zz_,ww_/;FreeQ[ww,eqvdIf]]->
+eqvdIf[cond[aa,bb],zz,dd],
+eqvdIf[cond_Symbol[xx_/;FreeQ[xx,eqvdIf],yy_/;FreeQ[yy,eqvdIf]],
+zz_/;FreeQ[zz,eqvdIf],ww_]->
+eqvdIf[cond[aa,bb],cc,ww]
+*)
+
 
 *)

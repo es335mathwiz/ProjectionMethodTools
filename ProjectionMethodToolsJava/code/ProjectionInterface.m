@@ -958,21 +958,95 @@ subOutPower[
 subOutPlus[
 subOutTimes[
 subOutRational[
+		Identity[
 subOutStateNonStateVars[
-	subOutEps[subOutPiecewise[#]]]]]]]]]]]&,eqns]
+	subOutEps[subOutPiecewise[#]]]]]]]]]]]]&,eqns]
 
 (*?FreeQ[#,Global`eqvdIf]&*)
-subOutConds[eqns_List]:=Module[{},
-	eqns//.{
+(*
+subOutConds[eqns_List]:=
+Module[{try1=	eqns//.sub1,try2=eqns//.sub2,try3=doSub2[eqns]},
+(*	Print["subOutConds:",{try1,try2,try3}];*)
+try2
+]
+
+*)
+
+subOutConds[eqns_List]:=
+Module[{try=doSubOrAnd[eqns]},
+try
+]
+
+doSubOrAnd[xx_]:=aPeek//@xx
+
+aPeek[xx_]:=
+Module[{aVal=xx//.subNow},
+	Print["aPeek:",{aVal,xx}//FullForm];
+	aVal]
+
+subNow={
+	cond_Symbol[condPrs:(_?onlyCompare[EquationValDrv[_String],EquationValDrv[_String]])..]/;onlyAndOr[cond]:>
+    condPairs[doConds[(List[condPrs]),cond]]
+}
+
+
+(*
+sub1={(*
 		Global`eqvdIf[cond_Symbol/;Or[cond===Or,cond===And][condPrs__/;FreeQ[List@condPrs,Global`eqvdIf[___]]],
    EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
+   EquationValDrv[dd_String]]/;FreeQ[List[condPrs],Global`eqvdIf]:>
       EquationValDrv[
     doConds[(List[condPrs]),cond]<>
       	").eqvdIf("<>cc<>","<>dd<>")"]
+*)}
+*)
+sub2={
+	cond_Symbol[condPrs__?noEvdOrAnd]/;onlyAndOr[cond]:>
+    condPairs[doConds[(List[condPrs]),cond]],
+    condPairs[condPairs[inner_String],outer_String]:>
+    condPairs["("<>inner<>")"<>outer],
+	Global`eqvdIf[cond_Symbol[condsStr_String],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]/;onlyAndOr[cond]:>
+      EquationValDrv[
+    condsStr<>
+      	").eqvdIf("<>cc<>","<>dd<>")"],
+(*      			Global`eqvdIf[cond_Symbol[condPrs__?noEvdOrAnd],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]/;onlyAndOr[cond]:>
+      EquationValDrv[
+    doConds[(List[condPrs]),cond]<>
+      	").eqvdIf("<>cc<>","<>dd<>")"],*)
+   Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],EquationValDrv[bb_String]], 
+   	EquationValDrv[cc_String],EquationValDrv[dd_String]]/;onlyCompare[cond]:>
+      	      EquationValDrv[aa<>rightCondStr[cond]<>bb<>").eqvdIf("<>cc<>","<>dd<>")"]/;onlyCompare[cond],
+   Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb_?noVars], 
+   	EquationValDrv[cc_String],EquationValDrv[dd_String]]/;onlyCompare[cond]:>
+      	      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"]/;onlyCompare[cond]
 }
-]
+sub2a={   Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb_], 
+   	EquationValDrv[cc_String],EquationValDrv[dd_String]]:>
+      	      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"]/;onlyCompare[cond]}
 
+sub3={
+		Global`eqvdIf[cond_Symbol[condPrs__?noEvdOrAnd],___]:>Global`eqvdIf["ahitsub3"]
+}
+sub4={		Global`eqvdIf[cond_Symbol[condPrs__],___]:>Global`eqvdIf["ahitsub3"]
+}
+(*
+
+doSub2[xx_]:=aPeek//@xx
+aPeek[xx_]:=
+Module[{aVal=xx//.sub2,fir=xx//.sub3,lst=xx//.sub4},
+	Print["aPeek:",{aVal,fir,xx}//FullForm];
+	aVal]
+	*)
+noEvdOrAnd[xx_]:=Module[{theVal=And[(*noCompare[xx],*)FreeQ[xx,Global`eqvdIf|Or|And|Plus|Times]]},(*Print["noEqvdOrAnd:",xx,theVal];*)
+theVal]
+onlyAndOr[xx_]:=Or[xx===And,xx===Or]
+onlyCompare[xx_]:=MemberQ[{Greater,GreaterEqual,Equal,LessEqual,Less},xx]
+noCompare[xx_]:=Module[{theVal=FreeQ[xx,Greater|GreaterEqual|Equal|LessEqual|Less]},(*Print["noCompare:",xx,theVal];*)
+	theVal]
 
 condSubs={
 (*	cond_[aa:(__?noVars),bb:(__?noVars)]:>ToString[CForm[aa]]<>rightCondStr[cond]<>ToString[CForm[bb]]<>")",  need to generate logical value same for whole grid*)
@@ -980,12 +1054,18 @@ condSubs={
 	cond_[EquationValDrv[aa_String],bb:(__?noVars)]:>aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>")",
 	cond_[EquationValDrv[aa_String],EquationValDrv[bb_String]]:>aa<>rightCondStr[cond]<>bb<>")"
 }
+toStringButNotHead[yy_]:=yy//.condSubs
 
-doConds[theConds_,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},Print["doConds:",logicStr[theLogic],lStr,condsList];
-With[{nvStr=(#/.xx_/;And[Head[xx]=!=String,ProjectionInterface`Private`noVars[xx]]:>ToString[CForm[xx]])&/@condsList},
-Fold[(#1<>logicStr[theLogic]<>(#2/.condSubs)<>")")&,nvStr[[1]]/.condSubs,Drop[nvStr,1]]]]
+doConds[theConds_?noEvdOrAnd,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},
+	Print["doConds:",logicStr[theLogic],lStr,condsList];
+With[{nvStr=#/.xx_/;And[Head[xx]=!=String,ProjectionInterface`Private`noVars[xx]]:>toStringButNotHead/@condsList},
+With[{theRes=Fold[((#1/.{condPairs[str_String],{condPairs[str_String]}}:>str)<>logicStr[theLogic]<>(#2//.condSubs)<>")")&,
+	(nvStr[[1]]//.condSubs)/.{condPairs[str_String],{condPairs[str_String]}}:>str,Drop[nvStr,1]]},
+	Print["doConds:theRes=",theRes];
+	theRes]]]
 
-logicStr[cond_Symbol]:=Module[{},Print["here",cond];Switch[cond,Or,".or(",And,".and("]]
+logicStr[cond_Symbol]:=Module[{},(*Print["here",cond];*)
+	Switch[cond,Or,".or(",And,".and("]]
 
 rightCondStr[cond_Symbol]:=Switch[cond,GreaterEqual,".ge(",Greater,".gt(",LessEqual,".le(",Less,".lt("]
 invertCondStr[cond_Symbol]:=Switch[cond,GreaterEqual,".lt(",Greater,".le(",LessEqual,".gt(",Less,".ge("]
@@ -994,32 +1074,40 @@ subOutEqvdIf[eqns_List]:=eqns/.{
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    EquationValDrv[bb_String]],
    EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
+   EquationValDrv[dd_String]]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>bb<>").eqvdIf("<>cc<>","<>dd<>")"],
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],bb:(__?noVars)],
    EquationValDrv[cc_String],
-   EquationValDrv[dd_String]]:>
+   EquationValDrv[dd_String]]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>dd<>")"],
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    bb:(__?noVars)],
    cc:(__?noVars),
-   EquationValDrv[dd_String]]:>
+   EquationValDrv[dd_String]]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    bb:(__?noVars)],
    EquationValDrv[cc_String],
-   dd:(__?noVars)]:>
+   dd:(__?noVars)]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    bb:(__?noVars)],
    EquationValDrv[cc_String],
-   EquationValDrv[dd:(__?noVars)]]:>
+   EquationValDrv[dd:(__?noVars)]]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
 Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    bb:(__?noVars)],
    cc:(__?noVars),
-   dd:(__?noVars)]:>
-      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"]
+   dd:(__?noVars)]/;onlyCompare[cond]:>
+      EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[condPairs[cStr_String],
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv["("<>cStr<>").eqvdIf("<>cc<>","<>dd<>")"],
+      Global`eqvdIf[{condPairs[cStr_String]},
+   EquationValDrv[cc_String],
+   EquationValDrv[dd_String]]:>
+      EquationValDrv["("<>cStr<>").eqvdIf("<>cc<>","<>dd<>")"]
 }
 
 
@@ -1036,8 +1124,9 @@ subOutPower[
 subOutPlus[
 subOutTimes[
 subOutRational[
+	Identity[
 subOutStateNonStateVars[
-	subOutEps[subOutPiecewise[#]]]]]]]]]]]&,eqns]]
+	subOutEps[subOutPiecewise[#]]]]]]]]]]]]&,eqns]]
 	
 (*
 makeParseSubs[eqns_List]:=
@@ -1085,6 +1174,7 @@ Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
 }
 
 *)
+suboutNoVars[eqns_List]:=eqns//.xx_?noVars:>EquationValDrv[ToString[CForm[xx]]]
 
 subOutPlus[eqns_List]:=eqns//.{
 Plus[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> 
