@@ -13,7 +13,7 @@ genPolysFromBasis::usage="genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?Matrix
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 tryNow::usage=""
 CreateRHSPolynomials::usage="CreateRHSPolynomials[aMod_,results_?JavaObjectQ]"
-eqvdif::usage="eqvdif placeholder for EquationValDrv in substitutions";
+Global`eqvdif::usage="eqvdif placeholder for EquationValDrv in substitutions";
 EquationValDrv::usage="java class for projection";
 doRecurIneqOcc::usage="doRecurIneqOcc[{}]";
 gtChebNodes::usage="gtChebNodes[aWSB_?JavaObjectQ]"
@@ -782,7 +782,7 @@ makeWeightedStochasticBasis[aPoly_?aPolyQ] :=
 
 
 (*
-noVars[aThing___] :=
+[aThing___] :=
     Cases[{aThing},EquationValDrv[___]|_Symbol[Global`t-1]|_Symbol[Global`t]|_Symbol[Global`t+1]|_?NumberQ,Infinity]==={}
 *)
 (*
@@ -790,13 +790,14 @@ Print["why not numbers?"]
 noVars[aThing___] :=
     Cases[{aThing},EquationValDrv[___]|_Symbol[Global`t-1]|_Symbol[Global`t]|_Symbol[Global`t+1]|EquationValDrv,Infinity,Heads->True]==={}
 *)
-noVars[aThing___]:=FreeQ[{aThing},EquationValDrv[___]|
+noVars[aThing___]:=FreeQ[aThing,EquationValDrv[___]|
 	_Symbol[Global`t-1]|
 	_Symbol[Global`t]|
 	_Symbol[Global`t+1]|
+	Less|LessEqual|Greater|GreaterEqual|Global`eqvdIf|List|
 	EquationValDrv]/;Not[Head[aThing]===String]
 
-
+condPairs[aStr_String]:=EquationValDrv[aStr]
 
 myDeleteFile[fileName_String] :=
     With[ {fns = FileNames[fileName]},
@@ -987,11 +988,14 @@ Module[{aVal=xx//.subNow},
 subNow={cond_Symbol[EquationValDrv[aa_String],
    EquationValDrv[bb_String]]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>bb<>")"],
+      aCondPr:(_?onlyCompare[EquationValDrv[_String]|_?noVars,EquationValDrv[_String]|_?noVars]):>
+    doACond[aCondPr],
 	cond_Symbol[condPrs:(_?onlyCompare[EquationValDrv[_String]|_?noVars,EquationValDrv[_String]|_?noVars])..]/;onlyAndOr[cond]:>
     condPairs[doConds[(List[condPrs]),cond]],
     	cond_Symbol[condPrs:(EquationValDrv[_String])..]/;onlyAndOr[cond]:>
-    condPairs[doStrConds[(List[condPrs]),cond]]
+    EquationValDrv[doStrConds[(List[condPrs]),cond]]
 }
+
 
 
 (*
@@ -1070,6 +1074,7 @@ With[{theRes=Fold[((#1/.{condPairs[str_String],{condPairs[str_String]}}:>str)<>l
 	Print["doConds:theRes=",theRes];
 	theRes]]]
 
+doACond[aCond:(_?onlyCompare[lft_,rgt_])]:=EquationValDrv[aCond//.condSubs]
 
 doStrConds[theConds_?noEvdOrAnd,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},
 	Print["doStrConds:",logicStr[theLogic],lStr,condsList];
@@ -1115,7 +1120,7 @@ Global`eqvdIf[cond_Symbol[EquationValDrv[aa_String],
    cc:(__?noVars),
    dd:(__?noVars)]/;onlyCompare[cond]:>
       EquationValDrv[aa<>rightCondStr[cond]<>ToString[CForm[bb]]<>").eqvdIf("<>ToString[CForm[cc]]<>","<>ToString[CForm[dd]]<>")"],
-Global`eqvdIf[condPairs[cStr_String],
+Global`eqvdIf[EquationValDrv[cStr_String],
    EquationValDrv[cc_String],
    EquationValDrv[dd_String]]:>
       EquationValDrv["("<>cStr<>").eqvdIf("<>cc<>","<>dd<>")"],
@@ -1189,7 +1194,7 @@ Times[Power[xx:(__?noVars),-1],EquationValDrv[yy_String]]:>
 }
 
 *)
-suboutNoVars[eqns_List]:=eqns//.xx_?noVars:>EquationValDrv[ToString[CForm[xx]]]
+suboutNoVars[eqns_]:=eqns//.xx_?noVars:>EquationValDrv[ToString[CForm[xx]]]
 
 subOutPlus[eqns_List]:=eqns//.{
 Plus[EquationValDrv[xx_String],EquationValDrv[yy_String],zz___]:> 
