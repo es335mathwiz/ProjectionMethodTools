@@ -790,12 +790,12 @@ Print["why not numbers?"]
 noVars[aThing___] :=
     Cases[{aThing},EquationValDrv[___]|_Symbol[Global`t-1]|_Symbol[Global`t]|_Symbol[Global`t+1]|EquationValDrv,Infinity,Heads->True]==={}
 *)
-noVars[aThing___]:=FreeQ[aThing,EquationValDrv[___]|
+noVars[aThing___]:=Or[NumberQ[aThing],FreeQ[aThing,EquationValDrv[___]|
 	_Symbol[Global`t-1]|
 	_Symbol[Global`t]|
 	_Symbol[Global`t+1]|
 	Less|LessEqual|Greater|GreaterEqual|Global`eqvdIf|List|
-	EquationValDrv]/;Not[Head[aThing]===String]
+	EquationValDrv]]/;Not[Head[aThing]===String]
 
 condPairs[aStr_String]:=EquationValDrv[aStr]
 
@@ -982,7 +982,7 @@ doSubOrAnd[xx_]:=aPeek//@xx
 
 aPeek[xx_]:=
 Module[{aVal=xx//.subNow},
-	Print["aPeek:",{aVal,xx}//FullForm];
+(*	Print["aPeek:",{aVal,xx}//FullForm];*)
 	aVal]
 
 subNow={cond_Symbol[EquationValDrv[aa_String],
@@ -1077,10 +1077,10 @@ With[{theRes=Fold[((#1/.{condPairs[str_String],{condPairs[str_String]}}:>str)<>l
 doACond[aCond:(_?onlyCompare[lft_,rgt_])]:=EquationValDrv[aCond//.condSubs]
 
 doStrConds[theConds_?noEvdOrAnd,theLogic_Symbol]:=Module[{condsList=theConds,lStr=logicStr[theLogic]},
-	Print["doStrConds:",logicStr[theLogic],lStr,condsList];
+(*	Print["doStrConds:",logicStr[theLogic],lStr,condsList];*)
 With[{theRes=Fold[(#1<>logicStr[theLogic]<>(#2[[1]])<>")")&,
 	condsList[[1,1]],Drop[condsList,1]]},
-	Print["doStrConds:theRes=",theRes];
+(*	Print["doStrConds:theRes=",theRes];*)
 	theRes]]
 
 
@@ -1124,7 +1124,15 @@ Global`eqvdIf[EquationValDrv[cStr_String],
    EquationValDrv[cc_String],
    EquationValDrv[dd_String]]:>
       EquationValDrv["("<>cStr<>").eqvdIf("<>cc<>","<>dd<>")"],
-      Global`eqvdIf[{condPairs[cStr_String]},
+Global`eqvdIf[EquationValDrv[cStr_String],
+   cc_?noVars,
+   EquationValDrv[dd_String]]:>
+      EquationValDrv["("<>cStr<>").eqvdIf("<>ToString[CForm[cc]]<>","<>dd<>")"],
+Global`eqvdIf[EquationValDrv[cStr_String],
+   EquationValDrv[cc_String],
+   dd_?noVars]:>
+      EquationValDrv["("<>cStr<>").eqvdIf("<>cc<>","<>ToString[CForm[dd]]<>")"],
+Global`eqvdIf[{condPairs[cStr_String]},
    EquationValDrv[cc_String],
    EquationValDrv[dd_String]]:>
       EquationValDrv["("<>cStr<>").eqvdIf("<>cc<>","<>dd<>")"]
@@ -2075,7 +2083,9 @@ xTp1Vals=MapThread[{
 #2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
 {Drop[xVars,-1],Drop[zSubNow,0],Drop[xVarsNoT,1]}]
 },
-With[{
+With[{xTp1Subs=Thread[Flatten[Drop[xVars,-1]]->Flatten[xTp1Vals]],
+xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
+Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]],
 zSubs=
 MapThread[(#1[Global`t]->
 #2[[-1]][#3[[1]],#3[[2]],0])&,
@@ -2086,9 +2096,9 @@ With[{zZap=(zVarNames[[-1]][Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnd
 With[{theEqns=Join[
 	({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]])})//Expand,
 {Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
-zEqns,
+zEqns,xTp1Eqns,
 {zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}//Expand]},
-Print["theEqn=",theEqn//InputForm];
+Print["theEqns=",theEqns//InputForm];
 newWeightedStochasticBasis[modSymb,(theEqns)//Expand];
 {{stateVar, nonStateVar, theShock}, modClass} = 
   GenerateModelCode[modSymb];
@@ -2248,10 +2258,10 @@ With[{
 	nxtsSubs=makeNextStateSubs[eqns,state],
 	nxtnsSubs=makeNextNonStateSubs[eqns,state,nonState],
 	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},Print["all=",
+	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},(*Print["all=",
 		{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
 			Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]},
-			{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];
+			{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];*)
 	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
 		Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}]]]]]
 
