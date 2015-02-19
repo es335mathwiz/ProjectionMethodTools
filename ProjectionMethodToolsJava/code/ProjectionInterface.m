@@ -2021,20 +2021,9 @@ Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expa
 Print["theEqns=",theEqn];theEqn]]]]
 	
 doRecurIneqOcc[{}]:=
-Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,initPower,shockPower,
+Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
-With[{
-thePath=genPath[1]/.
-{Global`qtm1->Global`qq[Global`t-1],Global`rtm1->Global`rr[Global`t-1],Global`rutm1->Global`ru[Global`t-1],Global`eps->Global`eps[Global`ru][Global`t]}},
-With[{zZap=
-(Global`zzz$0$1[Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnderBar//Global`numIt,Global`zzz$0$1[Global`t]]])//Expand},
-With[{theEqn=doRecurIneqOccEqns[{}](*{
-Global`qq[Global`t]-(thePath[[4,1]]),
-Global`ru[Global`t]-(thePath[[6,1]]),
-Global`discrep[Global`t]-((thePath[[5,1]]/.Global`zzz$0$1[Global`t]->0)-Global`rUnderBar//Global`numIt),
-Global`rr[Global`t]-(thePath[[5,1]]),
-Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}*)
-},Print["variables in alphabetic orderr and grouped state then nonstate"];
+With[{theEqn=doRecurIneqOccEqns[{}]},Print["variables in alphabetic orderr and grouped state then nonstate"];
 Print["theEqns=",theEqn];
 newWeightedStochasticBasis[modSymb,theEqn];
 {{stateVar, nonStateVar, theShock}, modClass} = 
@@ -2065,7 +2054,7 @@ polys=Expand[((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t
 Function @@ ({{Global`qq,Global`ru,Global`ru$Shock},PiecewiseExpand[Expand[polys[[1]]]]}),
 Function @@ ({{Global`qq,Global`ru,Global`ru$Shock},PiecewiseExpand[Expand[polys[[2]]]]}),
 Function @@ ({{Global`qq,Global`ru,Global`ru$Shock},PiecewiseExpand[Expand[polys[[-1]]]]})
-}}]]]]
+}}]]
 
 
 
@@ -2081,14 +2070,10 @@ ToExpression["Global`ru$"<>theStrModNoT[forTime,ii]]},
 theStrModNoT[forTime_Integer,ii_Integer]:=
 ToString[forTime]<>"$"<>ToString[ii]
 
-
-
-doRecurIneqOcc[zSubNow:{{(_Function)..}..}]:=
-Module[{stateVar,nonStateVar,theShock,modEqns,polyRange,initPower,shockPower,
-lucaBasis,simp,resZ10$0$0,modSymb=Unique["modSymb"],modClass=Unique["modClass"]},
+doRecurIneqOccEqns[zSubNow:{{(_Function)..}..}]:=
+Module[{},
 With[{numZs=Length[zSubNow]},
 With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
-thePos=Reverse[{1,3}+#&/@(3*Range[numZs])],
 xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
 With[{xVars=Through[#[Global`t]]&/@xVarsNoT},
 With[{thePath=genPath[numZs+1]/.
@@ -2101,7 +2086,7 @@ xTp1Vals=MapThread[{
 #2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
 {Drop[xVars,-1],Drop[zSubNow,0],Drop[xVarsNoT,1]}]
 },
-With[{xTp1Subs=Thread[Flatten[Drop[xVars,-1]]->Flatten[xTp1Vals]],
+With[{
 xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
 Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]],
 zSubs=
@@ -2116,6 +2101,15 @@ With[{theEqns=Join[
 {Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
 zEqns,xTp1Eqns,
 {zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap])}]},
+theEqns]]]]]]]]]]]
+
+doRecurIneqOcc[zSubNow:{{(_Function)..}..}]:=
+Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modSymb=Unique["modSymb"],modClass=Unique["modClass"]},
+With[{numZs=Length[zSubNow]},
+With[{xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
+With[{theEqns=doRecurIneqOccEqns[zSubNow]
+},
 Print["theEqns=",theEqns//InputForm];
 newWeightedStochasticBasis[modSymb,(theEqns)];
 {{stateVar, nonStateVar, theShock}, modClass} = 
@@ -2145,7 +2139,7 @@ Append[zSubNow,
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[1]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[2]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[-1]]}//Expand)
-}]]]]]]]]]]]]/;
+}]]]]]/;
 Length[zSubNow]>0
 
 
