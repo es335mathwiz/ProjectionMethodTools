@@ -2040,11 +2040,10 @@ resZ10$0$0 =
   ComputeInitialCollocationWeights[lucaBasis, 
    ConstantArray[1, {5, 1}], modClass, simp];
 If[resZ10$0$0[isConvergedQ[]],Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
-(*to$551 = resZ10$0$0[toOrder[{1,1,1}]];
+to$551 = resZ10$0$0[toOrder[{1,1,1}]];
 If[resZ10$0$0[isConvergedQ[]],Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
-to$551 = resZ10$0$0[toOrder[{2,2,1}]];
-If[to$551[isConvergedQ[]],Print["converged 03"],Throw["projection polynomial computation did not converge"]];*)
-to$551=resZ10$0$0;
+to$551 = resZ10$0$0[toOrder[2*{2,2,2}]];
+If[to$551[isConvergedQ[]],Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 {oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
 discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
 polys=Expand[((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t],Global`rr[Global`t],Global`zzz$0$1[Global`t]}-oldSys)/.MapThread[#1->#2&,zSubs]))/.Global`eqvdIf->If/.discrepSub]/.
@@ -2085,7 +2084,7 @@ xTp1Vals=MapThread[{
 #2[[1]][#3[[1]][Global`t],#3[[2]][Global`t],0],
 #2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
 {Drop[xVars,-1],Drop[zSubNow,0],Drop[xVarsNoT,1]}]
-},
+},Print["xtp1",{xTp1Vals,zSubNow,xVarsNoT}];
 With[{
 xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
 Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]],
@@ -2127,11 +2126,10 @@ resZ10$0$0 =
   ComputeInitialCollocationWeights[lucaBasis, 
    ConstantArray[1, {Length[theEqns], 1}], modClass, simp];
 If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
-(*to$551 = resZ10$0$0[toOrder[{1,1,1}]];
+to$551 = resZ10$0$0[toOrder[{1,1,1}]];
 If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
-to$551 = resZ10$0$0[toOrder[{2,2,1}]];
-If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];*)
-to$551=resZ10$0$0;
+to$551 = resZ10$0$0[toOrder[{5,5,2}]];
+If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 polys = Expand[CreatePolynomials[modSymb,to$551]] // Chop;
 (*Print["the Polys=",InputForm[{polys,CreatePolynomials[to$551]}]];*)
 Append[zSubNow,

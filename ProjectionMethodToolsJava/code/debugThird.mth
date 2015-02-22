@@ -1,0 +1,168 @@
+(*  *)
+Get["ProjectionInterface`"];
+Get["paperFocus.mth"]
+Get["thirdRecursion.mth"];
+zSubNow = Nest[doRecurIneqOcc, {}, 2];
+zSubNext = Nest[doRecurIneqOcc, zSubNow, 1];
+
+zSubNext01 = Nest[doRecurIneqOcc, zSubNext, 1];
+
+zSubNext05 = Nest[doRecurIneqOcc, zSubNext, 4];
+(*zSubNext30 = Nest[doRecurIneqOcc, zSubNext, 26];*)
+
+chk01=(hmat//numIt) .genPath[1,1]/.zzz$0$1[t]->zSubNow[[1,3]][qtm1,rtm1,eps]
+
+Export["prettyEqns01.pdf",
+MatrixForm[(Transpose[{eqns01=doRecurIneqOccEqns[{}]/.{eqvdIf->If,GreaterEqual->Greater}}]//myN//Simplify)//. latexSubs]
+]
+(*change conditionalExpression of two cases to form to get to piecewise*)
+pairs=Partition[Sort[Flatten[
+Solve[Thread[eqns01==0],{qq[t],ru[t],rr[t],discrep[t],zzz$0$1[t]},Reals]]],2]
+
+
+
+soln01=(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@pairs
+
+Export["prettySoln01Q.pdf", MatrixForm[soln01[[2]]//Simplify/. latexSubs]]
+Export["prettySoln01R.pdf", MatrixForm[soln01[[3]]//Simplify/. latexSubs]]
+Export["prettySoln01Z.pdf", MatrixForm[soln01[[5]]//Simplify/. latexSubs]]
+
+eqns02=doRecurIneqOccEqns[zSubNow[[{1}]]]/.{eqvdIf->If,GreaterEqual->Greater}
+
+Export["prettyEqns02.pdf",
+MatrixForm[(Transpose[{eqns02}]//myN//FullSimplify)//. latexSubs]
+]
+
+morePaperSubs={
+qtm1->Subscript[q,t-1],
+rutm1->Subscript[ru,t-1],
+eps->Subscript[epsilon,t]
+
+aPath01=genPath[1]
+try01={
+(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
+}
+red01=Reduce[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
+slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
+zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
+
+
+
+
+
+
+
+Export["try01A.pdf",try01[[1,1]]]
+Export["try01B.pdf",try01[[1,2]]]
+
+Export["red01A.pdf",red01[[1,1]]]
+Export["red01B.pdf",red01[[1,2]]]
+Export["red01C.pdf",red01[[2]]]
+
+
+aPath02=genPath[2]
+update01=red01/.{eps->0,qtm1->aPath02[[4,1]],rutm1->aPath02[[6,1]]}
+
+try02={((aPath02[[5,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath02[[5,1]]==0.02&&zzz$1$1[t]>=0)),
+zzz$0$1[t]==zzz$0$1Func[aPath02[[4,1]],aPath02[[6,1]],0]}//FullSimplify
+
+
+
+cmpSubs={eps[ru][t]->eps,
+qq$1$1[t]->aPath02[[4,1]],ru$1$1[t]->aPath02[[6,1]],
+qq$1$1[t-1]->qtm1,ru$1$1[t-1]->rutm1};
+cmp=doRecurIneqOccEqns[doRecurIneqOcc[{}]]
+forCmp=cmp/.cmpSubs//FullSimplify
+
+aCmpSub={eps->0,rutm1->0,qtm1->0}
+(*
+Reduce[try02,{zzz$0$1[t],zzz$1$1[t]},Reals]//FullSimplify//Chop
+*)
+try02Func=Function @@ {{qtm1,rutm1,eps},try02}
+
+try02Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+Plot3D[try02Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2},EvaluationMonitor:>Print[{try02Vals[xx,yy,0],xx,yy}]]
+
+
+
+(*
+Verify  zzz$0$1 equation *)
+
+chkSubs=Flatten[Join[Solve[cmp[[1]]==0,qq$1$1[t]],Solve[cmp[[2]]==0,ru$1$1[t]]]]
+(cmp[[4]]/.chkSubs//FullSimplify)/.eqvdIf->If/.cmpSubs/.aCmpSub
+
+
+always01=Thread[eqns01[[Range[4]]]==0]
+
+cases01={{discrep[t]>0,zzz$0$1[t]==0},{discrep[t]<0,
+zzz$0$1[t]==0.043055616708169354 - 0.5763904177042344*qq[-1 + t] - 
+     0.6644518272425242*ru[-1 + t] - 1.3289036544850483*eps[ru][t]}}
+
+
+
+
+try01=Or[And@@Join[always01,cases01[[1]]],
+And@@Join[always01,cases01[[2]]]]
+Solve[try01,{discrep[t],qq[t], rr[t], ru[t], zzz$0$1[t]},Reals]
+
+eqns01Subs={qq[-1 + t]->qq$1$1[t-1],qq[t]->qq$1$1[t],
+ru[-1 + t]->ru$1$1[t-1],
+ru[ t]->ru$1$1[t],
+zzz$0$1[t]->zzz$1$1[t]}
+
+
+cases02={discrep[t]>0,zzz$1$1[t]==0},{discrep[t]<0,zzz$1$1[t]==0.043055616708169354 - 
+     0.5763904177042344*qq$1$1[-1 + t] - 0.6644518272425242*ru$1$1[-1 + t] + 
+     0.30556167081693936*zzz$0$1[t] - 1.3289036544850483*eps[ru][t]}
+
+eqns02[[1]]-(eqns01[[1]]/.eqns01Subs)//Chop
+
+
+
+(*
+
+
+Solve[(Thread[eqns02==0]/.zzz$0$1[t]->soln01[[-1]])//FullSimplify,
+{qq$1$1[t],ru$1$1[t],discrep[t],zzz$1$1[t]},Reals]
+
+
+
+modSymb=Unique["modSymb"];
+modClass=Unique["modClass"];
+zVarNames=Flatten[ProjectionInterface`Private`redoGenZVars[numZs,1]]/.ProjectionInterface`Private`ridTSubs;
+numZs=Length[zSubNow]
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]
+xVars=Through[#[Global`t]]&/@xVarsNoT
+thePath=genPath[numZs+1]/.
+{Global`qtm1->(xVars[[-1,1]]/.Global`t->Global`t-1),Global`rtm1->Global`rr[Global`t-1],
+Global`rutm1->(xVars[[-1,2]]/.Global`t->Global`t-1),Global`eps->Global`eps[Global`ru][Global`t]}
+xTp1Vals=MapThread[{
+#2[[1]][#3[[1]][Global`t],#3[[2]][Global`t],0],
+#2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
+{Drop[xVars,-1],Drop[zSubNow,0],Drop[xVarsNoT,1]}];
+xTp1Subs=Thread[Flatten[Drop[xVars,-1]]->Flatten[xTp1Vals]];
+xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
+Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]];
+
+zZap=(zVarNames[[-1]][Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnderBar//Global`numIt,zVarNames[[-1]][Global`t]]])//Expand
+zSubs=
+MapThread[(#1[Global`t]->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xTp1Vals}]
+zEqns=ProjectionInterface`Private`subOutPiecewise[zSubs/.HoldPattern[xx_->yy_]->xx  -(yy)]
+theEqns=Join[
+	({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]])})//Expand,
+{Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
+zEqns,
+{zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}//Expand]
+*)
+(*
+thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]
+
+
+
+
+*)
