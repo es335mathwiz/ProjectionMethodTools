@@ -2,12 +2,75 @@
 Get["ProjectionInterface`"];
 Get["paperFocus.mth"]
 Get["thirdRecursion.mth"];
+
+(*compute z0 for time zero constraint only *)
+Print["for one"]
+aPath01=genPath[1]
+try01={
+(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
+}
+slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
+zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
+
+first = Nest[doRecurIneqOcc, {}, 1];
+
+Plot3D[first[[-1,-1]][qq,ru,.1] - zzz$0$1Func[qq,ru,.1],{qq,-.1,.1},{ru,-.2,.2}]
+Plot3D[first[[-1,-1]][qq,ru,-.1] - zzz$0$1Func[qq,ru,-.1],{qq,-.1,.1},{ru,-.2,.2}]
+
+
+
+(*compute z1 for time zero constrint and time t+1 constraint*)
+Print["now for two"]
+aPath02=genPath[2]
+
+try02={((aPath02[[5,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath02[[5,1]]==0.02&&zzz$1$1[t]>=0)),
+zzz$0$1[t]==zzz$0$1Func[aPath02[[4,1]],aPath02[[6,1]],0]}//FullSimplify
+try02Func=Function @@ {{qtm1,rutm1,eps},try02}
+try02Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]},Reals]]
+slv02=Solve[try02,{zzz$1$1[t]},Reals]//FullSimplify//Chop
+zzz$1$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv02])]}
+
+
+
+Plot3D[try02Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+
+second=doRecurIneqOcc[first]
+
+Plot3D[(try02Vals[xx,yy,0][[-1]]-second[[-1,-1]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2}]
+
+
+
+(*compute z2 for time zero constrint and time t+1,t+2 constraint*)
+Print["now for three"]
+
+aPath03=genPath[3]
+try03={((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0)),
+zzz$0$1[t]==zzz$0$1Func[aPath03[[4,1]],aPath03[[6,1]],0]
+zzz$1$1[t]==zzz$0$1Func[aPath03[[4,1]],aPath03[[6,1]],0]
+}//FullSimplify
+
+
+
+(*
+try03Func=Function @@ {{qtm1,rutm1,eps},try03}
+try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]},Reals]]
+Plot3D[try03Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+
+
+
+
+
 zSubNow = Nest[doRecurIneqOcc, {}, 2];
 zSubNext = Nest[doRecurIneqOcc, zSubNow, 1];
 
-zSubNext01 = Nest[doRecurIneqOcc, zSubNext, 1];
+(*zSubNext01 = Nest[doRecurIneqOcc, zSubNext, 1];*)
 
-zSubNext05 = Nest[doRecurIneqOcc, zSubNext, 4];
+(*zSubNext05 = Nest[doRecurIneqOcc, zSubNext, 4];*)
 (*zSubNext30 = Nest[doRecurIneqOcc, zSubNext, 26];*)
 
 chk01=(hmat//numIt) .genPath[1,1]/.zzz$0$1[t]->zSubNow[[1,3]][qtm1,rtm1,eps]
@@ -37,7 +100,7 @@ morePaperSubs={
 qtm1->Subscript[q,t-1],
 rutm1->Subscript[ru,t-1],
 eps->Subscript[epsilon,t]
-
+}
 aPath01=genPath[1]
 try01={
 (aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
@@ -81,13 +144,12 @@ aCmpSub={eps->0,rutm1->0,qtm1->0}
 Reduce[try02,{zzz$0$1[t],zzz$1$1[t]},Reals]//FullSimplify//Chop
 *)
 try02Func=Function @@ {{qtm1,rutm1,eps},try02}
-
 try02Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 {zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
 Plot3D[try02Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2},EvaluationMonitor:>Print[{try02Vals[xx,yy,0],xx,yy}]]
 
-
-
+first = Nest[doRecurIneqOcc, {}, 1];
+oneStep = Nest[doRecurIneqOcc, first, 1];
 (*
 Verify  zzz$0$1 equation *)
 
@@ -165,4 +227,5 @@ thePos=Reverse[{1,3}+#&/@(3*Range[numZs])]
 
 
 
+*)
 *)
