@@ -951,19 +951,44 @@ GenerateBasis[stateVars,stateRanges,statePowers,
 	
 Print["define preparsesubs"];
 tryNow[eqns_List]:=
-FixedPoint[
-subOutEqvdIf[
-subOutConds[
-subOutDoInt[
-subOutErf[
-subOutPower[
-subOutPlus[
-subOutTimes[
-subOutRational[
-		Identity[
-subOutStateNonStateVars[
-	subOutEps[subOutPiecewise[#]]]]]]]]]]]]&,eqns]
+FixedPoint[compEqns,eqns]
 
+compEqns[eqns_]:=Module[{},Print["h12"];
+subOutEqvdIf[
+		Print["h11"];
+subOutConds[
+		Print["h10"];
+subOutDoInt[
+		Print["h9"];
+subOutErf[
+		Print["h8"];
+subOutPower[
+		Print["h7"];
+subOutPlus[
+		Print["h6"];
+subOutTimes[
+		Print["h5"];
+subOutRational[
+		Print["h4"];
+		Identity[
+				Print["h3"];
+subOutStateNonStateVars[
+		Print["h2"];
+	subOutEps[
+			Print["h1"];
+		subOutPiecewise[eqns]
+		]
+		]
+		]
+		]
+		]
+		]
+		]
+		]
+		]
+		]
+		]
+		]
 (*?FreeQ[#,Global`eqvdIf]&*)
 (*
 subOutConds[eqns_List]:=
@@ -1072,7 +1097,7 @@ With[{nvStr=(*#/.xx_/;And[Head[xx]=!=String,ProjectionInterface`Private`noVars[x
 	Print["nvStr=",nvStr,toStringButNotHead/@condsList];
 With[{theRes=Fold[((#1/.{condPairs[str_String],{condPairs[str_String]}}:>str)<>logicStr[theLogic]<>(#2//.condSubs)<>")")&,
 	(nvStr[[1]]//.condSubs)/.{condPairs[str_String],{condPairs[str_String]}}:>str,Drop[nvStr,1]]},
-	Print["doConds:theRes=",theRes];
+(*	Print["doConds:theRes=",theRes];*)
 	theRes]]]
 
 doACond[aCond:(_?onlyCompare[lft_,rgt_])]:=EquationValDrv[aCond//.condSubs]
@@ -1155,7 +1180,8 @@ subOutTimes[
 subOutRational[
 	Identity[
 subOutStateNonStateVars[
-	subOutEps[subOutPiecewise[#]]]]]]]]]]]]&,eqns]]
+	subOutEps[
+		subOutPiecewise[#]]]]]]]]]]]]&,eqns]]
 	
 (*
 makeParseSubs[eqns_List]:=
@@ -1283,11 +1309,16 @@ Global`eqvdIf[EquationValDrv[aa_String]>=
 }
 *)
 
-doPreEqvdIfPrs[firstPrs:{{_,_}..},elseVal_]:=
-Fold[Global`eqvdIf[#2[[2]],#2[[1]],#1]&,elseVal,firstPrs]
+doPreEqvdIfPrs[firstPrs:{{_,_}..},elseVal_]:=Module[{theRes},
+theRes=Fold[Global`eqvdIf[#2[[2]],#2[[1]],#1]&,elseVal,firstPrs];
+theRes]
 
-subOutPiecewise[eqns_List]:=eqns//.HoldPattern[Piecewise[firstPrs:{{_,_}..},elseVal_]]:>doPreEqvdIfPrs[firstPrs,elseVal]
-
+subOutPiecewise[eqns_List]:=Module[{},
+With[{theRes=	
+	eqns/.{If->myIf,HoldPattern[Piecewise[firstPrs:{{_,_}..},elseVal_]]:>Evaluate[doPreEqvdIfPrs[firstPrs,elseVal]]}
+},
+theRes/.myIf->If
+]]
 
 (*/.{
 	Piecewise[{{xxVal_,xxCond_}},yyVal_]:>Global`eqvdIf[xxCond,xxVal,yyVal]
@@ -2018,13 +2049,14 @@ Global`ru[Global`t]-(thePath[[6,1]]),
 Global`discrep[Global`t]-((thePath[[5,1]]/.Global`zzz$0$1[Global`t]->0)-Global`rUnderBar//Global`numIt),
 Global`rr[Global`t]-(thePath[[5,1]]),
 Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}},Print["variables in alphabetic orderr and grouped state then nonstate"];
-Print["theEqns=",theEqn];theEqn]]]]
+(*Print["theEqns=",theEqn];*)
+theEqn]]]]
 	
 doRecurIneqOcc[{}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
 With[{theEqn=doRecurIneqOccEqns[{}]},Print["variables in alphabetic orderr and grouped state then nonstate"];
-Print["theEqns=",theEqn];
+(*Print["theEqns=",theEqn];*)
 newWeightedStochasticBasis[modSymb,theEqn];
 {{stateVar, nonStateVar, theShock}, modClass} = 
   GenerateModelCode[modSymb];
@@ -2080,11 +2112,11 @@ With[{thePath=genPath[numZs+1]/.
 Global`rutm1->(xVars[[-1,2]]/.Global`t->Global`t-1),Global`eps->Global`eps[Global`ru][Global`t]}},
 With[{(*zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand*)},
 With[{
-xTp1Vals=Join[xVars[[{-1}]],{}](*MapThread[{
+xTp1Vals=Join[xVars[[{-1}]],MapThread[{
 #2[[1]][#3[[1]][Global`t],#3[[2]][Global`t],0],
 #2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
-{Drop[xVars,-1],Drop[zSubNow,0],Drop[xVarsNoT,1]}]*)
-},Print["xtp1",{xTp1Vals,zSubNow,xVarsNoT}];
+{Drop[xVars,-2],Drop[zSubNow,-1],Drop[xVarsNoT,-2]}]]
+},(*Print["xtp1",{xTp1Vals,zSubNow,xVarsNoT}];*)
 With[{
 xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
 Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]],
@@ -2109,7 +2141,7 @@ With[{numZs=Length[zSubNow]},
 With[{xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
 With[{theEqns=doRecurIneqOccEqns[zSubNow]
 },
-Print["theEqns=",theEqns//InputForm];
+(*Print["theEqns=",theEqns//InputForm];*)
 newWeightedStochasticBasis[modSymb,(theEqns)];
 {{stateVar, nonStateVar, theShock}, modClass} = 
   GenerateModelCode[modSymb];
@@ -2212,8 +2244,8 @@ With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
 With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},(*Print["guts=",guts];*)
 With[{subbed=(ReplacePart[justRHS,#]&@guts )//.ridZSubs},(*Print["sbbed=",subbed];*)(*Print["stateSubs=",stateSubs];*)
 With[{theRes=
-(*PiecewiseExpand/@*)(((((subbed/.(Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"])/.Global`eqvdIf->If))/.
-xx_[Global`t-1]->xx)/.stateSubs)//Expand)//Chop},Print["theRes=",theRes];
+(*PiecewiseExpand/@*)(((((subbed/.(Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"])(*/.Global`eqvdIf->If*)))/.
+xx_[Global`t-1]->xx)/.stateSubs)//Expand)//Chop},(*Print["theRes=",theRes];*)
 theRes]]]]]]]]]]]
 
 lhsAMod[stateVars_List,nonStateVars_List]:=
