@@ -2132,7 +2132,76 @@ With[{theEqns=Join[
 {Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
 zEqns,xTp1Eqns,
 {zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap])}]},
-theEqns]]]]]]]]]]]
+theEqns]]]]]]]]]]]/;Length[subNow]==2
+
+doRecurIneqOccEqns[zSubNow:{{(_Function)..}..}]:=
+Module[{},
+With[{numZs=Length[zSubNow]},
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
+With[{xVars=Through[#[Global`t]]&/@xVarsNoT},
+With[{thePath=genPath[numZs+1]/.
+{Global`qtm1->(xVars[[-1,1]]/.Global`t->Global`t-1),Global`rtm1->Global`rr[Global`t-1],
+Global`rutm1->(xVars[[-1,2]]/.Global`t->Global`t-1),Global`eps->Global`eps[Global`ru][Global`t]}},
+With[{(*zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand*)},
+With[{
+xTp1Vals=Join[xVars[[{-1}]],MapThread[{
+#2[[1]][#3[[1]][Global`t],#3[[2]][Global`t],0],
+#2[[2]][#3[[1]][Global`t],#3[[2]][Global`t],0]}&,
+{Drop[xVars,-2],Drop[zSubNow,-1],Drop[xVarsNoT,-2]}]]
+},(*Print["xtp1",{xTp1Vals,zSubNow,xVarsNoT}];*)
+With[{
+xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
+Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]],
+zSubs=
+MapThread[(#1[Global`t]->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xTp1Vals}]
+},
+With[{zEqns=subOutPiecewise[zSubs/.HoldPattern[xx_->yy_]->xx  -(yy)]},
+With[{zZap=(zVarNames[[-1]][Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnderBar//Global`numIt,zVarNames[[-1]][Global`t]]])//Expand},
+With[{theEqns=Join[
+	({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]])}),
+{Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
+zEqns,xTp1Eqns,
+{zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap])}]},
+theEqns]]]]]]]]]]]/;Length[zSubNow]==1
+
+
+doRecurIneqOccEqns[zSubNow:{{(_Function)..}..}]:=
+Module[{},
+With[{numZs=Length[zSubNow]},
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
+With[{xVars=Through[#[Global`t]]&/@xVarsNoT},
+With[{thePath=genPath[numZs+1]/.
+{Global`qtm1->(xVars[[-1,1]]/.Global`t->Global`t-1),Global`rtm1->Global`rr[Global`t-1],
+Global`rutm1->(xVars[[-1,2]]/.Global`t->Global`t-1),Global`eps->Global`eps[Global`ru][Global`t]}},
+With[{(*zZap=(zVarNames[[-1]]/.Solve[thePath[[5,1]]==0.02,zVarNames[[-1]],Reals])//Expand*)},
+With[{
+xTp1Vals=MapThread[{
+#1[[1]][#2[[1]][Global`t],#2[[2]][Global`t],0],
+#1[[2]][#2[[1]][Global`t],#2[[2]][Global`t],0]}&,
+{zSubNow,Drop[xVarsNoT,1]}]
+},(*Print["xtp1",{xTp1Vals,zSubNow,xVarsNoT}];*)
+With[{
+xTp1Eqns=ProjectionInterface`Private`subOutPiecewise[
+Thread[Flatten[Drop[Drop[xVars,-1],1]]-Flatten[Drop[xTp1Vals,1]]]],
+zSubs=
+MapThread[(#1[Global`t]->
+#2[[-1]][#3[[1]],#3[[2]],0])&,
+{Drop[zVarNames,-1],zSubNow,xTp1Vals}]
+},
+With[{zEqns=subOutPiecewise[zSubs/.HoldPattern[xx_->yy_]->xx  -(yy)]},
+With[{zZap=(zVarNames[[-1]][Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnderBar//Global`numIt,zVarNames[[-1]][Global`t]]])//Expand},
+With[{theEqns=Join[
+	({xVars[[-1,1]]-(thePath[[4,1]]),xVars[[-1,2]]-(thePath[[6,1]])}),
+{Global`discrep[Global`t]-((thePath[[5,1]]/.zVarNames[[-1]][Global`t]->0)-Global`rUnderBar//Global`numIt)},
+zEqns,xTp1Eqns,
+{zVarNames[[-1]][Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap])}]},
+theEqns]]]]]]]]]]]/;Length[zSubNow]>1
+
+
 
 doRecurIneqOcc[zSubNow:{{(_Function)..}..}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
@@ -2162,7 +2231,13 @@ to$551 = resZ10$0$0[toOrder[{1,1,1}]];
 If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
 to$551 = resZ10$0$0[toOrder[2*{1,1,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
-polys = Expand[CreatePolynomials[modSymb,to$551]] // Chop;
+oldpolys = Expand[CreatePolynomials[modSymb,to$551]] // Chop;
+{oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
+discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
+polys=PiecewiseExpand[Expand[
+((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t],Global`rr[Global`t],Global`zzz$0$1[Global`t]}-oldSys)/.
+MapThread[#1->#2&,zSubs]))]/.Global`eqvdIf->If/.discrepSub]/.
+{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};(*Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];*)
 (*Print["the Polys=",InputForm[{polys,CreatePolynomials[to$551]}]];*)
 Append[zSubNow,
 {
@@ -2234,7 +2309,7 @@ With[{nonStateVars=gtNonStateVars[basis],
 stateVars=gtStateVarsNoShocks[basis]},
 With[{lhsVars=lhsAMod[stateVars,nonStateVars]},
 With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
-origPolys,{stateVars,nonStateVars}],justRHS=projEquations[aMod]-lhsVars,
+origPolys,{stateVars,nonStateVars}],justRHS=lhsVars-projEquations[aMod],
 stateSubs=MapThread[#1->#2&,{lhsVars,origPolys}]//Expand},(*Print["stateSubs=",stateSubs];*)
 If[cnstrPolys==={{},{}},origPolys,
 With[{vNames=ToExpression/@

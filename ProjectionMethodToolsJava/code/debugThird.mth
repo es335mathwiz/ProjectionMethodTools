@@ -94,7 +94,23 @@ PlotRange->All]]
 
 
 second=doRecurIneqOcc[first]
-Plot3D[(try02Vals[xx,yy,0][[-1]]-second[[-1,-1]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2}]
+
+secondEqns=doRecurIneqOccEqns[first]
+
+mySys02[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+With[{dSub=Solve[secondEqns[[3]]==0,discrep[t]],tpSubs=
+Thread[{
+qq$1$1[t-1],rr$1$1[t-1],ru$1$1[t-1],
+qq$1$1[t],rr$1$1[t],ru$1$1[t]}->
+Flatten[aPath02ExtFunc[qtm1Arg,rutm1Arg,epsArg][[Range[6]]]]],
+tVals=try02Vals[qtm1Arg,rutm1Arg,epsArg]},
+(((secondEqns/.dSub)/.tpSubs)/.{eqvdIf->If,eps[ru][t]->epsArg,zzz$0$1[t]:>tVals[[1]],zzz$1$1[t]:>tVals[[2]]})//Chop]
+
+Print["following Should be zeroes"]
+Plot3D[mySys02[xx,yy,.2],{xx,-.1,.1},{yy,-.2,.2}]
+
+Export["prettyNumDiff02.pdf",
+Plot3D[(try02Vals[xx,yy,0][[-1]]-second[[-1,-1]][xx,yy,0]/.eqvdIf->If),{xx,-.1,.1},{yy,-.2,.2}]]
 (*
 Export["prettyEqns02.pdf",
 MatrixForm[(Transpose[{eqns02}]//myN//FullSimplify)//. latexSubs]
@@ -116,27 +132,22 @@ try03Func=Function @@ {{qtm1,rutm1,eps},try03}
 try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 {zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],
 {zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
-Plot3D[try03Vals[xx,yy,0][[3]],{xx,-.1,.1},{yy,-.2,.2}]
+
+
+
+try03q1r1Vals[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+(aPath03[[{7,9},1]]/.Flatten[Solve[try03Func[qtm1Arg,rutm1Arg,epsArg],
+{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]])/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg}
 
 
 
 
 third=doRecurIneqOcc[second]
-Plot3D[(try03Vals[xx,yy,0][[-1]]-third[[-1,-1]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2}]
+Export["prettyNumDiff03.pdf",
+Plot3D[(try03Vals[xx,yy,0][[-1]]-third[[-1,-1]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2}]]
+thirdEqns=doRecurIneqOccEqns[second]
 
 
-
-aPath03=genPath[3]
-try03={((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
-(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0)),
-zzz$0$1[t]==zzz$0$1Func[aPath03[[7,1]],aPath03[[9,1]],0],
-zzz$1$1[t]==zzz$0$1Func[aPath03[[4,1]],aPath03[[6,1]],0]
-}//FullSimplify
-try03Func=Function @@ {{qtm1,rutm1,eps},try03}
-try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
-{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],
-{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]]
-Plot3D[try03Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
 
 
 aPath03ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
@@ -146,6 +157,47 @@ tp/.{zzz$0$1[t]:>tVals[[1]],
 zzz$1$1[t]:>tVals[[2]],
 zzz$2$1[t]:>tVals[[3]]
 }]
+
+
+
+
+mySys03[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+With[{dSub=Flatten[Solve[thirdEqns[[3]]==0,discrep[t]]],
+qrSubs=Thread[{qq$1$1[t],ru$1$1[t]}->try03q1r1Vals[qtm1Arg,rutm1Arg,epsArg]],
+tpSubs=
+Thread[{
+qq$2$1[t-1],rr$2$1[t-1],ru$2$1[t-1],
+qq$2$1[t],rr$2$1[t],ru$2$1[t]}->
+Flatten[aPath03ExtFunc[qtm1Arg,rutm1Arg,epsArg][[Range[6]]]]],
+tVals=try03Vals[qtm1Arg,rutm1Arg,epsArg]},
+((((thirdEqns/.dSub)/.tpSubs)/.{eqvdIf->If,eps[ru][t]->epsArg,zzz$0$1[t]->tVals[[1]],zzz$1$1[t]->tVals[[2]],zzz$2$1[t]->tVals[[2]]}))/.qrSubs/.tpSubs//Chop]
+
+(*Should be zeroes*)
+Plot3D[mySys03[xx,yy,.2],{xx,-.1,.1},{yy,-.2,.2}]
+
+thirdEqnsFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+thirdEqns/.{qq$2$1[t-1]->qtm1Arg,ru$2$1[t-1]->rutm1Arg,eps[ru][t]->epsArg}
+
+
+try03Func[0,0,0]//FullSimplify
+thirdEqnsFunc[0,0,0]//FullSimplify
+
+(*workinghere*)
+mySys03[0,0,0.09]
+(*only equation 4 differs from zero 
+this is equation for z0 depends on q1 r1 *)
+try03Func[0,0,0.09]//FullSimplify (*allzeroes*)
+try03Func[0,0,0.075]//FullSimplify(*allzeroes*)
+try03Func[0,0,0.070]//FullSimplify(*not allzeroes*)
+
+FindInstance[Not[mySys03[0,0,0.09][[4]]==0]&&(try03Func[0,0,09][[1]]),{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]},Reals]
+(*
+
+try03Vals[0,0,.05](*z2 non zero others zero*)
+try03Func[0,0,.05]
+thirdEqnsFunc[0,0,.05]
+*)
+
 
 hmatApp03[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 With[{tp=aPath03ExtFunc[qtm1,rutm1,eps]},
@@ -169,34 +221,83 @@ PlotRange->All]]
 
 
 Export["prettyhapp03C.pdf",
-Plot3D[hmatApp03[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+Plot3D[hmatApp03[qtm1,rutm1,0][[8,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
 
-Export["prettyrr01lessrr03.pdf",
+Export["prettyrr02lessrr03.pdf",
 Plot3D[{aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-aPath03ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
-
-
-
-
-(*compute z2 for time zero constrint and time t+1,t+2 constraint*)
+(*compute z2 for time zero constrint and time t+1,t+2 t+2 constraint*)
 Print["now for four"]
 aPath04=genPath[4]
-try04={((aPath04[[5,1]]>=0.02&&zzz$2$1[t]==0)||
-(aPath04[[5,1]]==0.02&&zzz$2$1[t]>=0)),
-zzz$0$1[t]==zzz$0$1Func[aPath04[[10,1]],aPath04[[12,1]],0],
-zzz$1$1[t]==zzz$1$1Func[aPath04[[7,1]],aPath04[[9,1]],0],
-zzz$2$1[t]==zzz$2$1Func[aPath04[[4,1]],aPath04[[6,1]],0]
-}//FullSimplify
+try04={
+((aPath04[[5,1]]>=0.02&&zzz$3$1[t]==0)||
+(aPath04[[5,1]]==0.02&&zzz$3$1[t]>=0))&&
+((aPath04[[8,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath04[[8,1]]==0.02&&zzz$2$1[t]>=0))&&
+((aPath04[[11,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath04[[11,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath04[[14,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath04[[14,1]]==0.02&&zzz$0$1[t]>=0))
+}
 try04Func=Function @@ {{qtm1,rutm1,eps},try04}
 try04Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 {zzz$0$1[t],zzz$1$1[t],zzz$2$1[t],zzz$3$1[t]}/.Flatten[Solve[try04Func[qtm1,rutm1,eps],
-{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]]
-Plot3D[try04Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+{zzz$3$1[t],zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
+
+
+aPath04ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[4,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try04Vals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]],
+zzz$2$1[t]:>tVals[[3]],
+zzz$3$1[t]:>tVals[[4]]
+}]
+
+hmatApp04[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath04ExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]],
+hmatN.tp[[Range[9]+3]],
+hmatN.tp[[Range[9]+6]],
+hmatN.tp[[Range[9]+9]]
+]//Chop]
+
+Export["prettyrr04.pdf",
+Plot3D[aPath04ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All]]
+
+
+Export["prettyhapp04A.pdf",
+Plot3D[hmatApp04[qtm1,rutm1,0][[2,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All]]
+
+Export["prettyhapp04B.pdf",
+Plot3D[hmatApp04[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All]]
+
+
+Export["prettyhapp04C.pdf",
+Plot3D[hmatApp04[qtm1,rutm1,0][[8,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All]]
+
+Export["prettyhapp04D.pdf",
+Plot3D[hmatApp04[qtm1,rutm1,0][[11,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All]]
+
+
+
+Export["prettyrr03lessrr04.pdf",
+Plot3D[{aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-aPath04ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All]]
+
+
+
+
 
 
 
