@@ -2053,7 +2053,7 @@ Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expa
 theEqn]]]]
 	
 doRecurIneqOcc[{}]:=
-Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,
+Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,polys,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
 With[{theEqn=doRecurIneqOccEqns[{}]},Print["variables in alphabetic orderr and grouped state then nonstate"];
 (*Print["theEqns=",theEqn];*)
@@ -2205,7 +2205,7 @@ theEqns]]]]]]]]]]]/;Length[zSubNow]>1
 
 doRecurIneqOcc[zSubNow:{{(_Function)..}..}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
-lucaBasis,simp,resZ10$0$0,modSymb=Unique["modSymb"],modClass=Unique["modClass"]},
+lucaBasis,simp,resZ10$0$0,modSymb=Unique["modSymb"],modClass=Unique["modClass"],polys,oldpolys,oldSys,zSubs},
 With[{numZs=Length[zSubNow]},
 With[{xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
 With[{theEqns=doRecurIneqOccEqns[zSubNow]
@@ -2234,9 +2234,9 @@ If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynom
 oldpolys = Expand[CreatePolynomials[modSymb,to$551]] // Chop;
 {oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
 discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
-polys=PiecewiseExpand[Expand[
-((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t],Global`rr[Global`t],Global`zzz$0$1[Global`t]}-oldSys)/.
-MapThread[#1->#2&,zSubs]))]/.Global`eqvdIf->If/.discrepSub]/.
+polys=PiecewiseExpand/@Expand[
+((({Global`qq[Global`t],Global`ru[Global`t],zSubs[[1,-1]]}-oldSys[[{1,2,-1}]])/.
+MapThread[#1->#2&,zSubs]))](*/.Global`eqvdIf->If*)/.discrepSub/.
 {Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};(*Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];*)
 (*Print["the Polys=",InputForm[{polys,CreatePolynomials[to$551]}]];*)
 Append[zSubNow,
