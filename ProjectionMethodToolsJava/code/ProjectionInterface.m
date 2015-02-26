@@ -2053,7 +2053,7 @@ Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expa
 theEqn]]]]
 	
 doRecurIneqOcc[{}]:=
-Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,polys,
+Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,polys,betterLHS,betterRHS,betterPolys,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
 With[{theEqn=doRecurIneqOccEqns[{}]},Print["variables in alphabetic orderr and grouped state then nonstate"];
 (*Print["theEqns=",theEqn];*)
@@ -2078,8 +2078,10 @@ to$551 = resZ10$0$0[toOrder[{2,2,2}]];
 If[to$551[isConvergedQ[]],Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 {oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
 discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
-polys=Expand[((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t],Global`rr[Global`t],Global`zzz$0$1[Global`t]}-oldSys)/.MapThread[#1->#2&,zSubs]))/.Global`eqvdIf->If/.discrepSub]/.
-{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};(*Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];*)
+polys=-1*(PiecewiseExpand/@(Expand[CreatePolynomials[modSymb,to$551]])/.Global`eqvdIf->If)// Chop;
+Print["polys=",polys];
+(*polys=Expand[((({Global`qq[Global`t],Global`ru[Global`t],Global`discrep[Global`t],Global`rr[Global`t],Global`zzz$0$1[Global`t]}-oldSys)/.MapThread[#1->#2&,zSubs]))/.Global`eqvdIf->If/.discrepSub]/.
+{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};*)(*Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];*)
 (*Print["repEqns=",InputForm[repEqns]];*)(*Print[InputForm[getOrderedOuterString[to$551]]]; shouldn't apply to result*)
 {{
 Function @@ ({{Global`qq,Global`ru,Global`ru$Shock},PiecewiseExpand[Expand[polys[[1]]]]}),
@@ -2204,10 +2206,12 @@ theEqns]]]]]]]]]]]/;Length[zSubNow]>1
 
 
 doRecurIneqOcc[zSubNow:{{(_Function)..}..}]:=
-Module[{stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
+Module[{allZSubs,stateVar,nonStateVar,theShock,polyRange,initPower,shockPower,
 lucaBasis,simp,resZ10$0$0,modSymb=Unique["modSymb"],modClass=Unique["modClass"],polys,oldpolys,oldSys,zSubs},
 With[{numZs=Length[zSubNow]},
-With[{xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
+With[{zVarNames=Flatten[redoGenZVars[numZs,1]]/.ridTSubs,
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0]},(*Print["zvn=",zVarNames];*)
+With[{xVars=Through[#[Global`t]]&/@xVarsNoT},
 With[{theEqns=doRecurIneqOccEqns[zSubNow]
 },
 (*Print["theEqns=",theEqns//InputForm];*)
@@ -2232,19 +2236,21 @@ If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection pol
 to$551 = resZ10$0$0[toOrder[2*{1,1,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 oldpolys = Expand[CreatePolynomials[modSymb,to$551]] // Chop;
-{oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
+(*{oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
+allZSubs=Flatten[
+MapThread[#1->#2&,zSubs]];
 discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
 polys=PiecewiseExpand/@Expand[
-((({Global`qq[Global`t],Global`ru[Global`t],zSubs[[1,-1]]}-oldSys[[{1,2,-1}]])/.
-MapThread[#1->#2&,zSubs]))](*/.Global`eqvdIf->If*)/.discrepSub/.
-{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};(*Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];*)
-(*Print["the Polys=",InputForm[{polys,CreatePolynomials[to$551]}]];*)
+((({xVars[[-1,1]],xVars[[-1,2]],zVarNames[[-1]]}-oldSys[[{1,2,-1}]])/.allZSubs))](*/.Global`eqvdIf->If*)/.discrepSub/.
+{xVarsNoT[[-1,1]][Global`t-1]->Global`qq,xVarsNoT[[-1,2]][Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock};(*Print["polys=",polys];repEqns=ReplaceVariables[modSymb,polys,{stateVar,nonStateVar}];*)
+(*Print["the Polys=",InputForm[{polys,CreatePolynomials[to$551]}]];*)*)
+polys=oldpolys;
 Append[zSubNow,
 {
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[1]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[2]]}//Expand),
 Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[-1]]}//Expand)
-}]]]]]/;
+}]]]]]]/;
 Length[zSubNow]>0
 
 
@@ -2317,11 +2323,14 @@ Join[stateVars,nonStateVars]},
 With[{theLHS=cnstrPolys[[1]],ridZSubs=MapThread[#1->#2&,cnstrPolys]},
 With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
 With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},(*Print["guts=",guts];*)
-With[{subbed=(ReplacePart[justRHS,#]&@guts )//.ridZSubs},(*Print["sbbed=",subbed];*)(*Print["stateSubs=",stateSubs];*)
+With[{subbed=(ReplacePart[justRHS,#]&@guts )//.ridZSubs[[{-1,-2}]]},(*Print["sbbed=",subbed];*)(*Print["stateSubs=",stateSubs];*)
 With[{theRes=
 (*PiecewiseExpand/@*)(((((subbed/.(Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"])(*/.Global`eqvdIf->If*)))/.
 xx_[Global`t-1]->xx)/.stateSubs)//Expand)//Chop},(*Print["theRes=",theRes];*)
 theRes]]]]]]]]]]]
+
+
+
 
 lhsAMod[stateVars_List,nonStateVars_List]:=
 		With[{lhs=Through[(ToExpression/@Join[stateVars,nonStateVars])[Global`t]]},lhs]
@@ -2366,24 +2375,15 @@ thePolys_List,{stateStr_List,nonStateStr_List}]:=
 With[{state=ToExpression[stateStr],nonState=ToExpression[nonStateStr]},
 With[{eqns=projEquations[theMod],
 thePattern=xxL_Symbol[Global`t] +sgn_.*
-Global`eqvdIf[cond_Symbol[xxR_,yy_],zz_,ww_]},
+Global`eqvdIf[cond_Symbol[xxR_,yy_],zz_,ww_],
+otherPattern=xxL_Symbol[Global`t] +yyy__},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
-(-1)*sgn*Global`eqvdIf[cond[xxR,yy],zz,ww]}]},
+(-1)*sgn*Global`eqvdIf[cond[xxR,yy],zz,ww]}],
+otherForSubbing=Cases[eqns,otherPattern->(xxL[Global`t]:>(Plus @@{yyy}))]},Print["whatever=",otherForSubbing];
 Print["constraints explicitly involving future state or non state not validated in general: augment model with dummy for now to check"];
-With[{ageCnstrSubs=GetCnstrnsTp1Subs[theMod,eqns,{state,nonState}]},
-With[{
-	lsSubs=makeLaggedStateSubs[state],
-	csSubs=makeCurrentStateSubs[eqns,state],
-	cnsSubs=makeCurrentNonStateSubs[eqns,state,nonState],
-	nxtsSubs=makeNextStateSubs[eqns,state],
-	nxtnsSubs=makeNextNonStateSubs[eqns,state,nonState],
-	nxtDrvSubsTp1={}(*makeAllFirstDerivTp1[state,nonState,thePolys]*),
-	nxtDrvSubsT=makeAllFirstDerivT[state,nonState,eqns]},(*Print["all=",
-		{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
-			Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]},
-			{lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs,eqns,rhsForSubbing}];*)
-	{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
-		Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}]]]]]
+				{otherForSubbing[[All,1]],otherForSubbing[[All,2]]}
+	(*{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
+		Join[{}(*lsSubs,nxtsSubs,nxtnsSubs,csSubs,cnsSubs*)]}*)]]]
 
 
 GetCnstrnsTp1Subs[theMod_,

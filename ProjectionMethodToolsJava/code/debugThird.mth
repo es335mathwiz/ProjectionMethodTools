@@ -2,7 +2,11 @@
 Get["ProjectionInterface`"];
 Get["paperFocus.mth"]
 Get["thirdRecursion.mth"];
+(*
+reduce pdf file size
+!gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -sOutputFile=tryIt.pdf prettyNumDiff02.pdf
 
+*)
 (*compute z0 for time zero constraint only *)
 Print["for one"]
 aPath01=genPath[1]
@@ -22,7 +26,10 @@ Plot3D[first[[-1,-1]][qq,ru,-.1] - zzz$0$1Func[qq,ru,-.1],{qq,-.1,.1},{ru,-.2,.2
 hmatN=hmat//.lucaSubs//myN;
 hmatApp01=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
 
-Export["prettyrr01.pdf",
+redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600]
+
+
+redExport["prettyrr01.pdf",
 Plot3D  @@{aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2}}]
 
 morePaperSubs={
@@ -74,20 +81,20 @@ hmatApp02[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 With[{tp=aPath02ExtFunc[qtm1,rutm1,eps]},
 Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
 
-Export["prettyrr02.pdf",
+redExport["prettyrr02.pdf",
 Plot3D[{aPath01Ext[[5,1]]/.eps->0,aPath02ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
-Export["prettyhapp02A.pdf",
+redExport["prettyhapp02A.pdf",
 Plot3D[hmatApp02[qtm1,rutm1,0][[2,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
-Export["prettyhapp02B.pdf",
+redExport["prettyhapp02B.pdf",
 Plot3D[hmatApp02[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
-Export["prettyrr01lessrr02.pdf",
+redExport["prettyrr01lessrr02.pdf",
 Plot3D[{aPath01Ext[[5,1]]/.eps->0-aPath02ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
@@ -109,7 +116,7 @@ tVals=try02Vals[qtm1Arg,rutm1Arg,epsArg]},
 Print["following Should be zeroes"]
 Plot3D[mySys02[xx,yy,.2],{xx,-.1,.1},{yy,-.2,.2}]
 
-Export["prettyNumDiff02.pdf",
+redExport["prettyNumDiff02.pdf",
 Plot3D[(try02Vals[xx,yy,0][[-1]]-second[[-1,-1]][xx,yy,0]/.eqvdIf->If),{xx,-.1,.1},{yy,-.2,.2}]]
 (*
 Export["prettyEqns02.pdf",
@@ -143,7 +150,7 @@ try03q1r1Vals[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
 
 
 third=doRecurIneqOcc[second]
-Export["prettyNumDiff03.pdf",
+redExport["prettyNumDiff03.pdf",
 Plot3D[(try03Vals[xx,yy,0][[-1]]-third[[-1,-1]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2}]]
 thirdEqns=doRecurIneqOccEqns[second]
 
@@ -206,27 +213,27 @@ hmatN.tp[[Range[9]+3]],
 hmatN.tp[[Range[9]+6]]
 ]//Chop]
 
-Export["prettyrr03.pdf",
+redExport["prettyrr03.pdf",
 Plot3D[aPath03ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
-Export["prettyhapp03A.pdf",
+redExport["prettyhapp03A.pdf",
 Plot3D[hmatApp03[qtm1,rutm1,0][[2,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
-Export["prettyhapp03B.pdf",
+redExport["prettyhapp03B.pdf",
 Plot3D[hmatApp03[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
-Export["prettyhapp03C.pdf",
+redExport["prettyhapp03C.pdf",
 Plot3D[hmatApp03[qtm1,rutm1,0][[8,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
 
-Export["prettyrr02lessrr03.pdf",
+redExport["prettyrr02lessrr03.pdf",
 Plot3D[{aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-aPath03ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
@@ -267,31 +274,31 @@ hmatN.tp[[Range[9]+6]],
 hmatN.tp[[Range[9]+9]]
 ]//Chop]
 
-Export["prettyrr04.pdf",
+redExport["prettyrr04.pdf",
 Plot3D[aPath04ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
-Export["prettyhapp04A.pdf",
+redExport["prettyhapp04A.pdf",
 Plot3D[hmatApp04[qtm1,rutm1,0][[2,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
-Export["prettyhapp04B.pdf",
+redExport["prettyhapp04B.pdf",
 Plot3D[hmatApp04[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
-Export["prettyhapp04C.pdf",
+redExport["prettyhapp04C.pdf",
 Plot3D[hmatApp04[qtm1,rutm1,0][[8,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
-Export["prettyhapp04D.pdf",
+redExport["prettyhapp04D.pdf",
 Plot3D[hmatApp04[qtm1,rutm1,0][[11,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
 
 
-Export["prettyrr03lessrr04.pdf",
+redExport["prettyrr03lessrr04.pdf",
 Plot3D[{aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-aPath04ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotRange->All]]
 
