@@ -1,0 +1,16 @@
+Get["ProjectionInterface`"];
+Get["paperFocus.mth"]
+Get["thirdRecursion.mth"];
+
+hmatN=hmat//.lucaSubs//myN;
+
+morePaperSubs={
+qtm1->Subscript[q,t-1],
+rutm1->Subscript[ru,t-1],
+rtm1->Subscript[rr,t-1],
+eps->Subscript[\[Epsilon],t]
+}
+
+redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600]
+
+

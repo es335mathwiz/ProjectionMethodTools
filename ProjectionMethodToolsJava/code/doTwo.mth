@@ -1,4 +1,4 @@
-
+Get["prep.mth"]
 (*compute z1 for time zero constrint and time t+1 constraint*)
 Print["now for two"]
 
@@ -29,7 +29,7 @@ tVals=try02Vals[qtm1Arg,rutm1Arg,epsArg]},
 tp/.{zzz$0$1[t]:>tVals[[1]],
 zzz$1$1[t]:>tVals[[2]]}]
 
-
+(*  expectations ahead
 try02Exp01=Join[try02,{zzz$0$1[t]==z0ExpFunc[qv,rv],
 qv==aPath02[[4,1]],rv==aPath02[[6,1]]}];
 try02Exp01Func=Function @@ {{qtm1,rutm1,eps},try02Exp01}
@@ -51,20 +51,16 @@ try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 
 
 Plot3D[try02Exp01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+*)
 
 
 
-(*to fix
 
-{aMod,aRes,firstProj,simp,lucaBasis,modClass}=fixDoRecurIneqOcc[1];
 
 
 {aMod,aRes,firstProj,simp,lucaBasis,modClass}=fixDoRecurIneqOcc[2];
 
 
-Get["ProjectionInterface`"];
-Get["paperFocus.mth"]
-Get["thirdRecursion.mth"];
 numZs=2;
 
 
@@ -94,11 +90,7 @@ ii=getAllNewtonIterInfo[aRes01];
 
 {oldS,{zleft,zright}}=ProjectionInterface`Private`redoCreatePolynomials[aMod,aRes01];
 theRHS=
-{qq[t],rr[t],ru[t],discrep$1$1[t],zzz$1$1[t],discrep$1$1[t],zzz$1$1[t]}-oldS[[Range[7]]]
-allSubs=Drop[Thread[zleft->zright],0]
-(*move vNames up*)
-
-
+{qq[t],rr[t],ru[t],discrep$1$1[t],zzz$1$1[t],discrep$0$1[t],zzz$0$1[t]}-oldS[[Range[7]]]
 
 vNames=ToExpression/@
 Join[stateVar,nonStateVar];
@@ -106,29 +98,68 @@ Join[stateVar,nonStateVar];
 origPolys=CreatePolynomials[aRes01];
 
 
-origSubs=Thread[(Through[vNames[t]])->origPolys]
-subbed=((theRHS/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock})/.origSubs)//Expand
+origSubs=Thread[(Through[vNames[t]])->origPolys];
+nonZSubs=Drop[Thread[(Through[vNames[t]])->origPolys],-2]
+zPolySubs=Take[Thread[(Through[vNames[t]])->origPolys],-2]
+realZSubs=Thread[{zzz$0$1[t],zzz$1$1[t]}->(theRHS[[{-1,-3}]]/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock}/.zPolySubs)]/.nonZSubs
+
+subbed=((theRHS/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock})/.nonZSubs/.realZSubs)//Expand
+subbedEqns=((theEqns/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock})/.origSubs)//Expand
 subbedFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
 subbed/.{qq->qtm1Arg,ru->rutm1Arg,ru$Shock->epsArg}/.eqvdIf->If
 
 
-(*
-aBasis=aRes01[getTheWeightedStochasticBasis[]]
+aBasis=aRes01[getTheWeightedStochasticBasis[]];
 theStatePoly = aBasis[getTheState[]];
-TableForm[
- Join @@ {(*lucaMat,*)
-   Transpose[
-    theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]]}]
+nodePts02=theStatePoly[getXformedChebNodePts[]];
+nodePts02Subs=gtXFormedChebSubsNotStrings[aBasis];
+subbedNodePts02=subbed/.eqvdIf->If/.nodePts02Subs;
+numEpsilon=Length[Union[nodePts02[[All,3]]]];
+numOuterOther=Length[nodePts02]/numEpsilon;
+ptsSByEpsilon=Partition[Sort[nodePts02,#[[3]]>#2[[3]]&],numOuterOther];
+Plot3D[subbedFunc[xx,yy,ptsSByEpsilon[[-1,1,3]]][[2]],{xx,-.1,.1},{yy,-.1,.1}]
 
-theStatePoly[getXformedChebNodePts[]]
-doExportOuterEval[aBasis]  part fails
+
+doEpsValPlot[varIndx_Integer,epsIndx_Integer]:=
+Show[
+ListPointPlot3D[doAnEps[ptsSByEpsilon[[epsIndx]],varIndx],
+PlotStyle->{PointSize[Large]},DisplayFunction->$DisplayFunction],
+Plot3D[subbedFunc[xx,yy,ptsSByEpsilon[[epsIndx,1,3]]][[varIndx]],{xx,-.5,.5},{yy,-.15,.15}],
+PlotRange->All]
+
+doAnEps[theVals:{
+{_?NumberQ,_?NumberQ,xx_?NumberQ}..},pick_Integer]:=
+{#[[1]],#[[2]],(subbedFunc @@ #)[[pick]]}& /@ theVals
+
+
+redExport["prettyNumDiff02.pdf",
+Plot3D[(try02Vals[xx,yy,0][[-1]]-subbedFunc[xx,yy,0][[-3]]),{xx,-.5,.5},{yy,-.15,.15},PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}]]
+
+
+
+
+
+(*
+
+
+all epsVals should be same
+
+
+*)
+(*to fix
+(*
+
 
 boo=  Transpose[
     theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]]
 
-(hoo=gtXFormedChebSubsNotStrings[aBasis] );
-
-
+(
+doExportOuterEval[aBasis]  part fails
+TableForm[
+ Join @@ {(*lucaMat,*)
+   Transpose[
+    theStatePoly[getTheGrid[][generatePolyOrdersForOuterProduct[]]]]}]
 
 shockSubs=(Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"]);
 hasEqvdIf=
