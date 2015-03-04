@@ -1,0 +1,407 @@
+Get["ProjectionInterface`"];
+Get["paperFocus.mth"]
+Get["thirdRecursion.mth"];
+
+hmatN=hmat//.lucaSubs//myN;
+
+morePaperSubs={
+qtm1->Subscript[q,t-1],
+rutm1->Subscript[ru,t-1],
+rtm1->Subscript[rr,t-1],
+eps->Subscript[\[Epsilon],t]
+}
+
+redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600]
+
+
+
+(*compute z0 for time zero constraint only *)
+Print["for one"]
+aPath01=genPath[1]
+try01={
+(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
+}
+try01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t]}/.Flatten[Solve[try01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+Plot3D[try01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+try01ExpVals[qtm1_?NumberQ,rutm1_?NumberQ]:=NExpectation[
+Hold[try01Vals[qtm1,rutm1,eps][[1]]],
+eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs//N]]
+
+
+
+redExport["prettyZ01.pdf",
+Plot3D[try01Vals[xx,yy,0],{xx,-.1,.1},{yy,-.2,.2},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r]  constraint for one period"}]]
+
+
+redExport["prettyExpZ01.pdf",
+Plot3D[try01ExpVals[xx,yy],{xx,-.1,.1},{yy,-.2,.2},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period"}]]
+
+
+redExport["prettyExpDiffZ01.pdf",
+Plot3D[try01ExpVals[xx,yy]-try01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period less perfectforsight value"}]]
+
+
+slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
+zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
+
+
+
+z0Exp=Expectation[zzz$0$1Func[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs]
+z0ExpFunc=Function @@ {{qtm1,rutm1},z0Exp};
+redExport["prettyExpExactDiffZ01.pdf",
+Plot3D[try01ExpVals[xx,yy]-(z0Exp/.{qtm1->xx,rutm1->yy}),{xx,-.1,.1},{yy,-.2,.2},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period less analytic value"}]]
+
+
+hmatApp01=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
+
+aPath01ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+aPath01Ext/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg}
+
+redExport["prettyrr01.pdf",
+Plot3D  @@{aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for one period"}}]
+
+
+Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
+Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01//.latexSubs/.morePaperSubs]]
+
+
+
+num01=newDoRecurIneqOcc[1]
+
+
+redExport["prettyNumDiff01.pdf",
+Plot3D[(aPath01ExtFunc[xx,yy,0][[5,1]] -num01[[4]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2},PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}]]
+
+
+
+Plot3D[aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for one period"}]
+
+
+better01[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+With[{bSys=ProjectionInterface`Private`makeForCheck[newGenSys[1]]/.
+{qq[t-1]->qtm1Arg,ru[t-1]->rutm1Arg,eps[ru][t]->epsArg}},
+bSys/.zzz$0$1[t]:>zzz$0$1Func[qtm1Arg,rutm1Arg,epsArg]]//Chop
+
+
+
+(*to fix
+
+{aMod,aRes,firstProj,simp,lucaBasis,modClass}=fixDoRecurIneqOcc[1];
+
+
+{aMod,aRes,firstProj,simp,lucaBasis,modClass}=fixDoRecurIneqOcc[2];
+
+
+Get["ProjectionInterface`"];
+Get["paperFocus.mth"]
+Get["thirdRecursion.mth"];
+numZs=2;
+
+(*
+pre=newGenSys[numZs];
+theEqns=Join[newGenSys[numZs],{zzz$0$1[t]-something01[t]^2,zzz$1$1[t]-something02[t]^2}]
+*)
+
+(*
+pre=newGenSys[numZs]//InputForm
+m
+
+Out[352]//InputForm= 
+{-0.2677422653638917*qq[-1 + t] + qq[t] - 0.30864815234034326*ru[-1 + t] + 
+  0.14193812291113334*zzz$0$1[t] + 0.5354845307277833*zzz$1$1[t] - 
+  0.6172963046806865*eps[ru][t], -0.2677422653638917*qq[-1 + t] + rr[t] - 
+  0.30864815234034326*ru[-1 + t] + 0.14193812291113334*zzz$0$1[t] - 
+  0.4645154692722171*zzz$1$1[t] - 0.6172963046806865*eps[ru][t], 
+ -0.5*ru[-1 + t] + ru[t] - eps[ru][t], 0.02 + discrep$1$1[t] - 
+  0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+  0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t], 
+ -eqvdIf[discrep$1$1[t] >= 0, 0, 2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t])] + 
+  zzz$1$1[t], 0.02 + discrep$0$1[t] - 0.07168592066218858*qq[-1 + t] - 
+  0.23696223167815467*ru[-1 + t] + 0.14337184132437716*zzz$1$1[t] - 
+  0.47392446335630933*eps[ru][t], 
+ -eqvdIf[discrep$0$1[t] >= 0, 0, 2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t])] + 
+  zzz$0$1[t]}
+
+
+modify z equations for non negativity
++++++++++++++++++++
+ -eqvdIf[discrep$0$1[t] >= 0, 0, 2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t])] + 
+  zzz$0$1[t]
+becomes 
+
+ -eqvdIf[discrep$0$1[t] >= 0, 0, 
+eqvdIf[
+2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t])<0,
+2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t]),0]
+] + 
+  zzz$0$1[t]
+
++++++++++++++++++++++
+ -eqvdIf[discrep$1$1[t] >= 0, 0, 2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t])] + 
+  zzz$1$1[t]
+
+ -eqvdIf[discrep$1$1[t] >= 0, 0, 
+eqvdIf[
+2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t])<0,
+2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t]),0]] + 
+  zzz$1$1[t]
+++++++++++++++
+
+newEqns=
+{-0.2677422653638917*qq[-1 + t] + qq[t] - 0.30864815234034326*ru[-1 + t] + 
+  0.14193812291113334*zzz$0$1[t] + 0.5354845307277833*zzz$1$1[t] - 
+  0.6172963046806865*eps[ru][t], -0.2677422653638917*qq[-1 + t] + rr[t] - 
+  0.30864815234034326*ru[-1 + t] + 0.14193812291113334*zzz$0$1[t] - 
+  0.4645154692722171*zzz$1$1[t] - 0.6172963046806865*eps[ru][t], 
+ -0.5*ru[-1 + t] + ru[t] - eps[ru][t], 0.02 + discrep$1$1[t] - 
+  0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+  0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t], 
+ -eqvdIf[discrep$1$1[t] >= 0, 0, 
+eqvdIf[
+2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t])<0,
+2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t]),0]] + 
+  zzz$1$1[t],
+ 0.02 + discrep$0$1[t] - 0.07168592066218858*qq[-1 + t] - 
+  0.23696223167815467*ru[-1 + t] + 0.14337184132437716*zzz$1$1[t] - 
+  0.47392446335630933*eps[ru][t], 
+ -eqvdIf[discrep$0$1[t] >= 0, 0, 
+eqvdIf[
+2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t])<0,
+2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t]),0]
+] + 
+  zzz$0$1[t]
+}
+
+
+
+*)
+
+(*/.{zzz$0$1[t]->zzz$0$1[t]^2,zzz$1$1[t]->zzz$1$1[t]^2}*)
+
+theEqns=
+{-0.2677422653638917*qq[-1 + t] + qq[t] - 0.30864815234034326*ru[-1 + t] + 
+  0.14193812291113334*zzz$0$1[t] + 0.5354845307277833*zzz$1$1[t] - 
+  0.6172963046806865*eps[ru][t], -0.2677422653638917*qq[-1 + t] + rr[t] - 
+  0.30864815234034326*ru[-1 + t] + 0.14193812291113334*zzz$0$1[t] - 
+  0.4645154692722171*zzz$1$1[t] - 0.6172963046806865*eps[ru][t], 
+ -0.5*ru[-1 + t] + ru[t] - eps[ru][t], 0.02 + discrep$1$1[t] - 
+  0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+  0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t], 
+ -eqvdIf[discrep$1$1[t] >= 0, 0, 
+eqvdIf[
+2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t])<0,
+2.1527808354084677*
+     (0.02 - 0.2677422653638917*qq[-1 + t] - 0.30864815234034326*ru[-1 + t] + 
+      0.14193812291113334*zzz$0$1[t] - 0.6172963046806865*eps[ru][t]),100]] + 
+  zzz$1$1[t],
+ 0.02 + discrep$0$1[t] - 0.07168592066218858*qq[-1 + t] - 
+  0.23696223167815467*ru[-1 + t] + 0.14337184132437716*zzz$1$1[t] - 
+  0.47392446335630933*eps[ru][t], 
+ -eqvdIf[discrep$0$1[t] >= 0, 0, 
+eqvdIf[
+2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t])<0,
+2.344596428421251*
+     (0.02 - 0.07168592066218858*qq[-1 + t] - 0.23696223167815467*ru[-1 + t] + 
+      0.14337184132437716*zzz$1$1[t] - 0.47392446335630933*eps[ru][t]),100]
+] + 
+  zzz$0$1[t]
+}
+
+theEqns=newGenSys[numZs]
+aMod=Unique["modSymb"];
+newWeightedStochasticBasis[aMod,(theEqns)];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[aMod];
+polyRange = {{Global`qLow, Global`qHigh}, {Global`ruLow, Global`ruHigh}} //. Global`mySubs;
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
+    Global`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+   Global`integOrder //. Global`mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+
+
+(*
+aRes= ComputeInitialCollocationWeights[lucaBasis, 
+   Transpose[{Table[Random[], {Length[theEqns]} ]}], modClass, simp];
+aRes= ComputeInitialCollocationWeights[lucaBasis, 
+   Transpose[{{-0.393108, 0.0201758, -0.15, -0.191801, 0.412906, -0.191801, 0.41318}}], modClass, simp];
+Solve[fix02OrigFunc[0,0,0],{qq[t],ru[t],rr[t],discrep$0$1[t],discrep$1$1[t],zzz$0$1[t],zzz$1$1[t]}] produces 
+{{qq[t] -> -0.0439529, ru[t] -> 0., rr[t] -> 0.02, 
+      discrep$0$1[t] -> -0.029169, discrep$1$1[t] -> -0.0297071, 
+      zzz$0$1[t] -> 0.0683896, zzz$1$1[t] -> 0.0639529}}
+*)
+aRes= ComputeInitialCollocationWeights[lucaBasis, 
+   Transpose[{{ -0.0439529, 0.0, -0.029169, -0.0297071, 0.02, 0.0683896,  0.0639529}}], modClass, simp];
+
+If[aRes[isConvergedQ[]],aRes01=aRes[toOrder[{3,3,3}]],"not converged at first step"]
+
+
+
+
+{oldS,{zleft,zright}}=ProjectionInterface`Private`redoCreatePolynomials[aMod,aRes01];
+theRHS=
+{qq[t],rr[t],ru[t],discrep$1$1[t],zzz$1$1[t],discrep$1$1[t],zzz$1$1[t]}-oldS[[Range[7]]]
+allSubs=Drop[Thread[zleft->zright],0]
+(*move vNames up*)
+
+
+
+vNames=ToExpression/@
+Join[stateVar,nonStateVar];
+(*order from projection interface*)
+origPolys=CreatePolynomials[aRes01];
+
+
+origSubs=Thread[(Through[vNames[t]])->origPolys]
+subbed=((theRHS/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock})/.origSubs)//Expand
+subbedFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+subbed/.{qq->qtm1Arg,ru->rutm1Arg,ru$Shock->epsArg}/.eqvdIf->If
+
+
+(*
+
+
+
+
+
+shockSubs=(Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"]);
+hasEqvdIf=
+Select[Transpose[cnstrPolys],Not[FreeQ[#,eqvdIf]]&]/.shockSubs/.xx_[t]:>xx/.xx_[Global`t-1]->xx
+fromEqvdIfSubs=First /@hasEqvdIf
+
+
+
+varSubs=Select[Thread[vNames->origPolys],Not[MemberQ[fromEqvdIfSubs,#[[1]]]]&]
+zvarPolySubs=Select[Thread[vNames->origPolys],MemberQ[fromEqvdIfSubs,#[[1]]]&]
+
+theEqvdIfSubs=
+Thread[hasEqvdIf[[All,1]]->((hasEqvdIf[[All,2]]/.varSubs)/.zvarPolySubs)]
+
+theRes=((((justRHS/.shockSubs/.xx_[t]:>xx/.xx_[Global`t-1]->xx))/.theEqvdIfSubs)/.varSubs//Expand)//Chop
+theRes=CreatePolynomials[modSymb,aRes01]
+
+resFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+zright/.{qq->qtm1Arg,ru->rutm1Arg,ru$Shock->epsArg}/.eqvdIf->If
+
+chkFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{lhsSubs=Thread[theLHS->resFunc[qtm1Arg,rutm1Arg,epsArg]]},
+((newGenSys[2]/.lhsSubs)/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock})/.{qq->qtm1Arg,ru->rutm1Arg,ru$Shock->epsArg}/.eqvdIf->If]
+
+chkZrightFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+zright/.{qq[t-1]->qq,ru[t-1]->ru,eps[ru][t]->ru$Shock}/.{qq->qtm1Arg,ru->rutm1Arg,ru$Shock->epsArg}/.eqvdIf->If
+
+*)
+(*
+discrepVals=Cases[cnstrPolys[[2]],eqvdIf[cond_[xx_,yy__],zz_,ww_]->xx]
+stateSubs=MapThread[#1->#2&,{lhsVars,origPolys}]//Expand;
+subPos=Flatten[Position[vNames,Head[#]]&/@theLHS];
+(*map cnstr loc to projinterface order*)
+guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]
+subbed=(ReplacePart[justRHS,#]&@guts )//.ridZSubs[[{-1,-2,-3,-4}]]
+*)
+
+
+
+*)
+
+
+
+
+(*compute z1 for time zero constrint and time t+1 constraint*)
+Print["now for two"]
+
+aPath02=genPath[2]
+try02={
+((aPath02[[5,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath02[[5,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath02[[8,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath02[[8,1]]==0.02&&zzz$0$1[t]>=0))
+}
+Export["prettyEqns02A.pdf",
+MatrixForm[(try02[[1,1]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns02B.pdf",
+MatrixForm[(try02[[1,2]]//myN//FullSimplify)//. latexSubs]]
+
+
+
+
+try02Func=Function @@ {{qtm1,rutm1,eps},try02}
+try02Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+Plot3D[try02Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+
+
+aPath02ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[2,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try02Vals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]]}]
+
+
+try02Exp01=Join[try02,{zzz$0$1[t]==z0ExpFunc[qv,rv],
+qv==aPath02[[4,1]],rv==aPath02[[6,1]]}];
+try02Exp01Func=Function @@ {{qtm1,rutm1,eps},try02Exp01}
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Exp01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t],qv,rv},Reals]]
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Reduce[try02Exp01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t],qv,rv},Reals]]
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[FindRoot[try02Exp01Func[qtm1,rutm1,eps],
+{{zzz$1$1[t],0},{zzz$0$1[t],0},{qv.1},{rv,.1}},Reals]]
+
+
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[NSolve[try02Exp01Func[qtm1,rutm1,eps]/.Erf->Identity,{zzz$1$1[t],zzz$0$1[t],qv,rv},Reals]]
+
+
+Plot3D[try02Exp01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]

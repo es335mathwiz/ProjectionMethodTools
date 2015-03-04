@@ -4,6 +4,8 @@
 BeginPackage["ProjectionInterface`", { "JLink`"}]
 (* Exported symbols added here with SymbolName::usage *)  
 (* Exported symbols added here with SymbolName::usage *) 
+newGenSys::usage="newGenSys";
+newDoRecurIneqOcc::usage="newDoRecurIneqOcc"
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 genPath::usage="genPath[num_Integer]"
@@ -12,11 +14,13 @@ genPolysFromBasis::usage="genPolysFromBasis[theBasis_?JavaObjectQ,theWts_?Matrix
 *)
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 tryNow::usage=""
+occBindCreatePolynomials::usage="occBindCreatePolynomials"
 CreateRHSPolynomials::usage="CreateRHSPolynomials[aMod_,results_?JavaObjectQ]"
 Global`eqvdif::usage="eqvdif placeholder for EquationValDrv in substitutions";
 EquationValDrv::usage="java class for projection";
 doRecurIneqOcc::usage="doRecurIneqOcc[{}]";
 doRecurIneqOccEqns::usage="doRecurIneqOcc[{}]";
+fixDoRecurIneqOcc::usage="fixDoRecurIneqOcc";
 gtChebNodes::usage="gtChebNodes[aWSB_?JavaObjectQ]"
 gtXFormedChebSubsNotStrings::usage="gtXFormedChebSubsNotStrings"
 getPhiFunc::usage="getPhiFunc[vName_String,theBasis_?JavaObjectQ]";
@@ -881,7 +885,7 @@ theWts=results[getResWeights[]]},
 				With[{
 				theMins=vSpec[getMinVals[]],
 				theMaxs=vSpec[getMaxVals[]]},
-					(theWts .  gtPolys[basis])//Chop]]]]]
+					Expand[(theWts .  gtPolys[basis])]//Chop]]]]]
 					
 
 PlotPolynomials[polys_List,varVals_List,varNames_List]:=With[{allPlots=
@@ -2051,7 +2055,85 @@ Global`rr[Global`t]-(thePath[[5,1]]),
 Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}},Print["variables in alphabetic orderr and grouped state then nonstate"];
 (*Print["theEqns=",theEqn];*)
 theEqn]]]]
-	
+
+
+newGenSys[{}]:=
+With[{numZs=1},
+With[{aPath=Flatten @genPath[numZs],forConPos=5+3*Range[0,numZs-1],
+zVars=Reverse @Flatten[ProjectionInterface`Private`redoGenZVars[numZs-1,1]],
+dVars=Reverse @Flatten[ProjectionInterface`Private`genDiscrepVars[numZs-1,1]]},
+With[{sEqns={Global`qq[Global`t],Global`rr[Global`t],Global`ru[Global`t]}-aPath[[{4,5,6}]]},
+With[{forCon=aPath[[forConPos]]},Join[sEqns,(Flatten @
+MapThread[makeDiscrepZPair,{forCon,zVars,dVars}])]/.
+	{Global`qtm1->Global`qq[Global`t-1],Global`rutm1->Global`ru[Global`t-1],Global`eps->Global`eps[Global`ru][Global`t]}]]]]
+
+
+
+newGenSys[zSubNow:{{(_Function)..}}]:=
+Module[{numZs=Length[zSubNow]+1},
+	With[{aPath=Flatten @genPath[numZs],forConPos=5+3*Range[0,numZs-1],
+zVars=Reverse @Flatten[ProjectionInterface`Private`redoGenZVars[numZs-1,1]],
+dVars=Reverse @Flatten[ProjectionInterface`Private`genDiscrepVars[numZs-1,1]]},
+With[{sEqns={Global`qq[Global`t],Global`rr[Global`t],Global`ru[Global`t]}-aPath[[{4,5,6}]]},
+With[{forCon=aPath[[forConPos]]},
+	With[{bigSys=Join[sEqns,(Flatten @
+MapThread[makeDiscrepZPair,{forCon,zVars,dVars}])]/.
+	{Global`qtm1->Global`qq[Global`t-1],Global`rutm1->Global`ru[Global`t-1],Global`eps->Global`eps[Global`ru][Global`t]}},
+	With[{theVals=
+	zSubNow[[-1,-1]][aPath[[4,1]],aPath[[6,1]],0]},Print["aPath=",aPath,zSubNow[[-1,-1]]];
+	{theVals}
+	]]]]]]
+
+
+
+
+newGenSys[numZs_Integer]:=
+With[{aPath=Flatten @genPath[numZs],forConPos=5+3*Range[0,numZs-1],
+zVars=Reverse @Flatten[ProjectionInterface`Private`redoGenZVars[numZs-1,1]],
+dVars=Reverse @Flatten[ProjectionInterface`Private`genDiscrepVars[numZs-1,1]]},
+With[{sEqns={Global`qq[Global`t],Global`rr[Global`t],Global`ru[Global`t]}-aPath[[{4,5,6}]]},
+With[{forCon=aPath[[forConPos]]},Join[sEqns,(Flatten @
+MapThread[makeDiscrepZPair,{forCon,zVars,dVars}])]/.
+	{Global`qtm1->Global`qq[Global`t-1],Global`rutm1->Global`ru[Global`t-1],Global`eps->Global`eps[Global`ru][Global`t]}]]]
+
+
+makeDiscrepEqn[anEqn_,zVar:_Symbol[Global`t],dVar:_Symbol[Global`t]]:=
+dVar-((anEqn/.zVar->0)-0.02)
+
+makeZapEqnVal[anEqn_,zVar:_Symbol[Global`t]]:=
+zVar/.Flatten[Solve[anEqn==0.02,zVar]]
+
+makeDiscrepZPair[anEqn_,zVar:_Symbol[Global`t],dVar:_Symbol[Global`t]]:=
+{makeDiscrepEqn[anEqn,zVar,dVar],zVar-Global`eqvdIf[dVar>=0,0,makeZapEqnVal[anEqn,zVar]]}
+
+
+makeForCheck[sysEqns_List]:=
+With[{numZs=((Length[sysEqns]-3)/2)-1},
+With[{dVars=Flatten[ProjectionInterface`Private`genDiscrepVars[numZs,1]]},
+With[{discEqns=sysEqns[[4+2*Range[0,numZs]]],
+zEqns=sysEqns[[5+2*Range[0,numZs]]]},
+With[{dSolns=Flatten[Solve[Thread[discEqns==0],dVars]]},
+zEqns/.dSolns/.Global`eqvdIf->If]]]]
+
+
+
+newDoRecurIneqOccEqns[{}]:=
+Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,initPower,shockPower,
+lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
+With[{
+thePath=genPath[1]/.
+{Global`qtm1->Global`qq[Global`t-1],Global`rtm1->Global`rr[Global`t-1],Global`rutm1->Global`ru[Global`t-1],Global`eps->Global`eps[Global`ru][Global`t]}},
+With[{zZap=
+(Global`zzz$0$1[Global`t]/.Flatten[Solve[thePath[[5,1]]==Global`rUnderBar//Global`numIt,Global`zzz$0$1[Global`t]]])//Expand},
+With[{theEqn={
+Global`qq[Global`t]-(thePath[[4,1]]),
+Global`ru[Global`t]-(thePath[[6,1]]),
+Global`discrep[Global`t]-((thePath[[5,1]]/.Global`zzz$0$1[Global`t]->0)-Global`rUnderBar//Global`numIt),
+Global`rr[Global`t]-(thePath[[5,1]]),
+Global`zzz$0$1[Global`t]-(Global`eqvdIf[Global`discrep[Global`t]>=0,0,zZap//Expand]//Expand)}},Print["variables in alphabetic orderr and grouped state then nonstate"];
+(*Print["theEqns=",theEqn];*)
+theEqn]]]]
+		
 doRecurIneqOcc[{}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,polys,betterLHS,betterRHS,betterPolys,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
@@ -2254,6 +2336,64 @@ Function @@ ({{xVarsNoT[[-1,1]],xVarsNoT[[-1,2]],Global`ru$Shock},polys[[-1]]}//
 Length[zSubNow]>0
 
 
+newDoRecurIneqOcc[numZs_Integer]:=
+Module[{modSymb=Unique["modSymb"]},
+With[{theEqns=newGenSys[numZs]},
+(*Print["theEqns=",theEqns//InputForm];*)
+newWeightedStochasticBasis[modSymb,(theEqns)];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modSymb];
+polyRange = {{Global`qLow, Global`qHigh}, {Global`ruLow, Global`ruHigh}} //. Global`mySubs;
+(*Print["here",InputForm[{theEqns,zZap,zEqns,zSubs}]];*)
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
+    Global`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+   Global`integOrder //. Global`mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {Length[theEqns], 1}], modClass, simp];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[{1,1,1}]];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[2*{1,1,1}]];
+If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
+polys = Expand[occBindCreatePolynomials[modSymb,to$551]/.Global`eqvdIf->If]//Chop;
+	Print["var order->",{stateVar, nonStateVar, theShock}];
+	(Function @@ {{Global`qq,Global`ru,Global`ru$Shock},#})&/@polys
+]]/;numZs>0
+
+
+
+
+fixDoRecurIneqOcc[numZs_Integer]:=
+Module[{modSymb=Unique["modSymb"]},
+With[{theEqns=newGenSys[numZs]},
+(*Print["theEqns=",theEqns//InputForm];*)
+newWeightedStochasticBasis[modSymb,(theEqns)];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modSymb];
+polyRange = {{Global`qLow, Global`qHigh}, {Global`ruLow, Global`ruHigh}} //. Global`mySubs;
+(*Print["here",InputForm[{theEqns,zZap,zEqns,zSubs}]];*)
+initPower = {0, 0}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
+    Global`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+   Global`integOrder //. Global`mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, 
+   ConstantArray[1, {Length[theEqns], 1}], modClass, simp];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[{1,1,1}]];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[2*{1,1,1}]];
+If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
+{modSymb,to$551,resZ10$0$0,simp,lucaBasis,modClass}]]
+
 genPath[numNonZeroZs_Integer]:=
 With[{xtm1={{Global`qtm1},{Global`rtm1},{Global`rutm1}},
 rawFParts=Reverse[(redoFPart[Global`phimat,Global`fmat,Global`psiz,#,1,0] &/@Range[0,numNonZeroZs-1])//Global`numIt]},
@@ -2275,6 +2415,13 @@ Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,
 Reverse[zMats]]]
 
 
+genDiscrepVars[horizons_Integer,numConstr_Integer]:=
+genDiscrepVars[horizons,numConstr,0]
+
+genDiscrepVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+Table[
+{ToExpression["Global`discrep$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
+{forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
 
 redoGenZVars[horizons_Integer,numConstr_Integer]:=
@@ -2306,6 +2453,28 @@ With[{startPath=genPath[numNonZeroZs]},
 With[{tailPath=NestList[((nonFPart[#,
 {{0}},Global`bmat,Global`phimat,Global`psieps])//Global`numIt)&,startPath[[{-3,-2,-1}]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
+
+
+occBindCreatePolynomials[aMod_,results_?JavaObjectQ]:=
+With[{origPolys=CreatePolynomials[results],
+basis=results[getTheWeightedStochasticBasis[]]},
+With[{nonStateVars=gtNonStateVars[basis],
+stateVars=gtStateVarsNoShocks[basis]},
+With[{lhsVars=lhsAMod[stateVars,nonStateVars]},
+With[{cnstrPolys=GetCnstrnsReplaceVariables[aMod,
+origPolys,{stateVars,nonStateVars}],justRHS=lhsVars-projEquations[aMod],
+stateSubs=MapThread[#1->#2&,{lhsVars,origPolys}]//Expand},(*Print["stateSubs=",stateSubs];*)
+If[cnstrPolys==={{},{}},origPolys,
+With[{vNames=ToExpression/@
+Join[stateVars,nonStateVars]},
+With[{theLHS=cnstrPolys[[1]],ridZSubs=MapThread[#1->#2&,cnstrPolys]},
+With[{subPos=Flatten[Position[vNames,Head[#]]&/@theLHS]},
+With[{guts=(#/.{xx_,yy_}->xx:>yy)& /@Transpose[{subPos,cnstrPolys[[2]]}]},(*Print["guts=",guts];*)
+With[{subbed=(ReplacePart[justRHS,#]&@guts )//.ridZSubs},(*Print["sbbed=",subbed];*)(*Print["stateSubs=",stateSubs];*)
+With[{theRes=
+(*PiecewiseExpand/@*)(((((subbed/.(Global`eps[xx_][Global`t]:>ToExpression["Global`"<>ToString[xx]<>"$Shock"])(*/.Global`eqvdIf->If*)))/.
+xx_[Global`t-1]->xx)/.stateSubs)//Expand)//Chop},(*Print["theRes=",theRes];*)
+theRes]]]]]]]]]]]
 
 
 CreatePolynomials[aMod_,results_?JavaObjectQ]:=
@@ -2379,7 +2548,7 @@ Global`eqvdIf[cond_Symbol[xxR_,yy_],zz_,ww_],
 otherPattern=xxL_Symbol[Global`t] +yyy__},
 With[{rhsForSubbing=Cases[eqns,thePattern->{xxL[Global`t],
 (-1)*sgn*Global`eqvdIf[cond[xxR,yy],zz,ww]}],
-otherForSubbing=Cases[eqns,otherPattern->(xxL[Global`t]:>(Plus @@{yyy}))]},Print["whatever=",otherForSubbing];
+otherForSubbing=Cases[eqns,otherPattern->(xxL[Global`t]:>(-1)*(Plus @@{yyy}))]},
 Print["constraints explicitly involving future state or non state not validated in general: augment model with dummy for now to check"];
 				{otherForSubbing[[All,1]],otherForSubbing[[All,2]]}
 	(*{rhsForSubbing[[All,1]],(rhsForSubbing[[All,2]]/.nxtDrvSubsTp1/.nxtDrvSubsT)/.
