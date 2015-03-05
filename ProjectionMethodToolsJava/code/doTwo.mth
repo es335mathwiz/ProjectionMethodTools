@@ -131,12 +131,13 @@ doAnEps[theVals:{
 {_?NumberQ,_?NumberQ,xx_?NumberQ}..},pick_Integer]:=
 {#[[1]],#[[2]],(subbedFunc @@ #)[[pick]]}& /@ theVals
 
+zeroColloc=ListPointPlot3D[ReplacePart[#,3->0]&/@ ptsSByEpsilon[[3]],
+PlotStyle->{PointSize[.04]}]
+
 
 redExport["prettyNumDiff02.pdf",
-Plot3D[(try02Vals[xx,yy,0][[-1]]-subbedFunc[xx,yy,0][[-3]]),{xx,-.5,.5},{yy,-.15,.15},PlotLabel->
-{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}]]
-
-
+Show[Plot3D[(try02Vals[xx,yy,0][[-1]]-subbedFunc[xx,yy,0][[-3]]),{xx,-.5,.5},{yy,-.15,.15},PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}],zeroColloc,DisplayFunction->$DisplayFunction]]
 
 
 
