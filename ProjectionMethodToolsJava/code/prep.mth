@@ -14,3 +14,18 @@ eps->Subscript[\[Epsilon],t]
 redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600]
 
 
+
+
+
+doEpsValPlot[varIndx_Integer,epsIndx_Integer,theFuncs_List]:=
+Show[
+ListPointPlot3D[doAnEps[ptsSByEpsilon[[epsIndx]],varIndx],
+PlotStyle->{PointSize[Large]},DisplayFunction->$DisplayFunction],
+Plot3D[theFuncs[xx,yy,ptsSByEpsilon[[epsIndx,1,3]]][[varIndx]],{xx,-.5,.5},{yy,-.15,.15}],
+PlotRange->All]
+
+doAnEps[theVals:{
+{_?NumberQ,_?NumberQ,xx_?NumberQ}..},theFuncs_List,pick_Integer]:=
+{#[[1]],#[[2]],(theFuncs @@ #)[[pick]]}& /@ theVals
+
+

@@ -1,0 +1,24 @@
+Get["prep.mth"]
+(*  expectations ahead
+try02Exp01=Join[try02,{zzz$0$1[t]==z0ExpFunc[qv,rv],
+qv==aPath02[[4,1]],rv==aPath02[[6,1]]}];
+try02Exp01Func=Function @@ {{qtm1,rutm1,eps},try02Exp01}
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Exp01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t],qv,rv},Reals]]
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Reduce[try02Exp01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t],qv,rv},Reals]]
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[FindRoot[try02Exp01Func[qtm1,rutm1,eps],
+{{zzz$1$1[t],0},{zzz$0$1[t],0},{qv.1},{rv,.1}},Reals]]
+
+
+
+try02Exp01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[NSolve[try02Exp01Func[qtm1,rutm1,eps]/.Erf->Identity,{zzz$1$1[t],zzz$0$1[t],qv,rv},Reals]]
+
+
+Plot3D[try02Exp01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
+*)

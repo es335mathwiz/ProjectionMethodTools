@@ -1,0 +1,83 @@
+Get["prep.mth"]
+(*compute z1 for time zero constrint and time t+1 constraint*)
+Print["now for three"]
+aPath03=genPath[3]
+try03={
+((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0))&&
+((aPath03[[8,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath03[[8,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath03[[11,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath03[[11,1]]==0.02&&zzz$0$1[t]>=0))
+}
+try03Func=Function @@ {{qtm1,rutm1,eps},try03}
+try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],
+{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
+
+aPath03ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[3,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try03Vals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]],
+zzz$2$1[t]:>tVals[[3]]}]
+
+hmatApp03[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath03ExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]],hmatN.tp[[Range[9]+6]]]//Chop]
+
+
+
+
+
+projResults=genProjResults @@ ({modSymb,theEqns,modClass,lucaBasis,simp}=genProjComponents[3])
+num03=genPolyFuncs[modSymb,projResults]
+
+aBasis=projResults[getTheWeightedStochasticBasis[]];
+{{qLow,qHigh},{ruLow,ruHigh},{epsLow,epsHigh}}=aBasis[getRanges[]];
+theStatePoly = aBasis[getTheState[]];
+nodePts01=theStatePoly[getXformedChebNodePts[]];
+nodePts01Subs=gtXFormedChebSubsNotStrings[aBasis];
+numEpsilon=Length[Union[nodePts01[[All,3]]]];
+numOuterOther=Length[nodePts01]/numEpsilon;
+ptsSByEpsilon=Partition[Sort[nodePts01,#[[3]]>#2[[3]]&],numOuterOther];
+zeroColloc=ListPointPlot3D[ReplacePart[#,3->0]&/@ ptsSByEpsilon[[3]],
+PlotStyle->{PointSize[.04]}]
+
+
+redExport["prettyrr03.pdf",r03G=
+Plot3D[aPath03ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All,
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for three periods"}]]
+
+
+redExport["prettyNumDiff03.pdf",numDiff03G=
+Show[Plot3D[(try03Vals[qq,ru,0][[-1]]-num03[[-5]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}],zeroColloc,DisplayFunction->$DisplayFunction]]
+
+
+
+
+redExport["prettyhapp03A.pdf",happ03AG=
+Plot3D[hmatApp03[qtm1,rutm1,0][[2,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for three periods"}]]
+
+redExport["prettyhapp03B.pdf",happ03BG=
+Plot3D[hmatApp03[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for three periods"}]]
+
+redExport["prettyhapp03C.pdf",happ03CG=
+Plot3D[hmatApp03[qtm1,rutm1,0][[8,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(8\)]\)[q,r,0]  constraint for three periods"}]]
+
+If[NumberQ[aPath02ExtFunc[.1,.1,0]],
+redExport["prettyrr02lessrr03.pdf",diffr02$03G=
+Plot3D[{aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-aPath03ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for two less three periods"}]]]
+
+

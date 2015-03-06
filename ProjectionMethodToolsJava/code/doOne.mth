@@ -1,4 +1,5 @@
 Get["prep.mth"]
+Print["without expectations this takes about 3 minutes on a linux box"]
 (*compute z0 for time zero constraint only *)
 Print["for one"]
 aPath01=genPath[1]
@@ -6,78 +7,54 @@ try01={
 (aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
 (aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
 }
+
+try01Func=Function @@ {{qtm1,rutm1,eps},try01}
 try01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 {zzz$0$1[t]}/.Flatten[Solve[try01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
-Plot3D[try01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2}]
-try01ExpVals[qtm1_?NumberQ,rutm1_?NumberQ]:=NExpectation[
-Hold[try01Vals[qtm1,rutm1,eps][[1]]],
-eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs//N]]
 
-redExport["prettyZ01.pdf",
-Plot3D[try01Vals[xx,yy,0],{xx,-.1,.1},{yy,-.2,.2},
-PlotLabel->
-{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r]  constraint for one period"}]]
-
-
-redExport["prettyExpZ01.pdf",
-Plot3D[try01ExpVals[xx,yy],{xx,-.1,.1},{yy,-.2,.2},
-PlotLabel->
-{"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period"}]]
-
-
-redExport["prettyExpDiffZ01.pdf",
-Plot3D[try01ExpVals[xx,yy]-try01Vals[xx,yy,0][[1]],{xx,-.1,.1},{yy,-.2,.2},
-PlotLabel->
-{"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period less perfectforsight value"}]]
-
+try01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t]}/.Flatten[Solve[try01Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
 
 slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
 zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
 
-
-
-z0Exp=Expectation[zzz$0$1Func[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs]
-z0ExpFunc=Function @@ {{qtm1,rutm1},z0Exp};
-redExport["prettyExpExactDiffZ01.pdf",
-Plot3D[try01ExpVals[xx,yy]-(z0Exp/.{qtm1->xx,rutm1->yy}),{xx,-.1,.1},{yy,-.2,.2},
-PlotLabel->
-{"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period less analytic value"}]]
-
-
 hmatApp01=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
+Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01//.latexSubs/.morePaperSubs]]
+Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
 
 aPath01ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
 aPath01Ext/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg}
 
+projResults=genProjResults @@ ({modSymb,theEqns,modClass,lucaBasis,simp}=genProjComponents[1])
+num01=genPolyFuncs[modSymb,projResults]
+Print["need last basis here"]
+aBasis=projResults[getTheWeightedStochasticBasis[]];
+{{qLow,qHigh},{ruLow,ruHigh},{epsLow,epsHigh}}=aBasis[getRanges[]];
+theStatePoly = aBasis[getTheState[]];
+nodePts01=theStatePoly[getXformedChebNodePts[]];
+nodePts01Subs=gtXFormedChebSubsNotStrings[aBasis];
+numEpsilon=Length[Union[nodePts01[[All,3]]]];
+numOuterOther=Length[nodePts01]/numEpsilon;
+ptsSByEpsilon=Partition[Sort[nodePts01,#[[3]]>#2[[3]]&],numOuterOther];
+zeroColloc=ListPointPlot3D[ReplacePart[#,3->0]&/@ ptsSByEpsilon[[3]],
+PlotStyle->{PointSize[.04]}]
+
+redExport["prettyZ01.pdf",
+z01G=Plot3D[try01Vals[qq,ru,0],{qq,qLow,qHigh},{ru,ruLow,ruHigh},
+PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r]  constraint for one period"}]]
+
 redExport["prettyrr01.pdf",
-Plot3D  @@{aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2},
+r01G=Plot3D  @@{aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2},
 PlotLabel->
 {"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for one period"}}]
 
-
-Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
-Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01//.latexSubs/.morePaperSubs]]
-
-
-
-num01=newDoRecurIneqOcc[1]
-
-
 redExport["prettyNumDiff01.pdf",
-Plot3D[(aPath01ExtFunc[xx,yy,0][[5,1]] -num01[[4]][xx,yy,0]),{xx,-.1,.1},{yy,-.2,.2},PlotLabel->
-{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}]]
+diff01G=Show[zeroColloc,Plot3D[(aPath01ExtFunc[qq,ru,0][[5,1]] -num01[[2]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for one symbolic less numeric"},PlotRange->All,DisplayFunction->$DisplayFunction],PlotRange->All]]
 
 
 
-Plot3D[aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2},
-PlotLabel->
-{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for one period"}]
-
-
-better01[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
-With[{bSys=ProjectionInterface`Private`makeForCheck[newGenSys[1]]/.
-{qq[t-1]->qtm1Arg,ru[t-1]->rutm1Arg,eps[ru][t]->epsArg}},
-bSys/.zzz$0$1[t]:>zzz$0$1Func[qtm1Arg,rutm1Arg,epsArg]]//Chop
 
 
 

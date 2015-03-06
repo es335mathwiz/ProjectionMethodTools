@@ -1,0 +1,42 @@
+Needs["JLink`"]; Needs["ProjectionInterface`"]; 
+Get["prepPackages.mth"]; Get["applyReliable.mth"];
+<<JavaGraphics`
+
+
+
+twoEqns={xx[t] - eqvdIf[xx[t-1]>=0, xx[t-1]/10000000.0,xx[t-1]],
+yy[t] - eqvdIf[yy[t-1]>=0, yy[t-1],0]}
+
+aMod=twoEqns;
+(*
+<<ProjectionInterface`;newWeightedStochasticBasis[two, aMod];ProjectionInterface`Private`makeParseSubs[twoEqns]
+*)
+
+
+
+
+
+
+newWeightedStochasticBasis[two,aMod];
+{{stateVar, nonStateVar, theShock}, modEqns00} = 
+  GenerateModelCode[two];
+
+
+
+
+
+polyRange = {{-1, 1}, {-1, 1}};
+initPower = {0, 0}; 
+aBasis = 
+  GenerateBasis[{stateVar,nonStateVar}, polyRange , initPower];
+
+
+
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+res0$0$0 = 
+ ComputeInitialCollocationWeights[aBasis,{{1},{1}}, modEqns00,simp]; 
+
+Print["one period solutions done"]
+

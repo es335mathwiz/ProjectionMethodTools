@@ -1,0 +1,148 @@
+Needs["JLink`"]; Needs["ProjectionInterface`"]; \
+Get["prepPackages.mth"]; Get["applyReliable.mth"];
+
+
+lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
+  rUnderBar -> 2/100, qLow -> -.5, qHigh -> .5, 
+  ruLow -> -4*sigma$u/(1 - rho$ru), ruHigh ->  4*sigma$u/(1 - rho$ru),
+   integOrder -> {8}, sigma$u -> 0.01, theMean -> {0}, rho$ru -> 0.5,
+   adj -> 1}; 
+
+
+
+
+lucaReliableEqns = genSysLaggedSubbed[1];
+(*rr[t]-eqvdIf[lambda[t]\[GreaterEqual]0,rUnderBar,phip*qq[t]] should \
+fix codesubs*)
+
+
+newWeightedStochasticBasis[lucaMod01SubZ0, lucaReliableEqns];
+{{stateVar, nonStateVar, theShock}, modEqns01SubZ0} = 
+  GenerateModelCode[lucaMod01SubZ0];
+
+(*modEqns01SubZ0[updateParams[modParams]]*)
+Print["compiled model"]
+
+
+polyRange = {{qLow, qHigh}, {ruLow, ruHigh}} /. lucaSubs;
+initPower = {1, 1}; shockPower = {1};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. lucaSubs, initPower, theShock,
+    theMean //. lucaSubs, {sigma$u} //. lucaSubs, 
+   integOrder //. lucaSubs, shockPower, nonStateVar];
+Print["computed basis"]
+
+
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+res1$1$101SubZ0 = 
+ ComputeInitialCollocationWeights[lucaBasis, 
+  Table[Random[], {Length[stateVar] + Length[nonStateVar]}, {8}], 
+  modEqns01SubZ0, simp]; If[res1$1$101SubZ0[isConvergedQ[]],
+ polys1$1$101SubZ0 = 
+  CreatePolynomials[lucaMod01SubZ0, res1$1$101SubZ0] // 
+   Chop(*Chop drops very small terms*), \
+"ComputeInitialCollocationWeights did not converge", \
+"ComputeInitialCollocationWeights did not converge"];
+
+Print["computed first order solution"]
+
+
+boo01 = res1$1$101SubZ0[incOrder[{1, 1, 1}]]; boo01[isConvergedQ[]]
+
+Print["incremented each order"]
+
+
+boo01 = boo01[incOrder[{1, 1, 1}]]; boo01[isConvergedQ[]]
+Print["incremented each order again"]
+
+(polysboo01 = 
+   CreatePolynomials[lucaMod01SubZ0, boo01] // Chop);
+Print["computed polynomial"]
+
+polyFunc = Function @@ {{qq, ru, uu$Shock}, polysboo01[[3]]};
+
+Print["computed polynomial function"]
+
+Print["about to generate graphs"]
+
+rrPts = Append[#, polyFunc @@ #] & /@ 
+   gtChebNodes[boo01[getTheWeightedStochasticBasis[]]];
+grrPts = gatherByShocks[rrPts];
+pts01 = ListPointPlot3D @@ {grrPts[[1, All, {1, 2, 4}]], 
+    Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+zpts01 = ListPointPlot3D @@ {ArrayFlatten[{{grrPts[[1, All, {1, 2}]], 
+       0}}], Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+pts02 = ListPointPlot3D @@ {grrPts[[2, All, {1, 2, 4}]], 
+    Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+zpts02 = ListPointPlot3D @@ {ArrayFlatten[{{grrPts[[2, All, {1, 2}]], 
+       0}}], Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+pts03 = ListPointPlot3D @@ {grrPts[[3, All, {1, 2, 4}]], 
+    Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+zpts03 = ListPointPlot3D @@ {ArrayFlatten[{{grrPts[[3, All, {1, 2}]], 
+       0}}], Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+pts04 = ListPointPlot3D @@ {grrPts[[4, All, {1, 2, 4}]], 
+    Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+zpts04 = ListPointPlot3D @@ {ArrayFlatten[{{grrPts[[4, All, {1, 2}]], 
+       0}}], Filling -> Bottom, PlotStyle -> {PointSize -> .04}, 
+    PlotRange -> All};
+rr3d01 = Plot3D @@ ({{rUnderBar //. lucaSubs, polysboo01[[3]]} /. 
+       uu$Shock -> grrPts[[1, 1, 3]], {qq, qLow, qHigh}, {ru, ruLow, 
+       ruHigh}, PlotRange -> All} //. lucaSubs);
+rr3d02 = Plot3D @@ ({{rUnderBar //. lucaSubs, polysboo01[[3]]} /. 
+       uu$Shock -> grrPts[[2, 1, 3]], {qq, qLow, qHigh}, {ru, ruLow, 
+       ruHigh}, PlotRange -> All} //. lucaSubs);
+rr3d03 = Plot3D @@ ({{rUnderBar //. lucaSubs, polysboo01[[3]]} /. 
+       uu$Shock -> grrPts[[3, 1, 3]], {qq, qLow, qHigh}, {ru, ruLow, 
+       ruHigh}, PlotRange -> All} //. lucaSubs);
+rr3d04 = Plot3D @@ ({{rUnderBar //. lucaSubs, polysboo01[[3]]} /. 
+       uu$Shock -> grrPts[[4, 1, 3]], {qq, qLow, qHigh}, {ru, ruLow, 
+       ruHigh}, PlotRange -> All} //. lucaSubs);
+
+Print["done generating some graphs"]
+
+Get["JavaGraphics`"]
+GraphicsRow[{Show[rr3d01, pts01], Show[rr3d02, pts02], 
+  Show[rr3d03, pts03], Show[rr3d04, pts04]}, ImageSize -> 1000, 
+ DisplayFunction -> (PopupWindow[Button["Click here"], #] &)]
+
+Print["about to replace variables in original system"]
+
+(theRes = 
+    ReplaceVariables[lucaMod01SubZ0, 
+      polysboo01, {stateVar, nonStateVar}] // Chop);
+
+Print["done replace variables in original system"]
+
+
+Print["creating a function for evaluating system errors"]
+
+notHuh = PiecewiseExpand /@ (theRes /. {eqvdIf -> If}); notHuhFunc = 
+ Function @@ ({{qq, ru, uu$Shock}, notHuh} // N);
+
+Print["done creating a function for evaluating system errors"]
+
+Print[notHuhFunc[0, 0, 0]]
+
+Print["saving function and evaluation points"]
+Save["lookupPrblm"<>ToString[integOrder/.lucaSubs]<>".m",{notHuhFunc,grrPts}]
+
+
+(*
+Get["lookupPrblm.m"]
+Expectation[(notHuhFunc @@ grrPts[[1, #, Range[3]]])[[1]], 
+   lookey \[Distributed] NormalDistribution[0, 0.01]] & /@ Range[16]
+
+Print["computing the expectation at all the evaluation points"]
+
+Print[Expectation[(notHuhFunc @@ grrPts[[1, #, Range[3]]])[[1]], 
+   lookey \[Distributed] NormalDistribution[0, 0.01]] & /@ Range[Length[grrPts[[1]]]]]
+
+*)

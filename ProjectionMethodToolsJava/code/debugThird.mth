@@ -134,7 +134,7 @@ With[{tp=aPath02ExtFunc[qtm1,rutm1,eps]},
 Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
 
 redExport["prettyrr02.pdf",
-Plot3D[{aPath01Ext[[5,1]]/.eps->0,aPath02ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
+Plot3D[aPath02ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,
 PlotLabel->
 {"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for two periods"}]]
