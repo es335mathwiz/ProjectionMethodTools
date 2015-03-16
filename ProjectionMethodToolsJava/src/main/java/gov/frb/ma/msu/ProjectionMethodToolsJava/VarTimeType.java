@@ -144,16 +144,28 @@ for(jj=0;jj<colDim;jj++){
 }}
 return(new Matrix(resMat));}}
 
-EquationValDrv doValSwitch( StochasticBasis model, int nonStateOffset, int rightEnd, int varNum, Matrix laggedMat, Matrix nowMat, Matrix nxtMat, Matrix nowDrvMat, Matrix nxtDrvMat){
-	 return new EquationValDrv(new Matrix(0,0),new Matrix(0,0));};;
-
-
  EquationValDrv doValSwitch( StochasticBasis model,  int varNum){
 		if(true)throw new ProjectionRuntimeException("unimplemented doValSwitch");
 		return(new EquationValDrv());	
 	};
-		
-		
+
+EquationValDrv doValSwitch(StochasticBasis model, double[] evalPt,
+		int varNum) {
+	if(true)throw new ProjectionRuntimeException("unimplemented doValSwitch");
+	return(new EquationValDrv());	
+}		
+
+
+EquationValDrv doValSwitch( StochasticBasis model, int nonStateOffset, int rightEnd, int varNum, Matrix laggedMat, Matrix nowMat, Matrix nxtMat, Matrix nowDrvMat, Matrix nxtDrvMat){
+	 return new EquationValDrv(new Matrix(0,0),new Matrix(0,0));};;
+
+
+EquationValDrv doValSwitch(StochasticBasis model, double[] evalPt,
+		int nonStateOffset, int rightEnd, int varNum, Matrix laggedMat,
+		Matrix nowMat, Matrix nxtMat, Matrix nowDrvMat, Matrix nxtDrvMat) {
+	if(true)throw new ProjectionRuntimeException("unimplemented doValSwitch");
+	return(new EquationValDrv());	
+}		
 		
 		EquationValDrv doDrvSwitchState(Basis model,Matrix nxtState,
 				Matrix jacobianNxtState,String varName){
@@ -165,7 +177,8 @@ EquationValDrv doValSwitch( StochasticBasis model, int nonStateOffset, int right
 
 EquationValDrv doDrvSwitchNonState(Basis model,double[][][] basisDrvs,
 		double [][][] nxtDrvs,VarTime theDrvVar,String varName){
-	return(doDrvSwitchNonStateCorrect( model, theDrvVar,varName));
+	if(true)throw new ProjectionRuntimeException("unimplemented doValSwitch");
+	return(new EquationValDrv());	
 
 	}
 EquationValDrv doDrvSwitchStateCorrect(Basis model,VarTime theDrvVar,String varName){
@@ -228,4 +241,6 @@ public static int getSTATE() {
 public static int getValueAtNode() {
 	return VALUEATNODE;
 }
+
+
 }

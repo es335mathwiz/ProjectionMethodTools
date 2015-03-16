@@ -43,6 +43,28 @@ int nonStateOffsetNot=0;int rightEndNot=model.getNumPolys(this)*model.getStateVa
 	
 
 	
+
+	EquationValDrv doValSwitch(StochasticBasis model,double[] evalPt,int varNum){
+		StateVariablePolynomials svP=model.getTheState();
+		  Matrix val;Matrix JJ;
+double[] theRes=svP.evaluate(evalPt);
+		  EquationValDrv newVals;
+			  val=new Matrix(1,1,theRes[varNum]);
+			  JJ=new Matrix(1,1);
+			  newVals=new EquationValDrv(val,JJ);
+
+		  return(newVals);		  
+
+
+	}
+
+
+	EquationValDrv doDrvSwitchState(Basis model,double[] evalPt ,Matrix nxtState,
+			Matrix jacobianNxtState,String varName){
+		if(true)throw new ProjectionRuntimeException("not implemented for CurrentVarTime");
+		return(new EquationValDrv());
+	}
+
 	
 	
 	

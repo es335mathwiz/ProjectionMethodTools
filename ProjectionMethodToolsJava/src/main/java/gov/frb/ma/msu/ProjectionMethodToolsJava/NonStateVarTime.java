@@ -43,6 +43,35 @@ EquationValDrv another;
 	    return(another);}
 
 
+/*
+EquationValDrv evalVar(StochasticBasis model, double[] evalPt)throws ProjectionRuntimeException{
+
+	 { 
+			  if(model.getTheNonState().hasVarQNSP(this)){
+				 
+				  return(evalVarNonState(model, evalPt));}
+			  else {
+					  {throw new ProjectionRuntimeException("CollocationSolution: var>>"+
+							  getVarName()+
+					  " not in state or nonState");}}}}	
+	
+	*/
+
+
+public EquationValDrv evalVar(StochasticBasis model, double[] evalPt)throws ProjectionRuntimeException{
+EquationValDrv another;
+	
+		  int varNum = model.getTheNonState().varPositionNSP(getVarName());
+
+		  another=getEvaluationTimeAndType().doValSwitch( model,evalPt,varNum);
+
+	    
+	    return(another);}
+
+
+
+
+
 public EquationValDrv evalVarNonStateGeneric(StochasticBasis model, Matrix nowMat, Matrix nxtMat, Matrix nowDrvMat, Matrix nxtDrvMat)throws ProjectionRuntimeException{
 	  {
 		

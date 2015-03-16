@@ -10,6 +10,12 @@ public	EquationValDrv doValSwitch(StochasticBasis model,int varNum){
 	return(super.doValSwitch(model,varNum));
 	}
 
+public	EquationValDrv doValSwitch(StochasticBasis model,double[] evalPt,int varNum){
+
+
+	return(super.doValSwitch(model,evalPt,varNum));
+	}
+
 
 	
 	

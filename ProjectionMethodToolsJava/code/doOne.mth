@@ -18,12 +18,28 @@ try01Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
 zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
 
-hmatApp01=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
-Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01//.latexSubs/.morePaperSubs]]
+hmatApp01NotFunc=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
+Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01NotFunc//.latexSubs/.morePaperSubs]]
 Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
+
+
+
+
 
 aPath01ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
 aPath01Ext/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg}
+
+
+hmatApp01[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath01ExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]]]//Chop]
+
+
+redExport["prettyhapp01A.pdf",happ02AG=
+(Plot3D[hmatApp01[qtm1,rutm1,0][[2,1]]*(aPath01ExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh}//.lucaSubs,{rutm1,ruLow,ruHigh}//.lucaSubs,
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for one period"}])]
+
 
 projResults=genProjResults @@ ({modSymb,theEqns,modClass,lucaBasis,simp}=genProjComponents[1])
 num01=genPolyFuncs[modSymb,projResults]
@@ -40,18 +56,19 @@ zeroColloc=ListPointPlot3D[ReplacePart[#,3->0]&/@ ptsSByEpsilon[[3]],
 PlotStyle->{PointSize[.04]}]
 
 redExport["prettyZ01.pdf",
-z01G=Plot3D[try01Vals[qq,ru,0],{qq,qLow,qHigh},{ru,ruLow,ruHigh},
+z01G=Plot3D[try01Vals[qq,ru,0],{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,
 PlotLabel->
 {"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r]  constraint for one period"}]]
 
 redExport["prettyrr01.pdf",
-r01G=Plot3D  @@{aPath01Ext[[5,1]]/.eps->0,{qtm1,-.1,.1},{rutm1,-.2,.2},
+r01G=Plot3D  @@{aPath01Ext[[5,1]]/.eps->0,{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},PlotRange->All,
 PlotLabel->
 {"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for one period"}}]
 
 redExport["prettyNumDiff01.pdf",
-diff01G=Show[zeroColloc,Plot3D[(aPath01ExtFunc[qq,ru,0][[5,1]] -num01[[2]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotLabel->
+diff01G=Show[zeroColloc,Plot3D[(aPath01ExtFunc[qq,ru,0][[5,1]] -num01[[2]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,PlotLabel->
 {"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for one symbolic less numeric"},PlotRange->All,DisplayFunction->$DisplayFunction],PlotRange->All]]
+
 
 
 

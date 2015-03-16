@@ -26,6 +26,21 @@ Matrix laggedMat=new Matrix(model.getTheState().getXformedChebNodePts());
 
 		  return(newVals);
 	}
+
+
+public	EquationValDrv doValSwitch(StochasticBasis model,double[] evalPt,int varNum){
+
+		  Matrix val;Matrix JJ;
+
+		  EquationValDrv newVals;
+			  val=new Matrix(1,1,evalPt[varNum]);
+			  JJ=new Matrix(1,1);
+			  newVals=new EquationValDrv(val,JJ);
+
+		  return(newVals);
+	}
+
+
 	EquationValDrv doDrvSwitchState(Basis model,Matrix nxtState,
 			Matrix jacobianNxtState,String varName){
 

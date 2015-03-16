@@ -1,3 +1,5 @@
+Print["disabling Exp code for now to work on perfect foresight recursion"]
+(*
 Print["should only Get after doOne.mth"]
 
 
@@ -6,20 +8,21 @@ Hold[try01Vals[qtm1,rutm1,eps][[1]]],
 eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs//N]]
 
 redExport["prettyExpZ01.pdf",z01ExpG=
-Plot3D[try01ExpVals[qq,ru],{qq,qLow,qHigh},{ru,ruLow,ruHigh},
+Plot3D[try01ExpVals[qq,ru],{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,
 PlotLabel->
 {"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period"}]]
 
 redExport["prettyExpDiffZ01.pdf",z01ExpLessPerfG=
-Plot3D[try01ExpVals[qq,ru]-try01Vals[qq,ru,0][[1]],{qq,qLow,qHigh},{ru,ruLow,ruHigh},
+Plot3D[try01ExpVals[qq,ru]-try01Vals[qq,ru,0][[1]],{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,
 PlotLabel->
 {"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period less perfectforsight value"}]]
 
 
-z0Exp=Expectation[zzz$0$1Func[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs]
+z0Exp=Expectation[zzz$0$1Func[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs]]
 z0ExpFunc=Function @@ {{qtm1,rutm1},z0Exp};
 redExport["prettyExpExactDiffZ01.pdf",z01ExpLessExactG=
 Plot3D[try01ExpVals[qq,ru]-(z0Exp/.{qtm1->qq,rutm1->ru}),
-{qq,qLow,qHigh},{ru,ruLow,ruHigh},
+{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,
 PlotLabel->
 {"\!\(\*SubscriptBox[\(E[z]\), \(t\)]\)[q,r]  constraint for one period less analytic value"}]]
+*)

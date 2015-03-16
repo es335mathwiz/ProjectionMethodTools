@@ -63,6 +63,40 @@ Matrix nxtDrvMat=model.getTheState().getVariablesIteratedFromChebNodesTimeTP1Der
 	
 	
 	
+
+	EquationValDrv doValSwitch(StochasticBasis model,double[] evalPt,int varNum){
+StateVariablePolynomials svP=model.getTheState();
+		  Matrix val;Matrix JJ;
+		  double[] shk ={0};
+			double [] x$t =Utilities.augmentVecWithVal(svP.evaluate(evalPt),shk);
+			double[] x$tp1=svP.evaluate(x$t);
+ 
+
+
+		  EquationValDrv newVals;
+			  val=new Matrix(1,1,x$tp1[varNum]);
+			  JJ=new Matrix(1,1);
+			  newVals=new EquationValDrv(val,JJ);
+
+		  return(newVals);		  
+
+	}
+	
+	
+	
+	
+	EquationValDrv doDrvSwitchState(Basis model,double[] evalPt,Matrix nxtState,
+			Matrix jacobianNxtState,String varName){
+
+		if(true)throw new ProjectionRuntimeException("not implemented for CurrentVarTime");
+		return(new EquationValDrv());
+		}
+		
+
+	
+	
+	
+	
 	
 	
 	

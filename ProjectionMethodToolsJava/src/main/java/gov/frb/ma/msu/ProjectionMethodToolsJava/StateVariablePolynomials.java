@@ -250,7 +250,7 @@ Matrix		variablesIteratedFromChebNodesTimeTP1DerivWRTWtsNSP;
 		}
 
 
-		private double[][] evaluateShockIter(double[] xx,double[]shockVal)throws ProjectionRuntimeException{
+		double[][] evaluateShockIter(double[] xx,double[]shockVal)throws ProjectionRuntimeException{
 
 			
 
@@ -369,7 +369,7 @@ public void setVariablesAtChebyshevNodesTimeTNSP(
 		Matrix variablesAtChebyshevNodesTimeTNSP) {
 	this.variablesAtChebyshevNodesTimeTNSP = variablesAtChebyshevNodesTimeTNSP;
 }
-double[] evaluateNSP(NonStateVariablePolynomials nonStateVariablePolynomials, double[] xx)throws ProjectionRuntimeException{	
+public double[] evaluateNSP(NonStateVariablePolynomials nonStateVariablePolynomials, double[] xx)throws ProjectionRuntimeException{	
 	double [] theRes =null;
 	double [] dblVals=getTheChebyshevPolysAtEvalPoints().evaluateBasisPolysAtPt(xx);
 	Matrix polysAtPt=new Matrix(dblVals,dblVals.length);
@@ -379,7 +379,7 @@ double[] evaluateNSP(NonStateVariablePolynomials nonStateVariablePolynomials, do
 	Matrix matRes=nonStateVariablePolynomials.getRelevantWeightsNSP().times(polysAtPt);
 	theRes=matRes.getColumnPackedCopy();
 	return(theRes); }
-double [][] evaluateNSP(NonStateVariablePolynomials nonStateVariablePolynomials, double[][] xx) throws ProjectionRuntimeException {
+public double [][] evaluateNSP(NonStateVariablePolynomials nonStateVariablePolynomials, double[][] xx) throws ProjectionRuntimeException {
 
 	double [][] theRes=new double[xx.length][];
 int ii;
@@ -575,7 +575,7 @@ return(theRes); }
  * @return
  * @throws ProjectionRuntimeException
  */
-private double [][] evaluate(double [] [] xx) throws ProjectionRuntimeException {
+double [][] evaluate(double [] [] xx) throws ProjectionRuntimeException {
 	double [][] theRes=new double[xx.length][];
 	int ii;
 	for(ii=0;ii<xx.length;ii++){

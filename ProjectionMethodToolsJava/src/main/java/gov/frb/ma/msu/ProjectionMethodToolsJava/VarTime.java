@@ -23,6 +23,9 @@ public EquationValDrv doValSwitch( StochasticBasis model, int nonStateOffset, in
 return evaluationTimeAndType.doValSwitch( model, nonStateOffset, rightEnd, varNum, laggedMat, nowMat, nxtMat, nowDrvMat, nxtDrvMat);}
 	
 
+public EquationValDrv doValSwitch( StochasticBasis model, double[] evalPt,int nonStateOffset, int rightEnd, int varNum, Matrix laggedMat, Matrix nowMat, Matrix nxtMat, Matrix nowDrvMat, Matrix nxtDrvMat){
+return evaluationTimeAndType.doValSwitch( model, evalPt, nonStateOffset, rightEnd, varNum, laggedMat, nowMat, nxtMat, nowDrvMat, nxtDrvMat);}
+	
 
 	int getNumPolys(Basis model) {
 		int numPolys=model.getTheState().getTheGrid().powersPlusOneProd();

@@ -70,10 +70,17 @@ Matrix		  nowDrvMat=model.getTheState().getVariablesAtChebNodesTimeTDerivWRTWtsN
 	
 
 	
-	
-	
-	
-	
-	
 
+	EquationValDrv doValSwitch(StochasticBasis model,double[] evalPt,int varNum){
+		StateVariablePolynomials svP=model.getTheState();
+		NonStateVariablePolynomials nsvP=model.getTheNonState();
+		  Matrix val;Matrix JJ;
+double[] theRes=svP.evaluateNSP(nsvP,evalPt);
+		  EquationValDrv newVals;
+			  val=new Matrix(1,1,theRes[varNum]);
+			  JJ=new Matrix(1,1);
+			  newVals=new EquationValDrv(val,JJ);
+
+			  return(newVals);
+	}
 }

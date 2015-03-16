@@ -1,4 +1,4 @@
-Needs["JLink`"]; Needs["OccasionallyBindingConstraints`"]; 
+Needs["JLink`"]; (*Needs["OccasionallyBindingConstraints`"]; *)
 Get["prepPackages.mth"]; Get["applyReliable.mth"];
 <<JavaGraphics`
 

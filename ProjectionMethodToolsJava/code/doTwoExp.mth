@@ -1,5 +1,6 @@
-Get["prep.mth"]
+Print["code commented out for now to focus on perfect foresight recursive implementation"]
 (*  expectations ahead
+Get["prep.mth"]
 try02Exp01=Join[try02,{zzz$0$1[t]==z0ExpFunc[qv,rv],
 qv==aPath02[[4,1]],rv==aPath02[[6,1]]}];
 try02Exp01Func=Function @@ {{qtm1,rutm1,eps},try02Exp01}

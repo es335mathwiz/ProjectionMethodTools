@@ -11,7 +11,7 @@ rtm1->Subscript[rr,t-1],
 eps->Subscript[\[Epsilon],t]
 }
 
-redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600]
+redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600,PlotRange->All]
 
 
 

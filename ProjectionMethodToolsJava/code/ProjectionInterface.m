@@ -5,6 +5,7 @@ BeginPackage["ProjectionInterface`", { "JLink`"}]
 (* Exported symbols added here with SymbolName::usage *)  
 (* Exported symbols added here with SymbolName::usage *) 
 newGenSys::usage="newGenSys";
+occBindCreatePolynomialsLeadsOK::usage="occBindCreatePolynomialsLeadsOK";
 newDoRecurIneqOcc::usage="newDoRecurIneqOcc"
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
@@ -1359,15 +1360,19 @@ Print[" define newcodegensubs"];
 
 
 
-intTermOrNot[aTerm_]:=aTerm;
-intTermOrNot[aTerm_?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &)]:=doInt[aTerm]
+
+noTP1[xx_]:=FreeQ[xx,Global`t+1]
+doInt[{}]:={}
+intSub=Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
+		Plus[doInt[Plus @@ {yy}], zz]
+intTermOrNot[anEqn_]:=If[FreeQ[anEqn,Global`t+1],anEqn,anEqn/.intSub]
 
 futureEqns[theEqns_List]:=With[{futEqns=Select[theEqns, Not[FreeQ[#, Global`t + 1]] &]},
 	With[{allGrouped=intTermOrNot/@Expand[theEqns]},
 	With[{intFut=futEqns/.Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
 		Plus[doInt[Plus @@ {yy}], zz]},
 	With[{forInts=Union[Cases[intFut,doInt[___],Infinity]]},With[{targ=Table[Unique["forInt"],{Length[forInts]}]},
-		With[{reps=Thread[forInts->targ]},
+		With[{reps=Thread[forInts->targ]},Print["reps=",reps//InputForm,"allGrouped",allGrouped//InputForm,allGrouped/.reps];
 		{ToString/@targ,First/@forInts,reps,intFut/.reps,allGrouped/.reps}]]]]]]
 
 getGrouped[eqns_List]:=intTermOrNot/@Expand[eqns]
@@ -1658,7 +1663,7 @@ With[{theShocks=getShocks[theEqns]},
 	*)
 closerInt[someNames_List,someEqns_List]:=
 Module[{},(*Print["incloserInt",{someNames,someEqns}];*)
-MapThread[("EquationValDrv "<>#1<>"="<>#2[[1]]<>";\n")&,{someNames,someEqns}]]
+MapThread[("EquationValDrv "<>#1<>"="<>#2<>";\n")&,{someNames,someEqns}]]
 
 closerInt01[someNames_List,someEqns_List]:=
 Module[{},(*Print["incloserInt",{someNames,someEqns}];*)
@@ -2469,6 +2474,19 @@ With[{tailPath=NestList[((nonFPart[#,
 {{0}},Global`bmat,Global`phimat,Global`psieps])//Global`numIt)&,startPath[[{-3,-2,-1}]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
 
+occBindCreatePolynomialsLeadsOK[aMod_,results_?JavaObjectQ]:=
+With[{origPolys=CreatePolynomials[results],
+basis=results[getTheWeightedStochasticBasis[]]},
+With[{nonStateVars=gtNonStateVars[basis],
+stateVars=gtStateVarsNoShocks[basis]},
+With[{lhsrhs=GetLhsRhs[aMod],ifSubs=eqvdIfSubs[aMod]},(*Print["stateSubs=",stateSubs];*)
+With[{vNames=ToExpression/@
+Join[stateVars,nonStateVars]},
+With[{ifPos=Flatten[DeleteCases[{Flatten[Position[vNames,Head[#[[1]]]]][[1]]->#}&/@ifSubs,{_,{}}]]},
+	With[{allSubs=Thread[(Through[vNames[Global`t]])->origPolys]},
+With[{nonZSubs=ReplacePart[allSubs,ifPos]},
+With[{subbed=((lhsrhs[[1]]/.{Global`qq[Global`t-1]->Global`qq,Global`ru[Global`t-1]->Global`ru,Global`eps[Global`ru][Global`t]->Global`ru$Shock})//.nonZSubs)//Expand},
+subbed]]]]]]]]
 
 occBindCreatePolynomials[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=CreatePolynomials[results],
@@ -2559,6 +2577,17 @@ otherPattern=xxL_Symbol[Global`t] +yyy__},
 With[{otherForSubbing=Cases[eqns,otherPattern->(xxL[Global`t]:>(-1)*(Plus @@{yyy}))]},
 				{otherForSubbing[[All,1]],otherForSubbing[[All,2]]}
 ]]
+
+
+eqvdIfSubs[theMod_]:=
+With[{eqns=projEquations[theMod],
+otherPattern=xxL_Symbol[Global`t]+(yyy__?(Not[FreeQ[#,Global`eqvdIf]]&))},
+With[{otherForSubbing=Cases[eqns,otherPattern->(xxL[Global`t]:>(-1)*(Plus @@{yyy})),Infinity]},
+				otherForSubbing
+]]
+
+
+
 		
 GetCnstrnsReplaceVariables[theMod_,
 thePolys_List,{stateStr_List,nonStateStr_List}]:=

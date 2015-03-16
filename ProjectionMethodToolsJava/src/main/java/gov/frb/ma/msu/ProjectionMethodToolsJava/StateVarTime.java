@@ -36,6 +36,27 @@ public class StateVarTime extends VarTime {
 		EquationValDrv theRes=getEvaluationTimeAndType().doValSwitch( model,varNum);
 		return(theRes); }
 
+
+	public EquationValDrv evalVar(StochasticBasis model, double[] evalPt)throws ProjectionRuntimeException{
+		if(model.getTheState().getTheGrid().hasVarQ(this)) {	
+			return(evalVarState(model,evalPt));
+		}  
+		else {
+			{throw new ProjectionRuntimeException(
+					"CollocationSolution: var>>"+
+					getVarName()+
+			") not in state");}}}
+
+
+	public EquationValDrv evalVarState(StochasticBasis model, double[] evalPt)throws ProjectionRuntimeException{
+		int varNum = getVarNum(model,this);
+		EquationValDrv theRes=getEvaluationTimeAndType().doValSwitch( model,evalPt,varNum);
+		return(theRes); }
+
+	
+	
+	
+	
 	public EquationValDrv evalDrvVar(Basis model, VarTime theDrvVar)
 	throws ProjectionRuntimeException{
 

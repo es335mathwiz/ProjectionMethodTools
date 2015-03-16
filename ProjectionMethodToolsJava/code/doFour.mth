@@ -1,6 +1,6 @@
 Get["prep.mth"]
 (*compute z1 for time zero constrint and time t+1 constraint*)
-Print["now for three"]
+Print["now for four"]
 aPath04=genPath[4]
 try04={
 ((aPath04[[5,1]]>=0.02&&zzz$3$1[t]==0)||
@@ -9,7 +9,7 @@ try04={
 (aPath04[[8,1]]==0.02&&zzz$2$1[t]>=0))&&
 ((aPath04[[11,1]]>=0.02&&zzz$1$1[t]==0)||
 (aPath04[[11,1]]==0.02&&zzz$1$1[t]>=0))&&
-((aPath04[[1,1]]>=0.02&&zzz$0$1[t]==0)||
+((aPath04[[14,1]]>=0.02&&zzz$0$1[t]==0)||
 (aPath04[[14,1]]==0.02&&zzz$0$1[t]>=0))
 }
 try04Func=Function @@ {{qtm1,rutm1,eps},try04}
@@ -43,48 +43,84 @@ aBasis=projResults[getTheWeightedStochasticBasis[]];
 theStatePoly = aBasis[getTheState[]];
 nodePts01=theStatePoly[getXformedChebNodePts[]];
 nodePts01Subs=gtXFormedChebSubsNotStrings[aBasis];
-numEpsilon=Length[Union[nodePts01[[All,4]]]];
+numEpsilon=Length[Union[nodePts01[[All,3]]]];
 numOuterOther=Length[nodePts01]/numEpsilon;
-ptsSByEpsilon=Partition[Sort[nodePts01,#[[4]]>#2[[3]]&],numOuterOther];
+ptsSByEpsilon=Partition[Sort[nodePts01,#[[3]]>#2[[3]]&],numOuterOther];
 zeroColloc=ListPointPlot3D[ReplacePart[#,3->0]&/@ ptsSByEpsilon[[3]],
 PlotStyle->{PointSize[.04]}]
 
 
 redExport["prettyrr04.pdf",r04G=
-Plot3D[aPath04ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
-PlotRange->All,
-PlotLabel->
-{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for three periods"}]]
+Plot3D[aPath04ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for four periods"}]]
 
 redExport["prettyNumDiff04.pdf",numDiff04G=
-Show[Plot3D[(try04Vals[qq,ru,0][[-1]]-num04[[-7]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotLabel->
-{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for two symbolic less numeric"}],zeroColloc,DisplayFunction->$DisplayFunction]]
+Show[Plot3D[(try04Vals[qq,ru,0][[-1]]-num04[[-7]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for four symbolic less numeric"}],zeroColloc,DisplayFunction->$DisplayFunction]]
 
 redExport["prettyhapp04A.pdf",happ04AG=
-Plot3D[hmatApp04[qtm1,rutm1,0][[2,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+Plot3D[hmatApp04[qtm1,rutm1,0][[2,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for three periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for four periods"}]]
 
 redExport["prettyhapp04B.pdf",happ04BG=
-Plot3D[hmatApp04[qtm1,rutm1,0][[5,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+Plot3D[hmatApp04[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for three periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for four periods"}]]
 
 redExport["prettyhapp04C.pdf",happ04CG=
-Plot3D[hmatApp04[qtm1,rutm1,0][[8,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+Plot3D[hmatApp04[qtm1,rutm1,0][[8,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(8\)]\)[q,r,0]  constraint for three periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(8\)]\)[q,r,0]  constraint for four periods"}]]
 
-redExport["prettyhapp04C.pdf",happ04DG=
-Plot3D[hmatApp04[qtm1,rutm1,0][[11,1]],{qtm1,-.1,.1},{rutm1,-.2,.2},
+redExport["prettyhapp04D.pdf",happ04DG=
+Plot3D[hmatApp04[qtm1,rutm1,0][[11,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(8\)]\)[q,r,0]  constraint for three periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(8\)]\)[q,r,0]  constraint for four periods"}]]
 
 
 If[NumberQ[aPath03ExtFunc[qtm1,rutm1,0][[5,1]]],
 redExport["prettyrr03lessrr04.pdf",diffr03$04G=
-Plot3D[{aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-aPath04ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,-.1,.1},{rutm1,-.2,.2},
+Plot3D[{aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-aPath04ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
 {"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for three less four periods"}]]]
 
 
+If[NumberQ[aPath03ExtFunc[qtm1,rutm1,0][[5,1]]],
+redExport["prettyrr03lessrr04.pdf",diffr03$04G=
+Plot3D[{aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-aPath04ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for three less four periods"}]]]
+
+
+
+
+
+
+If[NumberQ[aPath03ExtFunc[qtm1,rutm1,0][[5,1]]],
+redExport["prettyrr03lessrr04.pdf",diffr03$04G=
+Plot3D[{aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-aPath04ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for three less four periods"}]]]
+
+
+
+
+
+
+
+try04Subbed={
+((aPath04[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath04[[5,1]]==0.02&&zzz$2$1[t]>=0)),
+zzz$0$1[t]==zzz$0$1Func[aPath04[[10,1]],aPath04[[12,1]],0],
+zzz$1$1[t]==zzz$1$1Func[aPath04[[7,1]],aPath04[[9,1]],0],
+zzz$2$1[t]==zzz$2$1Func[aPath04[[4,1]],aPath04[[6,1]],0]
+}
+try04SubbedFunc=Function @@ {{qtm1,rutm1,eps},try04Subbed}
+try04SubbedVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t],zzz$3$1[t]}/.Flatten[Solve[try04SubbedFunc[qtm1,rutm1,eps],{zzz$3$1[t],zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]]
+
+
+(*
+
+*)
