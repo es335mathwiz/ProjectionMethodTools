@@ -32,6 +32,9 @@ Solve[Thread[(firstEqn[[{1,2,4}]]/.{eqvdIf->If,zzz$0$1[t]->zzz$0$1Func[qq[t-1],r
 
 first = Nest[doRecurIneqOcc, {}, 1];
 
+
+first = Nest[doRecurIneqOcc, {}, 1];
+
 Plot3D[first[[-1,-1]][qq,ru,.1] - zzz$0$1Func[qq,ru,.1],{qq,-.1,.1},{ru,-.2,.2}]
 Plot3D[first[[-1,-1]][qq,ru,-.1] - zzz$0$1Func[qq,ru,-.1],{qq,-.1,.1},{ru,-.2,.2}]
 hmatN=hmat//.lucaSubs//myN;

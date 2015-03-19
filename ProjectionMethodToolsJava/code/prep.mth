@@ -1,4 +1,5 @@
-Get["ProjectionInterface`"];
+If[$OperatingSystem==="Unix",
+Get["ProjectionInterface`"]];
 Get["paperFocus.mth"]
 Get["thirdRecursion.mth"];
 

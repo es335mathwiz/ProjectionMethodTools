@@ -10,6 +10,7 @@ newDoRecurIneqOcc::usage="newDoRecurIneqOcc"
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 genPath::usage="genPath[num_Integer]"
+genCompSlackSys::usage="genCompSlackSys[nn_Integer]"
 genPolyFuncs::usage="genPolyFuncs[projresults]"
 genProjComponents::usage="genProjComponents[numZs_Integer]"
 (*
@@ -1372,7 +1373,7 @@ futureEqns[theEqns_List]:=With[{futEqns=Select[theEqns, Not[FreeQ[#, Global`t + 
 	With[{intFut=futEqns/.Plus[ yy__?(And[FreeQ[#,doInt],Not[FreeQ[#, Global`t + 1]]] &), zz___] :> 
 		Plus[doInt[Plus @@ {yy}], zz]},
 	With[{forInts=Union[Cases[intFut,doInt[___],Infinity]]},With[{targ=Table[Unique["forInt"],{Length[forInts]}]},
-		With[{reps=Thread[forInts->targ]},Print["reps=",reps//InputForm,"allGrouped",allGrouped//InputForm,allGrouped/.reps];
+		With[{reps=Thread[forInts->targ]},
 		{ToString/@targ,First/@forInts,reps,intFut/.reps,allGrouped/.reps}]]]]]]
 
 getGrouped[eqns_List]:=intTermOrNot/@Expand[eqns]
@@ -1400,6 +1401,7 @@ doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
                     {eqNames,EquationValDrvEqns}])<>"\n",
                 varDefs = makeVarDefs[eqns,svInfo]<>makeShockDefs[eqns]<>
                 makeDVarDefs[Union[Cases[eqns,Global`theDeriv[___],Infinity]]],
+                                varDefsAtPt = makeVarDefsAtPt[eqns,svInfo]<>makeShockDefsAtPt[eqns],
             thePrms = theParams[eqns,svInfo]},
                 With[ {prmDefs = StringJoin @@(defParamString /@thePrms),
                 	getDefs = StringJoin @@(getParamString /@thePrms),
@@ -1407,9 +1409,9 @@ doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
                 	updateDefs=makeUpdateParams[thePrms]},
                 	With[{theIntDefs=forIntHeader<>forIntBody[futureStuff,eqns,varDefs]<>forIntFooter[eqns],
                 		shockEqnDefs=shockAssn[eqns]},
-                    writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[theDefs],theAugs,
+                    writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[varDefsAtPt],starCaretToE[theDefs],theAugs,
                     	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
-                    	modelBottom,modelPostParams];
+                    	modelBottom,modelPostParams,modelPostParamsAtPt];
                     (
                    JavaNew[modelName])
                 ]
@@ -1450,7 +1452,7 @@ getParamString[param_Symbol] :=
 starCaretToE[aStr_String] :=
     StringReplace[aStr,{"*^"->"e"}]
 augEqns[eqNameList_List] :=
-    "EquationValDrv sys="<>((eqNameList//.{yy_,xx_,zz___}:> {yy<>".augSys("<>xx<>")",zz})[[1]])<>";\n"
+    "EquationValDrv sys="<>((eqNameList//.{yy_,xx_,zz___}:> {yy<>".augSys("<>xx<>")",zz})[[1]])<>";\n"<>"return(sys);}\n"
 
 
 modelTop = 
@@ -1497,21 +1499,29 @@ useDoShocksDefs="double useShock(final int loc, final StochasticBasis theStochas
 "final void doShock(final int loc,final double val){theShocks[loc]=val;}\n"
 modelPostParams = "\n
     public EquationValDrv updateValDrv(final StochasticBasis theStochasticBasis) throws ProjectionRuntimeException{";
+modelPostParamsAtPt = "\n
+    public EquationValDrv updateValDrv(final StochasticBasis theStochasticBasis, double [] aPt) throws ProjectionRuntimeException{";
 
-modelBottom = "return(sys);}
+modelBottom = "
 double Global_pow(double base,double exp){
 	return(pow(base,exp));}
 double Global_pow(double base,int exp){
 	return(pow(base,exp));}
 }";
+writeModel[poo___]:={poo}
 
+(*
+                   writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[varDefsAtPt],starCaretToE[theDefs],theAugs,
+                    	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
+                    	modelBottom,modelPostParams];
+*)
 writeModel[modelName_String,
 	modelTop_String,shkDef_String,modelNearTop_String,
-	varDefs_String,eqnDefs_String,eqnAugs_String,
+	varDefs_String,varDefsAtPt_String,eqnDefs_String,eqnAugs_String,
 	getDefs_String,setDefs_String,prmDefs_String,updateDefs_String,theIntDefs_String,
 	shockEqnDefs_String,
 	meFuncDef_String,useDoShocksDefs_String,
-	modelBottom_String,modelPostParams_String] :=
+	modelBottom_String,modelPostParams_String,modelPostParamsAtPt_String] :=
     Module[ {},
         With[ {theFile = modelName<>".java"},
             If[ True(*FileInformation[theFile]== {}*),
@@ -1524,9 +1534,14 @@ writeModel[modelName_String,
                 WriteString[theFile,getDefs];
                 WriteString[theFile,setDefs];
                 WriteString[theFile,useDoShocksDefs];
-                WriteString[theFile,updateDefs];
+                WriteString[theFile,updateDefs];(*from here*)
                 WriteString[theFile,modelPostParams];
                 WriteString[theFile,varDefs];
+                WriteString[theFile,theIntDefs];
+                WriteString[theFile,eqnDefs];
+                WriteString[theFile,eqnAugs];(*new stuff here*)
+                WriteString[theFile,modelPostParamsAtPt];
+                WriteString[theFile,varDefsAtPt];
                 WriteString[theFile,theIntDefs];
                 WriteString[theFile,eqnDefs];
                 WriteString[theFile,eqnAugs];
@@ -1534,9 +1549,9 @@ writeModel[modelName_String,
                 WriteString[theFile,modelBottom];
                 Close[theFile];
                 doJavac[modelName]
-            (*,Print[" file "<>theFile<>" already exists. use DeleteFile[\""<>theFile<>"\"]"]*)]
-        ]
-    ]
+           ]]]
+        
+    
 
 
 makeDVarDefs[{}] :=
@@ -1545,6 +1560,7 @@ makeDVarDefs[theDVars_List] :=
     With[ {theSVars = DeleteCases[theDVars,Global`theDeriv[aSymbol_Symbol[Global`t],bSymbol_Symbol[Global`t-1]]]/.Global`theDeriv[aSymbol_Symbol[Global`t+1],bSymbol_Symbol[Global`t]]:> {ToString[aSymbol],ToString[bSymbol]},theSLagVars = DeleteCases[theDVars,Global`theDeriv[aSymbol_Symbol[Global`t+1],bSymbol_Symbol[Global`t]]]/.Global`theDeriv[aSymbol_Symbol[Global`t],bSymbol_Symbol[Global`t-1]]:> {ToString[aSymbol],ToString[bSymbol]}},
         "StateVarTime dVT;\n"<>(drvSingle/@theSVars)<>"\n"<>(drvSingleLag/@theSLagVars)<>"\n"
     ]
+
 
 
 tm1Vars[theEqns_List] :=
@@ -1560,9 +1576,7 @@ tp1Vars[theEqns_List] :=
 eqVDTm1[varName_Symbol] :=
  ToString[StringForm["VT=new StateVarTime(\"`1`\",-1);\n",ToString[varName]]]<>"\n"<>
 ToString[StringForm[" final EquationValDrv `1`$tm1=VT.evalVar(theStochasticBasis);\n",ToString[varName]]]<>"\n"
-(*
-    ToString[StringForm["VT=new StateVarTime(\"`1`\",-1); final EquationValDrv `1`$tm1=VT.evalVar(theStochasticBasis);\n",ToString[varName]]]<>"\n"
-*)
+
 eqStateVDT[varName_Symbol] :=
     ToString[StringForm["VT=new StateVarTime(\"`1`\",0); final EquationValDrv `1`$t=VT.evalVar(theStochasticBasis);\n",ToString[varName]]]<>"\n"
 eqStateVDTp1[varName_Symbol] :=
@@ -1573,8 +1587,22 @@ eqNonStateVDT[varName_Symbol] :=
 eqNonStateVDTp1[varName_Symbol] :=
     ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",1); final EquationValDrv `1`$tp1=NVT.evalVar(theStochasticBasis);\n",ToString[varName]]]<>"\n"
 
-nonStateDouble[varName_String] :=
-    ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",0); final EquationValDrv `1`$t=NVT.evalVar(theStochasticBasis);NVT=new NonStateVarTime(\"`1`\",1);final EquationValDrv `1`$tp1 = NVT.evalVar(theStochasticBasis);\n",varName]]<>"\n"
+
+eqVDAtPtTm1[varName_Symbol] :=
+ ToString[StringForm["VT=new StateVarTime(\"`1`\",-1);\n",ToString[varName]]]<>"\n"<>
+ToString[StringForm[" final EquationValDrv `1`$tm1=VT.evalVar(theStochasticBasis,aPt);\n",ToString[varName]]]<>"\n"
+
+eqStateVDAtPtT[varName_Symbol] :=
+    ToString[StringForm["VT=new StateVarTime(\"`1`\",0); final EquationValDrv `1`$t=VT.evalVar(theStochasticBasis,aPt);\n",ToString[varName]]]<>"\n"
+eqStateVDAtPtTp1[varName_Symbol] :=
+    ToString[StringForm["VT=new StateVarTime(\"`1`\",1); final EquationValDrv `1`$tp1=VT.evalVar(theStochasticBasis,aPt);\n",ToString[varName]]]<>"\n"
+
+eqNonStateVDAtPtT[varName_Symbol] :=
+    ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",0); final EquationValDrv `1`$t=NVT.evalVar(theStochasticBasis,aPt);\n",ToString[varName]]]<>"\n"
+eqNonStateVDAtPtTp1[varName_Symbol] :=
+    ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",1); final EquationValDrv `1`$tp1=NVT.evalVar(theStochasticBasis,aPt);\n",ToString[varName]]]<>"\n"
+
+
 makeVarDefs[theEqns_List,svInfo_List] :=
     With[ {begDef = "\nStateVarTime VT;NonStateVarTime NVT;ShockVarTime VTS;\n",
         forTM1 = StringJoin @@ (eqVDTm1/@tm1Vars[theEqns]),
@@ -1588,17 +1616,37 @@ makeVarDefs[theEqns_List,svInfo_List] :=
         },
         begDef<>forTM1<>forT<>forTP1
     ]
+    
+makeVarDefsAtPt[theEqns_List,svInfo_List] :=
+    With[ {begDef = "\nStateVarTime VT;NonStateVarTime NVT;ShockVarTime VTS;\n",
+        forTM1 = StringJoin @@ (eqVDAtPtTm1/@tm1Vars[theEqns]),
+        forT = 
+        StringJoin @@ (eqStateVDAtPtT/@Intersection[tVars[theEqns],svInfo[[1]]])<>
+               StringJoin @@ (eqNonStateVDAtPtT/@Intersection[tVars[theEqns],svInfo[[2]]])
+        ,
+        forTP1 = 
+        StringJoin @@ (eqStateVDAtPtTp1/@Intersection[tp1Vars[theEqns],svInfo[[1]]])<>
+        	        StringJoin @@ (eqNonStateVDAtPtTp1/@Intersection[tp1Vars[theEqns],svInfo[[2]]])
+        },
+        begDef<>forTM1<>forT<>forTP1
+    ]
 Print["why eval of shock t+1?"]
 eqVDShocks[varName_Symbol] :=
-(*    ToString[StringForm["VTS=new ShockVarTime(\"`1`$Shock\",0); final EquationValDrv `1`$Shock$t=VTS.evalVar(theStochasticBasis);\n",
-    	ToString[varName]]]<>"\n"<>*)
     	ToString[StringForm["VTS=new ShockVarTime(\"`1`$Shock\",-1); final EquationValDrv `1`$Shock$tm1=VTS.evalVar(theStochasticBasis);\n",
     	ToString[varName]]]<>"\n"
-
-
+eqVDAtPtShocks[varName_Symbol] :=
+    	ToString[StringForm["VTS=new ShockVarTime(\"`1`$Shock\",-1); final EquationValDrv `1`$Shock$tm1=VTS.evalVar(theStochasticBasis,aPt);\n",
+    	ToString[varName]]]<>"\n"
 makeShockDefs[theEqns_List] :=
     With[ {begDef = "\n",
         forT = StringJoin @@ (eqVDShocks/@shockVars[theEqns])},
+ begDef<>forT
+    ]
+    
+
+makeShockDefsAtPt[theEqns_List] :=
+    With[ {begDef = "\n",
+        forT = StringJoin @@ (eqVDAtPtShocks/@shockVars[theEqns])},
  begDef<>forT
     ]
     
@@ -1684,6 +1732,9 @@ makeNonStateVarDefs[{theSVars_List,theNSVars_List}] :=
 	
 makeVarDefs[{theSVars_List,theNSVars_List}] :=
   makeStateVarDefs[theSVars]<>makeNonStateVarDefs[theNSVars]
+  	
+makeVarDefsAtPt[{theSVars_List,theNSVars_List}] :=
+  makeStateVarDefsAtPt[theSVars]<>makeNonStateVarDefsAtPt[theNSVars]
   
 drvSingle[{varNameA_String,varNameB_String}] :=
     ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",1);dVT=new StateVarTime(\"`2`\",0); final EquationValDrv `1`$tp1$Drv$`2`$t=NVT.evalDrvVar(theStochasticBasis,dVT);\n",varNameA,varNameB]]<>"\n"
@@ -1696,8 +1747,13 @@ stateTriple[varName_String] :=
     ToString[StringForm["VT=new StateVarTime(\"`1`\",-1); final EquationValDrv `1`$tm1=VT.evalVar(theStochasticBasis);VT=new varTime(\"`1`\",0);EquationValDrv `1`$t = VT.evalVar(theStochasticBasis);VT=new varTime(\"`1`\",1);EquationValDrv `1`$tp1 = VT.evalVar(theStochasticBasis);\n",varName]]<>"\n"
 
 
+
 nonStateDouble[varName_String] :=
     ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",0);final EquationValDrv `1`$t = VT.evalVar(theStochasticBasis);NVT=new NonStateVarTime(\"`1`\",1);EquationValDrv `1`$tp1 = VT.evalVar(theStochasticBasis);\n",varName]]<>"\n"
+
+
+nonStateDoubleAtPt[varName_String] :=
+    ToString[StringForm["NVT=new NonStateVarTime(\"`1`\",0);final EquationValDrv `1`$t = VT.evalVar(theStochasticBasis,aPT);NVT=new NonStateVarTime(\"`1`\",1);EquationValDrv `1`$tp1 = VT.evalVar(theStochasticBasis,aPt);\n",varName]]<>"\n"
 
 
 windowsQ[] := Not[StringFreeQ[$Version, "Windows"]]
@@ -2104,6 +2160,23 @@ With[{forCon=aPath[[forConPos]]},Join[sEqns,(Flatten @
 MapThread[makeDiscrepZPair,{forCon,zVars,dVars}])]/.
 	{Global`qtm1->Global`qq[Global`t-1],Global`rutm1->Global`ru[Global`t-1],Global`eps->Global`eps[Global`ru][Global`t]}]]]
 
+globSSubs={Global`qtm1->Global`qq[Global`t-1],
+	Global`rutm1->Global`ru[Global`t-1],
+	Global`eps->Global`eps[Global`ru][Global`t]};
+
+genCompSlackSys[numZs_Integer]:=
+With[{aPath=Flatten @genPath[numZs],forConPos=5+3*Range[0,numZs-1],
+zVars=Reverse @Flatten[ProjectionInterface`Private`redoGenZVars[numZs-1,1]],
+dVars=Reverse @Flatten[ProjectionInterface`Private`genDiscrepVars[numZs-1,1]]},
+With[{sEqns={Global`qq[Global`t],Global`ru[Global`t]}-aPath[[{4,6}]]},
+With[{forCons=aPath[[forConPos]],theRRs=Table[Symbol["Global`rr"<>ToString[ii]][Global`t],{ii,numZs}]},
+With[{adjCons=theRRs-(applyRREqvdIf/@forCons)},
+With[{doMT=(Flatten @MapThread[makeDiscrepZPair,{forCons,zVars,dVars}])},
+	Join[sEqns,adjCons,doMT]/.globSSubs]]]]]
+
+
+
+applyRREqvdIf[eqn_]:=Global`eqvdIf[eqn>0.02,eqn,0.02]
 
 makeDiscrepEqn[anEqn_,zVar:_Symbol[Global`t],dVar:_Symbol[Global`t]]:=
 dVar-((anEqn/.zVar->0)-0.02)
@@ -2164,7 +2237,7 @@ resZ10$0$0 =
 If[resZ10$0$0[isConvergedQ[]],Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
 to$551 = resZ10$0$0[toOrder[{1,1,1}]];
 If[resZ10$0$0[isConvergedQ[]],Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
-to$551 = resZ10$0$0[toOrder[{2,2,2}]];
+to$551 = resZ10$0$0[toOrder[4{1,1,1}]];
 If[to$551[isConvergedQ[]],Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 {oldSys,zSubs} = Expand[redoCreatePolynomials[modSymb,to$551]]// Chop;
 discrepSub=Solve[oldSys[[3]]==0,Global`discrep[Global`t]]//Flatten;Print[discrepSub];
@@ -2364,16 +2437,16 @@ Module[{},
 resZ10$0$0 = 
   ComputeInitialCollocationWeights[lucaBasis, 
    ConstantArray[1, {Length[theEqns], 1}], modClass, simp];
-If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 01"],Throw["projection polynomial computation did not converge at first stage"]];
-to$551 = resZ10$0$0[toOrder[{1,1,1}]];
-If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["projection polynomial computation did not converge at first stage"]];
-to$551 = resZ10$0$0[toOrder[2*{1,1,1}]];
-If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 01"],Throw["genProjResults:projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[{1,1,0}]];
+If[resZ10$0$0[isConvergedQ[]]===True,Print["converged 02"],Throw["genProjResults:projection polynomial computation did not converge at first stage"]];
+to$551 = resZ10$0$0[toOrder[{4,4,2}]];
+If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["genProjResults:projection polynomial computation did not converge"]];
 to$551
 ]
 genProjComponents[numZs_Integer]:=
 Module[{modSymb=Unique["Global`modSymb"],lucaBasis,simp,modClass},
-With[{theEqns=newGenSys[numZs]},
+With[{theEqns=genCompSlackSys[numZs]},
 newWeightedStochasticBasis[modSymb,(theEqns)];
 {{stateVar, nonStateVar, theShock}, modClass} = 
   GenerateModelCode[modSymb];
@@ -2573,7 +2646,7 @@ With[{
 *)
 GetLhsRhs[theMod_]:=
 With[{eqns=projEquations[theMod],
-otherPattern=xxL_Symbol[Global`t] +yyy__},
+otherPattern=xxL_Symbol[Global`t] +yyy__},Print["the function getlhsrhs is not working correctly!!!!!!!!!!!!!!!!!!!!!!!!!!!"];
 With[{otherForSubbing=Cases[eqns,otherPattern->(xxL[Global`t]:>(-1)*(Plus @@{yyy}))]},
 				{otherForSubbing[[All,1]],otherForSubbing[[All,2]]}
 ]]

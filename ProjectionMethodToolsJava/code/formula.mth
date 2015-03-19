@@ -1,0 +1,110 @@
+Get["ProjectionInterface`"];
+Get["prep.mth"]
+numZs=1;
+
+theRes={modSymbNth,theEqnsNth,modClassNth,lucaBasisNth,simpNth}=genProjComponents[numZs]
+(*first = Nest[doRecurIneqOcc, {}, 1];
+secondEqns=doRecurIneqOccEqns[first];
+theEqnsNth=secondEqns;
+projEquations[modSymbNth]^=secondEqns;*)
+to$551=genProjResults @@ theRes
+
+
+theWts=to$551[getResWeights[]]
+aWSB=to$551[getTheWeightedStochasticBasis[]]
+aWSB[setAllWeights[theWts]]
+evdv=modClassNth[updateValDrv[aWSB]]
+solnValAtNodes = evdv[getTheVal[]][getArray[]]
+modEqnsAtPt[evalPt_?VectorQ]:=
+(modClassNth[updateValDrv[aWSB,evalPt]][getTheVal[]][getArray[]])
+
+getLhs[mod_]:=
+With[{eqns=projEquations[mod],otherPattern=xxL_Symbol[Global`t] +yyy__},
+With[{otherForSubbing=
+Cases[eqns,otherPattern->xxL[Global`t]]},
+				otherForSubbing
+]]
+
+theEqnsNthLHS=getLhs[modSymbNth]
+
+theEqnsNthRHS=theEqnsNthLHS-theEqnsNth;
+
+
+
+newWeightedStochasticBasis[modSymbRHS=Unique["modSymbRHS"],theEqnsNthRHS];
+{{stateVarRHS, nonStateVarRHS, theShockRHS}, modClassRHS} = 
+  GenerateModelCode[modSymbRHS];
+
+
+theResRHS={modSymbNthRHS,theEqnsNthRHS,modClassNthRHS,lucaBasisNthRHS,simpNthRHS}=genProjComponents[numZs]
+
+
+modEqnsAtPtRHS[evalPt_?VectorQ]:=
+(modClassRHS[updateValDrv[aWSB,evalPt]][getTheVal[]][getArray[]])
+
+xfChebSubs=gtXFormedChebSubs[aWSB];
+xfChebVals=(ToString/@{qq,ru,ru$Shock})/.xfChebSubs
+
+Print[evdvAPVals =modEqnsAtPt/@ xfChebVals//Chop]
+
+Print[modEqnsAtPtRHS[{-.1,-.2,-.3}]]
+
+getZSubsPos[aLHS_List]:=
+With[{chkForZ=ProjectionInterface`Private`startsZzz$/@aLHS},
+Flatten[Position[chkForZ,True]]]
+
+makeZSubs[qq_?NumberQ,ru_?NumberQ,eps_?NumberQ]:=
+With[{allVals=modEqnsAtPtRHS[{qq,ru,eps}]//Flatten,zPos=getZSubsPos[theEqnsNthLHS]},
+Thread[(theEqnsNthLHS[[zPos]])->(allVals[[zPos]])]]
+
+makePath[qq_?NumberQ,ru_?NumberQ,epsVal_?NumberQ]:=
+With[{thePath=genPath[numZs,1]/.{qtm1->qq,rutm1->ru,eps->epsVal},zSubs=makeZSubs[qq,ru,epsVal]},
+thePath/.zSubs]
+
+
+Print["constrained path=",makePath[-.1,-.2,-.3]]
+(*
+
+useSoln[numZs_Integer]:=With[{
+thePathNth=genPath[numZs,1]},
+Function[{qtm1,rutm1,eps},thePathNth/.
+Thread[{qtm1,rutm1,eps}->modEqnsAtPtRHS[{qtm1,rutm1,eps}]]]]
+
+
+
+
+
+
+{{qL,qH},{rL,rH},ig}=aWSB[getRanges[]];
+(Plot3D[modEqnsAtPt[{qq, ru, xfChebVals[[-1,-1]]}][[#]], {qq, qL, qH}, {ru, rL, rH},PlotRange -> All])& /@Range[Length[theEqnsNth]]
+
+
+
+useSoln[numZs_Integer]:=With[{
+thePathNth=genPath[numZs,1]},
+Function[{qtm1,rutm1,eps},thePathNth/.theLHS
+Thread[{theLHS->modEqnsAtPtRHS[{qtm1,rutm1,eps}]]]]
+
+
+will need
+
+(rr[t]- qq[t])(rr[t]-0.02)  from [[2]]-[[1]]
+(rr[t+1]- qq[t+1])(rr[t+1]-0.02)  from[[5]]-[[4]]
+*)
+
+
+theStatePoly = aWSB[getTheState[]];
+nodePts01=theStatePoly[getXformedChebNodePts[]];
+nodePts01Subs=gtXFormedChebSubsNotStrings[aWSB];
+numEpsilon=Length[Union[nodePts01[[All,3]]]];
+numOuterOther=Length[nodePts01]/numEpsilon;
+ptsSByEpsilon=Partition[Sort[nodePts01,#[[3]]>#2[[3]]&],numOuterOther];
+
+
+
+atohtwo=ListPointPlot3D[ReplacePart[#,3->0.02]&/@ ptsSByEpsilon[[3]],PlotStyle->{PointSize[0.04]}]
+
+
+{{qL,qH},{rL,rH},ig}=aWSB[getRanges[]];
+
+Show[(Plot3D[{0.02,makePath[qq, ru, xfChebVals[[33,-1]]][[#]]}, {qq, qL, qH}, {ru, rL, rH},PlotRange -> All])& /@ (5+3*Range[0,numZs-1]),atohtwo,DisplayFunction->$DisplayFunction]

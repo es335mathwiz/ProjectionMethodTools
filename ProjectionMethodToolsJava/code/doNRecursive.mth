@@ -1,0 +1,11 @@
+Get["ProjectionInterface`"];
+Get["prep.mth"]
+
+Get["doNNonRecursive.mth"]
+
+
+genMinCSRecurSys[{}]:=
+With[{zFuncVal=genZFuncs[1]},
+{zFuncVal}]
+
+

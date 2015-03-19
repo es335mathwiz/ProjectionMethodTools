@@ -1,0 +1,30 @@
+Get["ProjectionInterface`"];
+Get["prep.mth"]
+
+Get["doNNonRecursive.mth"]
+genZFuncs[numZs_Integer]:=
+Module[{tryNth=genMinCSSys[numZs]},
+With[{tryNthFunc=Function @@ {{qtm1,rutm1,eps},tryNth},
+theZVars=Reverse[Flatten[
+ProjectionInterface`Private`redoGenZVars[numZs-1,1]]]},
+tryNthVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+theZVars/.Flatten[Solve[tryNthFunc[qtm1,rutm1,eps],theZVars,Reals]];
+With[{forInterp=tryNthVals},
+FunctionInterpolation[forInterp[qq,ru,ep][[1]],
+{qq,-.1,.1},{ru,-.4,.4},{ep,-.2,.2}]]]]
+(*
+tryNthValsFirst[qq_,ru_,ep_]:=tryNthVals[qq,ru,ep][[1]]
+tryNthValsSecond[qq_,ru_,ep_]:=tryNthVals[qq,ru,ep][[2]]
+
+Print["constructing interpolating functions"]
+
+Print["numZs=",numZs];
+{t1,func}=Timing[fI1=FunctionInterpolation[tryNthValsFirst[qq,ru,ep],{qq,-.1,.1},{ru,-.4,.4},{ep,-.2,.2}]]
+*)
+
+
+
+
+
+
+
