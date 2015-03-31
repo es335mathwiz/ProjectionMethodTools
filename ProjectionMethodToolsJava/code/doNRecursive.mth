@@ -9,3 +9,14 @@ With[{zFuncVal=genZFuncs[1]},
 {zFuncVal}]
 
 
+genMinCSRecurSys[zFuncs:{z0FuncVal_}]:=
+With[{numZs=Length[zFuncs]+1},
+With[{theZs=Reverse[
+Flatten[ProjectionInterface`Private`redoGenZVars[numZs-1,1]]],
+thePath=genPath[Length[zFuncs]+1],conLocs=2+3*Range[numZs]},
+With[{unSubbed=And @@ MapThread[conOr,{thePath[[conLocs]],theZs}]},
+{unSubbed,thePath,theZs,zFuncs}]]]
+
+(*
+{ig,ig,{eqns,pr,zs,{zf}}}=NestList[genMinCSRecurSys,{},2];
+*)

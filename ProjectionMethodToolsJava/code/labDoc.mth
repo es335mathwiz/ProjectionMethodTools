@@ -1,0 +1,209 @@
+Get["prep.mth"]
+Print["without expectations this takes about 3 minutes on a linux box"]
+(*compute z0 for time zero constraint only *)
+Print["for one"]
+
+
+aPath01=genPath[1]
+try01={
+(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
+}
+red01=Reduce[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
+slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
+zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
+
+
+
+
+
+Export["try01A.pdf",try01[[1,1]]]
+Export["try01B.pdf",try01[[1,2]]]
+
+Export["red01A.pdf",red01[[1,1]]]
+Export["red01B.pdf",red01[[1,2]]]
+Export["red01C.pdf",red01[[2]]]
+
+
+Export["prettyEqns01.pdf",
+MatrixForm[(Transpose[{eqns01=doRecurIneqOccEqns[{}]/.{eqvdIf->If,GreaterEqual->Greater}}]//myN//Simplify)//. latexSubs]
+]
+(*change conditionalExpression of two cases to form to get to piecewise*)
+pairs=Partition[Sort[Flatten[
+Solve[Thread[eqns01==0],{qq[t],ru[t],rr[t],discrep[t],zzz$0$1[t]},Reals]]],2]
+
+
+
+soln01=(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@pairs
+
+Export["prettySoln01Q.pdf", MatrixForm[soln01[[2]]//Simplify/. latexSubs]]
+Export["prettySoln01R.pdf", MatrixForm[soln01[[3]]//Simplify/. latexSubs]]
+Export["prettySoln01Z.pdf", MatrixForm[soln01[[5]]//Simplify/. latexSubs]]
+
+
+
+hmatApp01NotFunc=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
+Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01NotFunc//.latexSubs/.morePaperSubs]]
+Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
+
+
+
+
+Print["for two"]
+
+aPath02=genPath[2]
+try02={
+((aPath02[[5,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath02[[5,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath02[[8,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath02[[8,1]]==0.02&&zzz$0$1[t]>=0))
+}
+Export["prettyEqns02A.pdf",
+MatrixForm[(try02[[1,1]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns02B.pdf",
+MatrixForm[(try02[[1,2]]//myN//FullSimplify)//. latexSubs]]
+
+
+
+try02Func=Function @@ {{qtm1,rutm1,eps},try02}
+try02Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+soln02=Flatten[Solve[try02Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]},Reals]];
+condExps=DeleteCases[zzz$1$1[t]/.#&/@soln02,zzz$1$1[t]]
+pw=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps]//FullSimplify
+try02ValsSoln= Function @@ {{qtm1,rutm1,eps},pw}
+
+
+aPath02ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[2,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try02Vals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]]}]
+hmatApp02[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath02ExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
+
+
+
+redExport["prettyrr02.pdf",r02G=
+Plot3D[aPath02ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for two periods"}]]
+
+
+
+
+redExport["prettyhapp02A.pdf",happ02AG=
+Plot3D[hmatApp02[qtm1,rutm1,0][[2,1]]*(aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}]]
+
+redExport["prettyhapp02B.pdf",happ02BG=
+Plot3D[hmatApp02[qtm1,rutm1,0][[5,1]]*(aPath02ExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
+
+
+
+
+
+
+
+(*
+(*should all be zero*)
+
+redExport["xxprettyhapp02B.pdf",xxhapp02BG=
+Plot3D[hmatApp02[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
+*)
+
+
+
+
+
+try02Rec={
+((aPath02[[5,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath02[[5,1]]==0.02&&zzz$1$1[t]>=0))&&
+zzz$0$1[t]==zzz$0$1Func[aPath02[[4,1]],aPath02[[6,1]],0]
+}
+
+
+try02RecFunc=Function @@ {{qtm1,rutm1,eps},try02Rec}
+try02RecVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try02RecFunc[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+soln02Rec=Flatten[Solve[try02RecFunc[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]},Reals]];
+
+
+Export["prettyEqns02RecA.pdf",
+MatrixForm[(try02Rec[[1,1]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns02RecB.pdf",
+MatrixForm[(try02Rec[[1,2]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns02RecB.pdf",
+
+grp=Partition[Sort[Flatten[soln02Rec]],4]
+zzz$1$1Func= Function @@ {{qtm1,rutm1,eps},
+(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@grp}
+
+aPath02RecExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[2,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=zzz$1$1Func[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]]}]
+hmatApp02Rec[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath02RecExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
+
+
+
+
+
+redExport["prettyhapp02RecA.pdf",happ02RecAG=
+Plot3D[hmatApp02Rec[qtm1,rutm1,0][[2,1]]*(aPath02RecExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}]]
+
+redExport["prettyhapp02RecB.pdf",happ02RecBG=
+Plot3D[hmatApp02Rec[qtm1,rutm1,0][[5,1]]*(aPath02RecExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
+
+
+
+
+
+
+
+(*
+(*should all be zero*)
+
+redExport["xxprettyhapp02RecB.pdf",xxhapp02RecBG=
+Plot3D[hmatApp02Rec[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
+*)
+
+
+
+
+(*
+
+
+(Last/@Flatten[soln02Rec])]
+}
+
+
+
+
+try02SubbedVals[qtm1,rutm1,eps]
+
+
+*)
+
+
+
+
+
+
+
