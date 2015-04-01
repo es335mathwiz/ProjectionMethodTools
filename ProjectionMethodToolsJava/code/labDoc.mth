@@ -1,54 +1,6 @@
-Get["prep.mth"]
-Print["without expectations this takes about 3 minutes on a linux box"]
-(*compute z0 for time zero constraint only *)
-Print["for one"]
+Needs["symb01`"]
 
-
-aPath01=genPath[1]
-try01={
-(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
-(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
-}
-red01=Reduce[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
-slv01=Solve[try01,{zzz$0$1[t]},Reals]//FullSimplify//Chop
-zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
-
-
-
-
-
-Export["try01A.pdf",try01[[1,1]]]
-Export["try01B.pdf",try01[[1,2]]]
-
-Export["red01A.pdf",red01[[1,1]]]
-Export["red01B.pdf",red01[[1,2]]]
-Export["red01C.pdf",red01[[2]]]
-
-
-Export["prettyEqns01.pdf",
-MatrixForm[(Transpose[{eqns01=doRecurIneqOccEqns[{}]/.{eqvdIf->If,GreaterEqual->Greater}}]//myN//Simplify)//. latexSubs]
-]
-(*change conditionalExpression of two cases to form to get to piecewise*)
-pairs=Partition[Sort[Flatten[
-Solve[Thread[eqns01==0],{qq[t],ru[t],rr[t],discrep[t],zzz$0$1[t]},Reals]]],2]
-
-
-
-soln01=(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@pairs
-
-Export["prettySoln01Q.pdf", MatrixForm[soln01[[2]]//Simplify/. latexSubs]]
-Export["prettySoln01R.pdf", MatrixForm[soln01[[3]]//Simplify/. latexSubs]]
-Export["prettySoln01Z.pdf", MatrixForm[soln01[[5]]//Simplify/. latexSubs]]
-
-
-
-hmatApp01NotFunc=hmatN .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
-Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01NotFunc//.latexSubs/.morePaperSubs]]
-Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
-
-
-
-
+(*
 Print["for two"]
 
 aPath02=genPath[2]
@@ -62,7 +14,6 @@ Export["prettyEqns02A.pdf",
 MatrixForm[(try02[[1,1]]//myN//FullSimplify)//. latexSubs]]
 Export["prettyEqns02B.pdf",
 MatrixForm[(try02[[1,2]]//myN//FullSimplify)//. latexSubs]]
-
 
 
 try02Func=Function @@ {{qtm1,rutm1,eps},try02}
@@ -84,39 +35,31 @@ With[{tp=aPath02ExtFunc[qtm1,rutm1,eps]},
 Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
 
 
-
 redExport["prettyrr02.pdf",r02G=
-Plot3D[aPath02ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {aPath02ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,
 PlotLabel->
-{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for two periods"}]]
-
-
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 
 
 redExport["prettyhapp02A.pdf",happ02AG=
-Plot3D[hmatApp02[qtm1,rutm1,0][[2,1]]*(aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {hmatApp02[qtm1,rutm1,0][[2,1]]*(aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 
 redExport["prettyhapp02B.pdf",happ02BG=
-Plot3D[hmatApp02[qtm1,rutm1,0][[5,1]]*(aPath02ExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {hmatApp02[qtm1,rutm1,0][[5,1]]*(aPath02ExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
-
-
-
-
-
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 
 
 (*
 (*should all be zero*)
 
 redExport["xxprettyhapp02B.pdf",xxhapp02BG=
-Plot3D[hmatApp02[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {hmatApp02[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 *)
 
 
@@ -140,7 +83,7 @@ Export["prettyEqns02RecA.pdf",
 MatrixForm[(try02Rec[[1,1]]//myN//FullSimplify)//. latexSubs]]
 Export["prettyEqns02RecB.pdf",
 MatrixForm[(try02Rec[[1,2]]//myN//FullSimplify)//. latexSubs]]
-Export["prettyEqns02RecB.pdf",
+
 
 grp=Partition[Sort[Flatten[soln02Rec]],4]
 zzz$1$1Func= Function @@ {{qtm1,rutm1,eps},
@@ -156,49 +99,165 @@ With[{tp=aPath02RecExtFunc[qtm1,rutm1,eps]},
 Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
 
 
-
-
-
 redExport["prettyhapp02RecA.pdf",happ02RecAG=
-Plot3D[hmatApp02Rec[qtm1,rutm1,0][[2,1]]*(aPath02RecExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {hmatApp02Rec[qtm1,rutm1,0][[2,1]]*(aPath02RecExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 
 redExport["prettyhapp02RecB.pdf",happ02RecBG=
-Plot3D[hmatApp02Rec[qtm1,rutm1,0][[5,1]]*(aPath02RecExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {hmatApp02Rec[qtm1,rutm1,0][[5,1]]*(aPath02RecExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
-
-
-
-
-
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 
 
 (*
 (*should all be zero*)
 
 redExport["xxprettyhapp02RecB.pdf",xxhapp02RecBG=
-Plot3D[hmatApp02Rec[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+Plot3D @@ {hmatApp02Rec[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
 PlotRange->All,PlotLabel->
-{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}]]
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 *)
 
+
+
+Print["for three"]
+
+aPath03=genPath[3];
+
+(*
+try03={
+((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0))&&
+((aPath03[[8,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath03[[8,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath03[[11,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath03[[11,1]]==0.02&&zzz$0$1[t]>=0))
+}
+Export["prettyEqns03A.pdf",
+MatrixForm[(try03[[1,1]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns03B.pdf",
+MatrixForm[(try03[[1,2]]//myN//FullSimplify)//. latexSubs]]
+
+
+try03Func=Function @@ {{qtm1,rutm1,eps},try03}
+try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+soln03=Flatten[Solve[try03Func[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]},Reals]];
+condExps=DeleteCases[zzz$1$1[t]/.#&/@soln03,zzz$1$1[t]]
+pw=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps]//FullSimplify
+try03ValsSoln= Function @@ {{qtm1,rutm1,eps},pw}
+
+
+aPath03ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[3,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try03Vals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]]}]
+hmatApp03[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath03ExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
+
+
+redExport["prettyrr03.pdf",r03G=
+Plot3D @@ {aPath03ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+
+redExport["prettyhapp03A.pdf",happ03AG=
+Plot3D @@ {hmatApp03[qtm1,rutm1,0][[2,1]]*(aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+redExport["prettyhapp03B.pdf",happ03BG=
+Plot3D @@ {hmatApp03[qtm1,rutm1,0][[5,1]]*(aPath03ExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+
+(*
+(*should all be zero*)
+
+redExport["xxprettyhapp03B.pdf",xxhapp03BG=
+Plot3D @@ {hmatApp03[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+*)
+
+*)
+
+
+
+try03Rec={
+((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0))&&
+zzz$1$1[t]==zzz$1$1Func[aPath03[[4,1]],aPath03[[6,1]],0][[2]]&&
+zzz$0$1[t]==zzz$0$1Func[aPath03[[7,1]],aPath03[[9,1]],0]
+}
+
+
+try03RecFunc=Function @@ {{qtm1,rutm1,eps},try03Rec}
+try03RecVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03RecFunc[qtm1,rutm1,eps],{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
+
+
+(*
+soln03Rec=Flatten[Solve[try03RecFunc[qtm1,rutm1,eps],{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]];
+*)
+
+Export["prettyEqns03RecA.pdf",
+MatrixForm[(try03Rec[[1,1]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns03RecB.pdf",
+MatrixForm[(try03Rec[[1,2]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns03RecC.pdf",
+MatrixForm[(try03Rec[[1,3]]//myN//FullSimplify)//. latexSubs]]
+
+grp=Partition[Sort[Flatten[soln03Rec]],4]
+zzz$1$1Func= Function @@ {{qtm1,rutm1,eps},
+(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@grp}
+
+aPath03RecExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[3,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try03RecVals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]],
+zzz$2$1[t]:>tVals[[3]]
+}]
+hmatApp03Rec[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath03RecExtFunc[qtm1,rutm1,eps]},
+Join[
+hmatN.tp[[Range[9]]],
+hmatN.tp[[Range[9]+3]],
+hmatN.tp[[Range[9]+6]]
+]//Chop]
+
+
+redExport["prettyhapp03RecA.pdf",happ03RecAG=
+Plot3D @@ {hmatApp03Rec[qtm1,rutm1,0][[2,1]]*(aPath03RecExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+redExport["prettyhapp03RecB.pdf",happ03RecBG=
+Plot3D @@ {hmatApp03Rec[qtm1,rutm1,0][[5,1]]*(aPath03RecExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+redExport["prettyhapp03RecC.pdf",happ03RecCG=
+Plot3D @@ {hmatApp03Rec[qtm1,rutm1,0][[8,1]]*(aPath03RecExtFunc[qtm1,rutm1,0][[11,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 
 
 
 (*
+(*should all be zero*)
 
-
-(Last/@Flatten[soln02Rec])]
-}
-
-
-
-
-try02SubbedVals[qtm1,rutm1,eps]
-
-
+redExport["xxprettyhapp03RecB.pdf",xxhapp03RecBG=
+Plot3D @@ {hmatApp03Rec[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
 *)
 
 
@@ -207,3 +266,84 @@ try02SubbedVals[qtm1,rutm1,eps]
 
 
 
+
+
+
+
+
+Print["for four"]
+
+aPath04=genPath[4];
+
+try04Rec={
+((aPath04[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath04[[5,1]]==0.02&&zzz$2$1[t]>=0))&&
+zzz$1$1[t]==zzz$1$1Func[aPath04[[4,1]],aPath04[[6,1]],0][[2]]&&
+zzz$0$1[t]==zzz$0$1Func[aPath04[[7,1]],aPath04[[9,1]],0]
+}
+
+try04RecFunc=Function @@ {{qtm1,rutm1,eps},try04Rec}
+try04RecVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try04RecFunc[qtm1,rutm1,eps],{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
+(*
+soln04Rec=Flatten[Solve[try04RecFunc[qtm1,rutm1,eps],{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]];
+grp=Partition[Sort[Flatten[soln04Rec]],4]
+zzz$1$1Func= Function @@ {{qtm1,rutm1,eps},
+(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@grp}
+*)
+Export["prettyEqns04RecA.pdf",
+MatrixForm[(try04Rec[[1,1]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns04RecB.pdf",
+MatrixForm[(try04Rec[[1,2]]//myN//FullSimplify)//. latexSubs]]
+Export["prettyEqns04RecC.pdf",
+MatrixForm[(try04Rec[[1,3]]//myN//FullSimplify)//. latexSubs]]
+
+
+aPath04RecExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[4,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try04RecVals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]],
+zzz$2$1[t]:>tVals[[3]]
+}]
+hmatApp04Rec[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath04RecExtFunc[qtm1,rutm1,eps]},
+Join[
+hmatN.tp[[Range[9]]],
+hmatN.tp[[Range[9]+3]],
+hmatN.tp[[Range[9]+6]]
+]//Chop]
+
+redExport["prettyhapp04RecA.pdf",happ04RecAG=
+Plot3D @@ {hmatApp04Rec[qtm1,rutm1,0][[2,1]]*(aPath04RecExtFunc[qtm1,rutm1,0][[5,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+redExport["prettyhapp04RecB.pdf",happ04RecBG=
+Plot3D @@ {hmatApp04Rec[qtm1,rutm1,0][[5,1]]*(aPath04RecExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+redExport["prettyhapp04RecC.pdf",happ04RecCG=
+Plot3D @@ {hmatApp04Rec[qtm1,rutm1,0][[8,1]]*(aPath04RecExtFunc[qtm1,rutm1,0][[11,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+(*
+(*should all be zero*)
+
+redExport["xxprettyhapp04RecB.pdf",xxhapp04RecBG=
+Plot3D @@ {hmatApp04Rec[qtm1,rutm1,0][[{1,3,4,6},1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+*)
+
+
+
+
+
+
+
+
+
+*)

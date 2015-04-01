@@ -1,0 +1,41 @@
+Print["begin semi-algebraic computation"]
+try02Vals[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
+{Global`zzz$0$1[Global`t],Global`zzz$1$1[Global`t]}/.Flatten[Solve[try02Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]}]]
+aPath02ExtFunc[Global`qtm1Arg_?NumberQ,Global`rutm1Arg_?NumberQ,Global`epsArg_?NumberQ]:=  
+With[{tp=genPath[2,1]/.{Global`qtm1->Global`qtm1Arg,Global`rutm1->Global`rutm1Arg,Global`eps->Global`epsArg},
+tVals=try02Vals[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]},
+tp/.{Global`zzz$0$1[Global`t]:>tVals[[1]],
+Global`zzz$1$1[Global`t]:>tVals[[2]]}]
+hmatApp02[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
+With[{tp=aPath02ExtFunc[Global`qtm1,Global`rutm1,Global`eps]},
+Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]]]//Chop]
+
+
+redExport["prettyrr02.pdf",r02G=
+Plot3D @@ {aPath02ExtFunc[Global`qtm1,Global`rutm1,0][[5,1]],{Global`qtm1,qLow,qHigh},{Global`rutm1,ruLow,ruHigh},
+PlotRange->All,
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+
+redExport["prettyhapp02A.pdf",happ02AG=
+Plot3D @@ {hmatApp02[Global`qtm1,Global`rutm1,0][[2,1]]*(aPath02ExtFunc[Global`qtm1,Global`rutm1,0][[5,1]]-.02),{Global`qtm1,qLow,qHigh},{Global`rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+redExport["prettyhapp02B.pdf",happ02BG=
+Plot3D @@ {hmatApp02[Global`qtm1,Global`rutm1,0][[5,1]]*(aPath02ExtFunc[Global`qtm1,Global`rutm1,0][[8,1]]-.02),{Global`qtm1,qLow,qHigh},{Global`rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+
+
+(*
+(*should all be zero*)
+
+redExport["xxprettyhapp02B.pdf",xxhapp02BG=
+Plot3D @@ {hmatApp02[Global`qtm1,Global`rutm1,0][[{1,3,4,6},1]],{Global`qtm1,qLow,qHigh},{Global`rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for two periods"}}//.lucaSubs]
+*)
+
+

@@ -59,8 +59,8 @@ getPiEtcForPhiWider::usage = "getPiEtcForPhiWider[thePhi_?NumberQ,theModel_Symbo
     "
 (*benchMarkSubs::usage = "substitutions for benchmark case";*)(* Mathematica package *)
 (* Exported symbols added here with SymbolName::usage *) 
-Print["making xx global"]
-Global`xx::usage = "for displaying polynomial";
+Print["making x$4$Poly global for displaying polynomials"]
+Global`x$4$Poly::usage = "for displaying polynomial";
 Global`t::usage = "the time variable";
 Global`pow::usage ="so that pow can be used in codeGenSubs without long private name"
 (*benchMarkSubs::usage = "substitutions for benchmark case";*)
@@ -2802,4 +2802,5 @@ Global`mySubs={betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
 Global`myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
 
 Global`numIt[xx_]:=xx//.lucaSubs//myN//Expand//Chop
+
 Print["done reading ProjectionInterface"]
