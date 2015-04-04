@@ -2802,5 +2802,6 @@ Global`mySubs={betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
 Global`myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
 
 Global`numIt[xx_]:=xx//.lucaSubs//myN//Expand//Chop
-
+(*
+Global`numIt[xx_]:=xx//.lucaSubs//Expand//Chop;Print["ProjectionInterface: taking //N out of numIt"];*)
 Print["done reading ProjectionInterface"]

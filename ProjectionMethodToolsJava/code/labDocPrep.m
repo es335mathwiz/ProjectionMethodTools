@@ -190,6 +190,8 @@ Unprotect[MatrixPower]
 MatrixPower[xx_?MatrixQ,0]:=IdentityMatrix[Length[xx]]/;
 Length[xx]===Length[xx[[1]]]
 Protect[MatrixPower]
+Global`ridUndef[xx_List]:=DeleteCases[xx,_->Undefined]
+redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600,PlotRange->All]
 
 
 
@@ -232,11 +234,13 @@ eps->Subscript[\[Epsilon],t]
 
 
 {hmat,qmat,{bmat,phimat,fmat}}=numericLinearizeSystemForOBC[(lucaEqns//.(lucaSubs)//Rationalize[#,1/100000000]&)]
-psiz={{0},{1},{0}};
-psieps={{0},{0},{1}};
+psiz={{0},{0},{1}};
+psieps={{0},{1},{0}};
 
 Export["prettyHmat.pdf", MatrixForm[hmat //. latexSubs]];
 Export["prettyBmat.pdf", MatrixForm[bmat //. latexSubs]];
 Export["prettyPhimat.pdf", MatrixForm[phimat //. latexSubs]];
 Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs]];
+
+Global`$MaxSolveTime=900;
 

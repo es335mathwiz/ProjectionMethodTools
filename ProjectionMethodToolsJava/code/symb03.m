@@ -20,17 +20,20 @@ MatrixForm[(try03[[1,1]]//FullSimplify)//. Global`latexSubs]]
 Export["prettyEqns03B.pdf",
 MatrixForm[(try03[[1,2]]//FullSimplify)//. Global`latexSubs]]
 
-
+abStr="Aborted("<>ToString[Global`$MaxSolveTime]<>")";
 try03Func=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},try03}
 Print["trying first solve"]
-{symb03FirstSecs,ig02}=Timing[soln03=Flatten[Solve[try03Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$2$1[Global`t],Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]];
+Print["time limit set to ",Global`$MaxSolveTime]
+If[
+TimeConstrained[{symb03FirstSecs,ig02}=Timing[soln03=Flatten[Solve[try03Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$2$1[Global`t],Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]],Global`$MaxSolveTime]===$Aborted,
+symb03FirstSecs=abStr];
 Print["trying second solve"]
-{symb03SecondSecs,ig02}=Timing[soln03=Flatten[Solve[try03Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$2$1[Global`t],Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]];
+If[symb03FirstSecs===abStr,symb03SecondSecs=abStr,
+{symb03SecondSecs,ig02}=Timing[soln03=Flatten[Solve[try03Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$2$1[Global`t],Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]]];
 Print["done trying second solve"]
 condExps=DeleteCases[Global`zzz$1$1[Global`t]/.#&/@soln03,Global`zzz$1$1[Global`t]]
 pw=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps]//FullSimplify
 try03ValsSoln= Function @@ {{Global`qtm1,Global`rutm1,Global`eps},pw}
-
 Splice["symb03Secs.mtex"]
 EndPackage[]
 Print["done reading symb03 package"]

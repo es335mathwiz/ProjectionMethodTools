@@ -44,7 +44,13 @@ Export["prettySoln01Q.pdf", MatrixForm[soln01[[2]]//Simplify/.Global`latexSubs]]
 Export["prettySoln01R.pdf", MatrixForm[soln01[[3]]//Simplify/.Global`latexSubs]]
 Export["prettySoln01Z.pdf", MatrixForm[soln01[[5]]//Simplify/.Global`latexSubs]]
 
+regs01=Last/@(Last/@Flatten[slv01])
 
+regPlts01=RegionPlot3D[#,{Global`qtm1,-.5,.5},{Global`rutm1,-.2,.2},{Global`eps,-.1,.1}]& /@regs01
+
+
+Global`redExport["prettyreg01pltA.pdf",regPlts01[[1]]]
+Global`redExport["prettyreg01pltB.pdf",regPlts01[[2]]]
 
 EndPackage[]
 Print["done reading symb01 package"]
