@@ -1,0 +1,138 @@
+Get["prep.mth"]
+(*compute z1 for time zero constrint and time t+1 constraint*)
+Print["now for three"]
+aPath03=genPath[3]
+try03={
+((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0))&&
+((aPath03[[8,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath03[[8,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath03[[11,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath03[[11,1]]==0.02&&zzz$0$1[t]>=0))
+}
+try03Func=Function @@ {{qtm1,rutm1,eps},try03}
+try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],
+{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
+
+
+soln03=Flatten[Solve[try03Func[qtm1,rutm1,eps],{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]];
+condExps=DeleteCases[zzz$1$1[t]/.#&/@soln02,zzz$1$1[t]]
+pw=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps]//FullSimplify
+try02ValsSoln= Function @@ {{qtm1,rutm1,eps},pw}
+
+aPath03ExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[3,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+tVals=try03SubbedVals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{zzz$0$1[t]:>tVals[[1]],
+zzz$1$1[t]:>tVals[[2]],
+zzz$2$1[t]:>tVals[[3]]}]
+
+hmatApp03[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+With[{tp=aPath03ExtFunc[qtm1,rutm1,eps]},
+Join[hmatN.tp[[Range[9]]],hmatN.tp[[Range[9]+3]],hmatN.tp[[Range[9]+6]]]//Chop]
+
+
+
+
+
+projResults=genProjResults @@ ({modSymb,theEqns,modClass,lucaBasis,simp}=genProjComponents[3])
+num03=genPolyFuncs[modSymb,projResults]
+
+aBasis=projResults[getTheWeightedStochasticBasis[]];
+{{qLow,qHigh},{ruLow,ruHigh},{epsLow,epsHigh}}=aBasis[getRanges[]];
+theStatePoly = aBasis[getTheState[]];
+nodePts01=theStatePoly[getXformedChebNodePts[]];
+nodePts01Subs=gtXFormedChebSubsNotStrings[aBasis];
+numEpsilon=Length[Union[nodePts01[[All,3]]]];
+numOuterOther=Length[nodePts01]/numEpsilon;
+ptsSByEpsilon=Partition[Sort[nodePts01,#[[3]]>#2[[3]]&],numOuterOther];
+happ03eroColloc=ListPointPlot3D[ReplacePart[#,3->0]&/@ ptsSByEpsilon[[3]],
+PlotStyle->{PointSize[.04]}]
+
+
+redExport["prettyrr03.pdf",r03G=
+Plot3D[aPath03ExtFunc[qtm1,rutm1,0][[5,1]],{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,
+PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0]  constraint for three periods"}]]
+
+
+redExport["prettyNumDiff03.pdf",numDiff03G=
+Show[Plot3D[(try03SubbedVals[qq,ru,0][[-1]]-num03[[-5]][qq,ru,0]),{qq,qLow,qHigh},{ru,ruLow,ruHigh},PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(z\), \(t\)]\)[q,r,0] constraint for three symbolic less numeric"}],zeroColloc,DisplayFunction->$DisplayFunction]]
+
+
+
+
+redExport["prettyhapp03A.pdf",happ03AG=
+Plot3D[hmatApp03[qtm1,rutm1,0][[2,1]]*(aPath03ExtFunc[qtm1,rutm1,0][[5,1]]-.02),
+{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(2\)]\)[q,r,0]  constraint for three periods"}]]
+
+redExport["prettyhapp03B.pdf",happ03BG=
+Plot3D[hmatApp03[qtm1,rutm1,0][[5,1]]*(aPath03ExtFunc[qtm1,rutm1,0][[8,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(5\)]\)[q,r,0]  constraint for three periods"}]]
+
+redExport["prettyhapp03C.pdf",happ03CG=
+Plot3D[hmatApp03[qtm1,rutm1,0][[8,1]]*(aPath03ExtFunc[qtm1,rutm1,0][[11,1]]-.02),{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(H\), \(8\)]\)[q,r,0]  constraint for three periods"}]]
+
+If[NumberQ[aPath02ExtFunc[.1,.1,0][[5,1]]],
+redExport["prettyrr02lessrr03.pdf",diffr02$03G=
+Plot3D[{aPath02ExtFunc[qtm1,rutm1,0][[5,1]]-aPath03ExtFunc[qtm1,rutm1,0][[5,1]]},{qtm1,qLow,qHigh},{rutm1,ruLow,ruHigh},
+PlotRange->All,PlotLabel->
+{"\!\(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] - \(\*SubscriptBox[\(r\), \(t\)]\)[q,r,0] constraint for two less three periods"}]]]
+
+
+
+
+
+
+(*
+
+
+toSee=zzz$0$1Func[aPath02[[4,1]],aPath02[[6,1]],0]
+
+
+try03={
+((aPath03[[8,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath03[[8,1]]==0.02&&zzz$1$1[t]>=0))&&
+((aPath03[[11,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath03[[11,1]]==0.02&&zzz$0$1[t]>=0))
+}
+try03Func=Function @@ {{qtm1,rutm1,eps},try03}
+try03Vals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03Func[qtm1,rutm1,eps],
+{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]}]]
+
+try03Subbed={
+((aPath03[[5,1]]>=0.02&&zzz$2$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$2$1[t]>=0)),
+zzz$0$1[t]==zzz$0$1Func[aPath03[[7,1]],aPath03[[9,1]],0],
+zzz$1$1[t]==zzz$1$1Func[aPath03[[4,1]],aPath03[[6,1]],0]
+}
+try03SubbedFunc=Function @@ {{qtm1,rutm1,eps},try03Subbed}
+try03SubbedVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t],zzz$2$1[t]}/.Flatten[Solve[try03SubbedFunc[qtm1,rutm1,eps],{zzz$2$1[t],zzz$1$1[t],zzz$0$1[t]},Reals]]
+
+
+
+Solve fails and NSolve takes too long
+z0Exp=Expectation[zzz$0$1Func[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0, sigma$u//.lucaSubs]]
+z0ExpFunc=Function @@ {{qtm1,rutm1},z0Exp};
+try03SubbedExp=try03={
+((aPath03[[5,1]]>=0.02&&zzz$1$1[t]==0)||
+(aPath03[[5,1]]==0.02&&zzz$1$1[t]>=0)),
+zzz$0$1[t]==z0ExpFunc[aPath03[[4,1]],aPath03[[6,1]]]
+}
+try03SubbedExpFunc=Function @@ {{qtm1,rutm1,eps},try03SubbedExp}
+try03SubbedExpVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
+{zzz$0$1[t],zzz$1$1[t]}/.Flatten[NSolve[try03SubbedExpFunc[qtm1,rutm1,eps],{zzz$1$1[t],zzz$0$1[t]}]]
+
+
+
+*)

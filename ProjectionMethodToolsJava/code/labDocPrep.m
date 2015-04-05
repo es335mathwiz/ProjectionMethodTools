@@ -237,10 +237,10 @@ eps->Subscript[\[Epsilon],t]
 psiz={{0},{0},{1}};
 psieps={{0},{1},{0}};
 
-Export["prettyHmat.pdf", MatrixForm[hmat //. latexSubs]];
-Export["prettyBmat.pdf", MatrixForm[bmat //. latexSubs]];
-Export["prettyPhimat.pdf", MatrixForm[phimat //. latexSubs]];
-Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs]];
+Export["prettyHmat.pdf", MatrixForm[hmat //. latexSubs//N]];
+Export["prettyBmat.pdf", MatrixForm[bmat //. latexSubs//N]];
+Export["prettyPhimat.pdf", MatrixForm[phimat //. latexSubs//N]];
+Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs//N]];
 
 Global`$MaxSolveTime=900;
 

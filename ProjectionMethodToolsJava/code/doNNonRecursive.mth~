@@ -1,0 +1,5 @@
+genMinCSSys[numZs_Integer]:=
+With[{theZs=Reverse[
+Flatten[ProjectionInterface`Private`redoGenZVars[numZs-1,1]]],
+thePath=Flatten[genPath[numZs]],conLocs=2+3*Range[numZs]},
+And @@ MapThread[conOr,{thePath[[conLocs]],theZs}]]

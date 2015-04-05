@@ -1,6 +1,7 @@
 Get["ProjectionInterface`"];
+(*
 Get["prep.mth"]
-
+*)
 Get["doNNonRecursive.mth"]
 genZFuncs[numZs_Integer]:=
 Module[{tryNth=genMinCSSys[numZs]},

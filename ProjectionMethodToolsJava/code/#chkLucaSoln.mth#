@@ -1,0 +1,90 @@
+Get["prep.mth"]
+{theA}=Import["A_sol_mat.mat"];
+
+theEqns = {qq[t] - (betap*(1 - rhop)*qq[t+1 ] + rhop*qq[t - 1] - 
+      sigmap*rr[t] + ru[t]),
+   ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
+   rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]}//.
+lucaSubs//myN
+
+modName=Unique["modName"]
+newWeightedStochasticBasis[modName,theEqns];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modName];
+polyRange = {{qLow=-10, qHigh=10}, {ruLow=-5*sigma$u/(1-rhop),ruHigh=5*sigma$u/(1-rhop)}} //. lucaSubs;
+
+initPower = 0*{1, 2}; shockPower = {0};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+init={{Random[]},{Random[]},{Random[]}}
+
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, init, modClass, simp];
+resZ10$0$0[isConvergedQ[]]
+
+(*
+fA=Flatten[Transpose[theA]];
+
+
+*)
+(*
+
+aWSB=lucaBasis(*resZ10$0$0[getTheWeightedStochasticBasis[]]*);
+gtPolyOrdersForOuterProduct[aWSB]
+mmaPolys=mmaPolysAtPts[aWSB];
+xfChebs=gtXFormedChebSubs[aWSB];
+theSum=fA.mmaPolys[[All,1]]//Simplify
+
+*)
+
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, Table[Random[],{7},{11}], modClass, simp];
+
+
+resZ10$0$0[isConvergedQ[]]
+
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, init, modClass, simp];
+resZ10$0$0[isConvergedQ[]]
+
+resZ10$0$0=ComputeCollocationWeightsToOrder[resZ10$0$0,3*{1,1,1}]
+resZ10$0$0[isConvergedQ[]]
+
+(*thePolys=occBindCreatePolynomials[modName,resZ10$0$0];*)
+thePolys=redoCreatePolynomials[modName,resZ10$0$0];
+(*
+
+orderq = 6;  % this is the order of the approximating polynomial
+        % choose n even number so that the constant for the
+        % polynomial family matches the steady stat
+        
+        qstart = -10;
+        qend = 10;
+        
+        pustart = -5*sigma_u/(1-rho_pu);
+        puend = 5*sigma_u/(1-rho_pu);
+ 
+        orderpu = 10; % this is the order of the approximating polynomial
+                           
+        
+        order_gauss_hermite_quadrature = 10;   % used in approximating integrals 
+                                       % in the Euler residual function
+
+
+
+Polynomials
+
+qpol = chebypol(qnodes(inode),orderq,qstart,qend);
+        pupol = chebypol(punodes(state),orderpu,pustart,puend);
+        
+        eqfunc = sum(sum(a.*kron(qpol,pupol')));
+
+
+*)
+
+

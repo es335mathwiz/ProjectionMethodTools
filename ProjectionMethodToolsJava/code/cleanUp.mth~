@@ -1,0 +1,22 @@
+theRes=resZ10$0$0
+modSymbNow=modSymb
+
+
+
+zSubNow=doRecurIneqOcc[{}];
+numZs=Length[zSubNow];
+nodePtSubs=gtXFormedChebSubsNotStrings[
+theRes[getTheWeightedStochasticBasis[]]];
+If[theRes[isConvergedQ[]], 
+{orig,forZSub}=
+ProjectionInterface`Private`redoCreatePolynomials[modSymbNow,theRes];
+
+xVarsNoT=Drop[Flatten[genXVars[numZs,1],1],0];
+xVars=Through[#[Global`t]]&/@xVarsNoT;
+
+xVarSubs=MapThread[#1->#2& ,{xVars[[-1]],({qq[t],ru[t]}-orig[[{1,2}]])}];
+betterEqnZSub=Join[(MapThread[#1->#2&,forZSub]/.{eps[ru][t]->eps,qq->qq[t-1],rr->rr[t-1],ru->ru[t-1]}),{(discrep[t]->((discrep[t]-theEqns[[3]]))/.xVarSubs),eqvdIf->If}];
+rrVal=(((theEqns[[4]]/.betterEqnZSub)/.{eps[ru][t]->ru$Shock,qq[t-1]->qq,ru[t-1]->ru,eps->ru$Shock,(discrep[t]->(discrep[t]-theEqns[[3]])),eqvdIf->If})/.xVarSubs)/.
+{eps[ru][t]->ru$Shock,qtm1->qq,rutm1->ru,eps->ru$Shock,eqvdIf->If};
+
+

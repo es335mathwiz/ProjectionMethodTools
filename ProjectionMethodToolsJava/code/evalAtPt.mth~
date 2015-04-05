@@ -1,0 +1,74 @@
+
+
+If[$OperatingSystem==="Unix",
+Run["rm ./modSymb9.class"];
+Run["./cmp.sh"]]
+Get["prep.mth"]
+
+
+theEqns = {qq[t] - (betap*(1 - rhop)*qq[t+1 ] + rhop*qq[t - 1] - 
+      sigmap*rr[t] + ru[t]),
+   ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
+   rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]}//.
+lucaSubs//myN
+
+modName=modSymb9;
+projEquations[modName9] ^= theEqns;
+{stateVar, nonStateVar, theShock}={{"qq", "ru"}, {"rr"}, {"uu$Shock"}}
+modClass=JavaNew[ToString[modName]]
+(*
+newWeightedStochasticBasis[modName,theEqns];
+{{stateVar, nonStateVar, theShock}, modClass} = 
+  GenerateModelCode[modName];
+
+*)
+polyRange = {{qLow, qHigh}, {ruLow,ruHigh}}//.lucaSubs 
+
+initPower = {1, 1}; shockPower = {1};
+lucaBasis = 
+  GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
+    theMean //. mySubs, {sigma$u} //. mySubs, 
+   integOrder //. mySubs, shockPower, nonStateVar];
+simp = JavaNew[
+   "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
+
+
+init={{-0.31846234287043573, 0.2822184431779994, 0.15093439513505424, 
+-0.03745900872199287, 0.48573818599945146, -0.12251368978560823, 
+-0.0569212663211015, -0.03871007783631986}, {-1.3863904609098535*^-17, 
+1.3915057468754732*^-17, 0.08, -2.7487927616282955*^-18, 0.2597176891083112, 
+3.1475590066622894*^-18, 2.152677566255846*^-17, 2.597439586636005*^-17}, 
+{0.05582703809632461, 0.05066708317547983, 0.016210605930917683, 
+0.02292525876178952, 0.05066708317547981, 0.07165407619264923, 
+0.022925258761789517, 0.03242121186183537}};
+
+
+resZ10$0$0 = 
+  ComputeInitialCollocationWeights[lucaBasis, init, modClass, simp];
+resZ10$0$0[isConvergedQ[]]
+boo=resZ10$0$0[toOrder[{1,1,2}]]
+
+If[boo[isConvergedQ[]],resZ10$0$0=boo]
+theWts=resZ10$0$0[getResWeights[]]
+aWSB=resZ10$0$0[getTheWeightedStochasticBasis[]]
+aWSB[setAllWeights[theWts]]
+evdv=modClass[updateValDrv[aWSB]]
+solnValAtNodes = evdv[getTheVal[]][getArray[]]
+
+
+
+
+
+gtPolyOrdersForOuterProduct[aWSB]
+mmaPolys=mmaPolysAtPts[aWSB];
+xfChebSubs=gtXFormedChebSubs[aWSB];
+xfChebVals=(ToString/@{qq,ru,uu$Shock})/.xfChebSubs
+aSP=aWSB[getTheState[]];
+nsAtNodes=aSP[computeNxtStateAtNodes[]][getArray[]]
+modEqnsAtPt[evalPt_?VectorQ]:=
+(modClass[updateValDrv[aWSB,evalPt]][getTheVal[]][getArray[]])
+
+evdvAPVals =modEqnsAtPt/@ xfChebVals//Chop
+
+{{qL,qH},{rL,rH},ig}=aWSB[getRanges[]];
+Plot3D[modEqnsAtPt[{qq, ru, xfChebVals[[-1,-1]]}][[1]], {qq, qL, qH}, {ru, rL, rH},PlotRange -> All]

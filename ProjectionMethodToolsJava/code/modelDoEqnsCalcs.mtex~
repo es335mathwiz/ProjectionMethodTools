@@ -1,0 +1,16 @@
+%Splice["modelDoEqnsCalcs.mtex","judd.tex",FormatType->InputForm]
+%<*{vFName,dFName}=doExport[varName="kk",0];*>
+\newcommand{\aVar}[3]{\item[$#1$] \ 
+  \begin{itemize}
+  \item    \includegraphics{#2}
+  \item    \includegraphics{#3}
+  \end{itemize}
+}
+\begin{description}
+\aVar{<*varName*>}{<*vFName*>}{<*dFName*>}
+\item[$<*varName*>$] \ 
+  \begin{itemize}
+  \item    \includegraphics{<*vFName*>}
+  \item    \includegraphics{<*dFName*>}
+  \end{itemize}
+\end{description}

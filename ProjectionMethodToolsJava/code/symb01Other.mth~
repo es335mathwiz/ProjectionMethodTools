@@ -1,0 +1,23 @@
+BeginPackage["symb01`",{"labDocPrep`","ProjectionInterface`"}]
+Print["reading symb01 package"]
+
+(*compute z0 for time zero constraint only *)
+
+Print["for one"]
+
+aPath01=genPath[1]
+
+try01={
+(aPath01[[5,1]]>=0.02&&Global`zzz$0$1[Global`t]==0)||
+(aPath01[[5,1]]==0.02&&Global`zzz$0$1[Global`t]>=0)
+}
+Export["try01A.pdf",try01[[1,1]]]
+Export["try01B.pdf",try01[[1,2]]]
+
+{symb01Secs,ig01}=Timing[slv01=Solve[try01,{Global`zzz$0$1[Global`t]},Reals]//FullSimplify//Chop]
+Global`zzz$0$1Func= Function @@ {{Global`qtm1,Global`rutm1,Global`eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
+
+Splice["symb01Secs.mtex"]
+
+EndPackage[]
+Print["done reading symb01 package"]

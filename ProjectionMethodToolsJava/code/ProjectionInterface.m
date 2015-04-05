@@ -10,6 +10,7 @@ newDoRecurIneqOcc::usage="newDoRecurIneqOcc"
 nxtWts::usage="    nxtWts[prevWts_?MatrixQ,oldMaxPows_List,newMaxPows_List]"
 GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_List,{stateStr_List,nonStateStr_List},theLocs_?ArrayQ]"
 genPath::usage="genPath[num_Integer]"
+genValsPath::usage="genValsPath[num_Integer]"
 genCompSlackSys::usage="genCompSlackSys[nn_Integer]"
 genPolyFuncs::usage="genPolyFuncs[projresults]"
 genProjComponents::usage="genProjComponents[numZs_Integer]"
@@ -173,12 +174,18 @@ gtResWeights::usage="gtResWeights[aRes_?JavaObjectQ]:"
 
 
 debugEqCode::usage="debugEqCode[modelName_String,eqns_List,svInfo_List]"
-
+solnCondsToPiecewise::usage="solnCondsToPiecewise[solnWithConds_List]"
 Print["beginning private defs"]
 Begin["`Private`"]
 
-
-
+solnCondsToPiecewise[solnWithConds:{{HoldPattern[_->ConditionalExpression[__]]..}..}]:=
+With[{sConds=Sort[Flatten[solnWithConds]]},
+With[{toSub=Union[First/@sConds]},
+With[{grp=Cases[sConds,HoldPattern[#->_]]&/@toSub},
+Thread[toSub->((Piecewise[List @@@ Last /@ #]//FullSimplify)&/@grp)]]]]
+(*
+solnCondsToPiecewise[xx_]:=Identity[xx]
+*)
 gtXFormedChebNodes[aWSB_?JavaObjectQ]:=With[{theSt=gtStateVarPolys[aWSB]},
 theSt[getXformedChebNodePts[]]]/;
 ClassName[aWSB]==="gov.frb.ma.msu.ProjectionMethodToolsJava.WeightedStochasticBasis"
@@ -2487,21 +2494,46 @@ to$551 = resZ10$0$0[toOrder[2*{1,1,1}]];
 If[to$551[isConvergedQ[]]===True,Print["converged 03"],Throw["projection polynomial computation did not converge"]];
 {modSymb,to$551,resZ10$0$0,simp,lucaBasis,modClass}]]
 
-genPath[numNonZeroZs_Integer]:=
+
+genValsPath[numNonZeroZs_Integer]:=
 With[{xtm1={{Global`qtm1},{Global`rtm1},{Global`rutm1}},
-rawFParts=Reverse[(redoFPart[Global`phimat,Global`fmat,Global`psiz,#,1,0] &/@Range[0,numNonZeroZs-1])//Global`numIt]},
+rawFParts=Reverse[((doFPart[Global`phimat,Global`fmat,Global`psiz,#,1,0]+doFEpsPart[Global`phimat,Global`fmat,Global`psieps,#,1,0]) &/@Range[0,numNonZeroZs-1])//Global`numIt]},
 With[{bgn=(nonFPart[xtm1,
 {{Global`eps}},Global`bmat,Global`phimat,Global`psieps]+rawFParts[[1]])//Global`numIt},
 Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},Global`bmat,Global`phimat,Global`psieps]+#2//Global`numIt)&,
 bgn,Drop[rawFParts,1]]]]]
 
 
-redoFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
+
+
+
+genPath[numNonZeroZs_Integer]:=
+With[{xtm1={{Global`qtm1},{Global`rtm1},{Global`rutm1}},
+rawFParts=Reverse[(doFPart[Global`phimat,Global`fmat,Global`psiz,#,1,0] &/@Range[0,numNonZeroZs-1])//Global`numIt]},
+With[{bgn=(nonFPart[xtm1,
+{{Global`eps}},Global`bmat,Global`phimat,Global`psieps]+rawFParts[[1]])//Global`numIt},
+Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},Global`bmat,Global`phimat,Global`psieps]+#2//Global`numIt)&,
+bgn,Drop[rawFParts,1]]]]]
+
+
+doFEpsPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
 horizon_Integer,numCon_Integer]:=
-redoFPart[phimat,fmat,psiz,horizon,numCon,0]
+doFEpsPart[phimat,fmat,psiz,horizon,numCon,0]
 
 
-redoFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
+doFEpsPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
+horizon_Integer,numCon_Integer,offset_Integer]:=
+With[{zMats=doGenEpsVars[horizon,numCon,offset]},
+Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,
+Reverse[zMats]]]
+
+
+doFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
+horizon_Integer,numCon_Integer]:=
+doFPart[phimat,fmat,psiz,horizon,numCon,0]
+
+
+doFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,
 horizon_Integer,numCon_Integer,offset_Integer]:=
 With[{zMats=redoGenZVars[horizon,numCon,offset]},
 Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,
@@ -2516,6 +2548,14 @@ Table[
 {ToExpression["Global`discrep$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
 {forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
+
+doGenEpsVars[horizons_Integer,numConstr_Integer]:=
+redoGenZVars[horizons,numConstr,0]
+
+doGenEpsVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+Table[
+{ToExpression["Global`epsVar$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[Global`t"<>"]"]},
+{forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
 redoGenZVars[horizons_Integer,numConstr_Integer]:=
 redoGenZVars[horizons,numConstr,0]

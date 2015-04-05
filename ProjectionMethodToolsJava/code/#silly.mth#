@@ -1,0 +1,303 @@
+{{{Function[{qq, ru, ru$Shock}, \!\(\*
+TagBox[GridBox[{
+{"\[Piecewise]", GridBox[{
+{
+RowBox[{
+RowBox[{"0.2677422653638917`", " ", "qq"}], "+", 
+RowBox[{"0.30864815234034326`", " ", "ru"}], "+", 
+RowBox[{"0.6172963046806865`", " ", "ru$Shock"}]}], 
+RowBox[{
+RowBox[{
+RowBox[{"0.2677422653638917`", " ", "qq"}], "+", 
+RowBox[{"0.30864815234034326`", " ", "ru"}], "+", 
+RowBox[{"0.6172963046806865`", " ", "ru$Shock"}]}], ">=", "0.02`"}]},
+{
+RowBox[{"0.5763904177042347`", " ", 
+RowBox[{"(", 
+RowBox[{
+RowBox[{"-", "0.03999999999999997`"}], "+", 
+RowBox[{"1.`", " ", "qq"}], "+", 
+RowBox[{"1.1527808354084699`", " ", "ru"}], "+", 
+RowBox[{"2.3055616708169397`", " ", "ru$Shock"}]}], ")"}]}], 
+TagBox["True",
+"PiecewiseDefault",
+AutoDelete->True]}
+},
+AllowedDimensions->{2, Automatic},
+Editable->True,
+GridBoxAlignment->{
+            "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.84]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}},
+Selectable->True]}
+},
+GridBoxAlignment->{
+         "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.35]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}}],
+"Piecewise",
+DeleteWithContents->True,
+Editable->False,
+SelectWithContents->True,
+Selectable->False]\)], 
+   Function[{qq, ru, ru$Shock}, 0.5 ru + ru$Shock], 
+   Function[{qq, ru, ru$Shock}, \!\(\*
+TagBox[GridBox[{
+{"\[Piecewise]", GridBox[{
+{
+RowBox[{"0.043055616708169354`", " ", "-", 
+RowBox[{"0.5763904177042344`", " ", "qq"}], "-", 
+RowBox[{"0.6644518272425242`", " ", "ru"}], "-", 
+RowBox[{"1.3289036544850483`", " ", "ru$Shock"}]}], 
+RowBox[{
+RowBox[{
+RowBox[{"0.2677422653638917`", " ", "qq"}], "+", 
+RowBox[{"0.30864815234034326`", " ", "ru"}], "+", 
+RowBox[{"0.6172963046806865`", " ", "ru$Shock"}]}], "<", "0.02`"}]},
+{"0", 
+TagBox["True",
+"PiecewiseDefault",
+AutoDelete->True]}
+},
+AllowedDimensions->{2, Automatic},
+Editable->True,
+GridBoxAlignment->{
+            "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.84]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}},
+Selectable->True]}
+},
+GridBoxAlignment->{
+         "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.35]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}}],
+"Piecewise",
+DeleteWithContents->True,
+Editable->False,
+SelectWithContents->True,
+Selectable->False]\)]}}, {{Function[{qq, ru, ru$Shock}, \!\(\*
+TagBox[GridBox[{
+{"\[Piecewise]", GridBox[{
+{
+RowBox[{
+RowBox[{"0.2677422653638917`", " ", "qq"}], "+", 
+RowBox[{"0.30864815234034326`", " ", "ru"}], "+", 
+RowBox[{"0.6172963046806865`", " ", "ru$Shock"}]}], 
+RowBox[{
+RowBox[{
+RowBox[{"0.2677422653638917`", " ", "qq"}], "+", 
+RowBox[{"0.30864815234034326`", " ", "ru"}], "+", 
+RowBox[{"0.6172963046806865`", " ", "ru$Shock"}]}], ">=", "0.02`"}]},
+{
+RowBox[{"0.5763904177042347`", " ", 
+RowBox[{"(", 
+RowBox[{
+RowBox[{"-", "0.03999999999999997`"}], "+", 
+RowBox[{"1.`", " ", "qq"}], "+", 
+RowBox[{"1.1527808354084699`", " ", "ru"}], "+", 
+RowBox[{"2.3055616708169397`", " ", "ru$Shock"}]}], ")"}]}], 
+TagBox["True",
+"PiecewiseDefault",
+AutoDelete->True]}
+},
+AllowedDimensions->{2, Automatic},
+Editable->True,
+GridBoxAlignment->{
+            "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.84]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}},
+Selectable->True]}
+},
+GridBoxAlignment->{
+         "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.35]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}}],
+"Piecewise",
+DeleteWithContents->True,
+Editable->False,
+SelectWithContents->True,
+Selectable->False]\)], 
+   Function[{qq, ru, ru$Shock}, 0.5 ru + ru$Shock], 
+   Function[{qq, ru, ru$Shock}, \!\(\*
+TagBox[GridBox[{
+{"\[Piecewise]", GridBox[{
+{
+RowBox[{"0.043055616708169354`", " ", "-", 
+RowBox[{"0.5763904177042344`", " ", "qq"}], "-", 
+RowBox[{"0.6644518272425242`", " ", "ru"}], "-", 
+RowBox[{"1.3289036544850483`", " ", "ru$Shock"}]}], 
+RowBox[{
+RowBox[{
+RowBox[{"0.2677422653638917`", " ", "qq"}], "+", 
+RowBox[{"0.30864815234034326`", " ", "ru"}], "+", 
+RowBox[{"0.6172963046806865`", " ", "ru$Shock"}]}], "<", "0.02`"}]},
+{"0", 
+TagBox["True",
+"PiecewiseDefault",
+AutoDelete->True]}
+},
+AllowedDimensions->{2, Automatic},
+Editable->True,
+GridBoxAlignment->{
+            "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.84]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}},
+Selectable->True]}
+},
+GridBoxAlignment->{
+         "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.35]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}}],
+"Piecewise",
+DeleteWithContents->True,
+Editable->False,
+SelectWithContents->True,
+Selectable->False]\)]}, {Function[{qq$1$1, ru$1$1, 
+     ru$Shock}, -2.51394 + 0.443748 qq$1$1 + 0.543155 ru$1$1 + 
+     0.00381196 qq$1$1 ru$1$1 - 0.00203438 ru$1$1^2 - 
+     0.000451513 qq$1$1 ru$1$1^2 + 1.04807 ru$Shock - 
+     0.0165697 qq$1$1 ru$Shock - 0.0169507 ru$1$1 ru$Shock - 
+     0.000415137 qq$1$1 ru$1$1 ru$Shock + 
+     0.000221551 ru$1$1^2 ru$Shock + 
+     0.0000491716 qq$1$1 ru$1$1^2 ru$Shock], 
+   Function[{qq$1$1, ru$1$1, ru$Shock}, 0.5 ru$1$1 + 1. ru$Shock], 
+   Function[{qq$1$1, ru$1$1, ru$Shock}, \!\(\*
+TagBox[GridBox[{
+{"\[Piecewise]", GridBox[{
+{
+RowBox[{"0.043055616708169354`", " ", "-", 
+RowBox[{"0.5763904177042344`", " ", "qq$1$1"}], "-", 
+RowBox[{"0.6644518272425242`", " ", "ru$1$1"}], "-", 
+RowBox[{"1.3289036544850483`", " ", "ru$Shock"}], "+", 
+RowBox[{"0.30556167081693936`", " ", 
+RowBox[{"zzz$0$1", "[", "t", "]"}]}]}], 
+RowBox[{
+RowBox[{"discrep", "[", "t", "]"}], "<", "0"}]},
+{"0", 
+TagBox["True",
+"PiecewiseDefault",
+AutoDelete->True]}
+},
+AllowedDimensions->{2, Automatic},
+Editable->True,
+GridBoxAlignment->{
+            "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.84]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}},
+Selectable->True]}
+},
+GridBoxAlignment->{
+         "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{1.}}, "RowsIndexed" -> {}},
+GridBoxSpacings->{"Columns" -> {
+Offset[0.27999999999999997`], {
+Offset[0.35]}, 
+Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+Offset[0.2], {
+Offset[0.4]}, 
+Offset[0.2]}, "RowsIndexed" -> {}}],
+"Piecewise",
+DeleteWithContents->True,
+Editable->False,
+SelectWithContents->True,
+Selectable->False]\)]}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+theEq={0.7322577346361083*qq$1$1[t] - 0.30864815234034326*ru$1$1[t] + 0.14193812291113334*zzz$0$1[t] + 0.5354845307277833*zzz$1$1[t] - 0.6172963046806865*eps[ru][t], 0.5*ru$1$1[t] - eps[ru][t], 0.02 + discrep[t] - 0.2677422653638917*qq$1$1[t] - 0.30864815234034326*ru$1$1[t] - 0.4645154692722171*zzz$1$1[t] - 0.6172963046806865*eps[ru][t], -eqvdIf[0. + 0.2677422653638917*qq$1$1[t] + 0.30864815234034326*ru$1$1[t] < 0.02, 0.043055616708169354 - 0.5763904177042344*qq$1$1[t] - 0.6644518272425242*ru$1$1[t], 0] + zzz$0$1[t], -eqvdIf[discrep[t] >= 0, 0, 0.043055616708169354 - 0.5763904177042344*qq$1$1[t] - 0.6644518272425242*ru$1$1[t] + 0.30556167081693936*zzz$0$1[t] - 1.3289036544850483*eps[ru][t]] + zzz$1$1[t]};
