@@ -24,7 +24,11 @@ try02RecVals/.{Global`qtm1->qtm1Arg,Global`rutm1->Global`rutm1Arg,Global`eps->ep
 {Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t],Global`qq[Global`t],Global`ru[Global`t]},Reals]]
 igVar=Unique[];
 
-
+(*
+forInterp=tryNthVals},
+FunctionInterpolation[forInterp[qq,ru,ep][[1]],
+{qq,-.1,.1},{ru,-.4,.4},{ep,-.2,.2}]]]]
+*)
 EndPackage[]
 Print["done reading symb02RecVals package"]
 

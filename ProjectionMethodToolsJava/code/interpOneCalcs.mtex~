@@ -1,0 +1,10 @@
+\begin{tabular}{|r|r|
+S[table-format=3.6]|
+S[table-format=3.6]|
+}
+\multicolumn{1}{|c|}{Order}&
+\multicolumn{1}{|c|}{Points}&
+\multicolumn{1}{|c|}{$\inorm{\cdot}$}&
+\multicolumn{1}{|c|}{Seconds}\\
+<*
+\end{tabular}
