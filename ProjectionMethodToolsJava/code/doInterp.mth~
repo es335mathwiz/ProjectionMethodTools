@@ -1,5 +1,0 @@
-Get["ProjectionInterface`"];
-Get["prep.mth"]
-Nest[doRecurIneqOcc, {}, 1];
-secondEqns=doRecurIneqOccEqns[first];
-

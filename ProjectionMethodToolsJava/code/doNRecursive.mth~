@@ -1,5 +1,0 @@
-genMinCSRecurSys[{}]:=
-With[{zVal=genMinCssS
-
-conOr[thePthVal_,theZVal_]:=
-Or[thePthVal>=0.02&&theZVal==0,thePthVal==0.02&&theZVal>=0]

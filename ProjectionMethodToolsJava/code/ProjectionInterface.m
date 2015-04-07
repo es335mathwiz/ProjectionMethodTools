@@ -2,6 +2,7 @@
 (*ToDo make sure rationals mapped to numbers beofre java sees them otherwise obscure error MLGet out of sequence
 *)
 BeginPackage["ProjectionInterface`", { "JLink`"}]
+Print["reading ProjectionInterface`"];
 (* Exported symbols added here with SymbolName::usage *)  
 (* Exported symbols added here with SymbolName::usage *) 
 newGenSys::usage="newGenSys";

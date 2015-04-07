@@ -1,4 +1,4 @@
-Get["ProjectionInterface`"];
+Get["ProjectionInterface`"];t
 (*
 Get["prep.mth"]
 *)
@@ -7,7 +7,7 @@ genZFuncs[numZs_Integer]:=
 Module[{tryNth=genMinCSSys[numZs]},
 With[{tryNthFunc=Function @@ {{qtm1,rutm1,eps},tryNth},
 theZVars=Reverse[Flatten[
-ProjectionInterface`Private`redoGenZVars[numZs-1,1]]]},
+ProjectionInterface`Private`GenZVars[numZs-1,1]]]},
 tryNthVals[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ]:=
 theZVars/.Flatten[Solve[tryNthFunc[qtm1,rutm1,eps],theZVars,Reals]];
 With[{forInterp=tryNthVals},

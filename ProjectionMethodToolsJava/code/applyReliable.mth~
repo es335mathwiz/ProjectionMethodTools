@@ -1,6 +1,0 @@
-(* use reliable paper formula to solve occasionally binding constraints models*)
-Get["PrepPackages.mth"]
-
-
-
-g

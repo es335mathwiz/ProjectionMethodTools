@@ -244,3 +244,65 @@ Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs//N]];
 
 Global`$MaxSolveTime=900;
 
+
+Print["interp defs"]
+Global`makeInterpFunc[theFunc_Function]:=
+FunctionInterpolation @@ {theFunc[Global`qq,Global`ru,Global`ep],
+{Global`qq,Global`qLow,Global`qHigh}//.Global`lucaSubs//N,
+{Global`ru,Global`ruLow,Global`ruHigh}//.Global`lucaSubs//N,
+{Global`ep,-2*Global`sigma$u,2*Global`sigma$u}//.Global`lucaSubs//N(*,
+InterpolationOrder -> 10, InterpolationPrecision -> 30, 
+ AccuracyGoal -> 15, PrecisionGoal -> 15, 
+ InterpolationPoints -> 100, MaxRecursion -> 25*)}
+
+
+Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
+FunctionInterpolation @@ {theFunc[Global`qq,Global`ru,Global`ep],
+{Global`qq,Global`qLow,Global`qHigh}//.Global`lucaSubs//N,
+{Global`ru,Global`ruLow,Global`ruHigh}//.Global`lucaSubs//N,
+{Global`ep,-2*Global`sigma$u,2*Global`sigma$u}//.Global`lucaSubs//N,
+InterpolationOrder ->iOrder, 
+InterpolationPoints -> iPts(*, InterpolationPrecision -> 30, 
+ AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)}
+Print["interp defs"]
+
+
+Print["interp defs"]
+
+
+Global`timeMakeInterpFunc[theFunc_Function]:=
+Timing[Global`makeInterpFunc[theFunc]]
+
+
+
+Global`timeMakeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
+Timing[Global`timeMakeInterpFunc[theFunc,iOrder,iPts]]
+Print["interp defs"]
+
+
+Global`infNorm[func_]:=
+NMaximize @@ 
+{{func[Global`qq,Global`ru,Global`ep],
+(((Global`qLow<=Global`qq<=Global`qHigh)//.Global`lucaSubs)//N)&&
+(((Global`ruLow<=Global`ru<=Global`ruHigh)//.Global`lucaSubs)//N)&&
+(((-2*Global`sigma$u<=Global`ep<=2*Global`sigma$u)//.Global`lucaSubs)//N)
+},
+{Global`qq,Global`ru,Global`ep},Method->{"RandomSearch","SearchPoints"->50}}
+Print["interp defs"]
+
+
+Global`experOrd[]:=
+Module[{timeInterp=Flatten[
+Table[Join[Global`timeMakeInterpFunc[Global`zzz$0$1Func,io,ip],{io,ip}],
+{io,1,4},{ip,10,100,10}],1]},
+{#[[1]],Global`infNorm[cmpExct[#[[2]]]],#[[3]],#[[4]],#[[2]]}&/@ timeInterp
+]
+
+Print["interp defs"]
+
+Global`cmpExct[aFunc_]:=
+Function[{Global`qq,Global`ru,Global`ep},Abs[aFunc[Global`qq,Global`ru,Global`ep]-Global`zzz$0$1Func[Global`qq,Global`ru,Global`ep]]]
+
+
+
+Print["done defs"]

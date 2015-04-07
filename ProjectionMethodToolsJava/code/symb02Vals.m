@@ -2,6 +2,7 @@ BeginPackage["symb02Vals`",{"labDocPrep`","ProjectionInterface`"}]
 Print["reading symb02 package"]
 (*compute z0 for time zero constraint only *)
 Print["for 02"]
+Print["takes less than minute"]
 
 
 aPath02Vals=genPath[02];
