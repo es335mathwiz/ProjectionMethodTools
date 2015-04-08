@@ -23,32 +23,35 @@ Global`zzz$0$1[Global`t]==
 Global`zzz$0$1InterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]
 }
 
-useVal[
-Function @@ 
-{{Global`qtm1,Global`rutm1,Global`eps},
-aPath02ValsRec/.
 
-delFuncSub[(xx_InterpolatingFunction|xx_Function)]:=
+delFuncSub[(Global`xx_InterpolatingFunction|Global`xx_Function)]:=
 Global`zzz$1$1[Global`t]->
 ((Function @@ {{Global`qtm1Arg,Global`rutm1Arg,Global`epsArg},
-xx[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg] +Global`zzz$0$1InterpFunc[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`rutm1,Global`eps])
+Global`xx[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg] +Global`zzz$0$1InterpFunc[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`rutm1,Global`eps])
+
+
+delFuncSub[targ_Symbol,
+(Global`del_InterpolatingFunction|Global`del_Function),
+(Global`base_InterpolatingFunction|Global`base_Function)]:=
+targ[Global`t]->
+((Function @@ {{Global`qtm1Arg,Global`rutm1Arg,Global`epsArg},
+Global`del[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg] +
+Global`base[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`rutm1,Global`eps])
 
 
 
-(*
-slick=({
-((aPath02ValsRec[[5,1]]>=0.02&&Global`zzz$1$1[Global`t]==0)||
-(aPath02ValsRec[[5,1]]==0.02&&Global`zzz$1$1[Global`t]>=0))}/.{
-Global`zzz$0$1[Global`t]->
-Global`zzz$0$1InterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]})//.{
-Global`zzz$1$1[Global`t]->
-Global`delZ+Global`zzz$0$1InterpFunc[aPath02ValsRec[[1,1]],aPath02ValsRec[[3,1]],0]}
-*)
 
+fixZ0[Global`qqVar_?NumberQ,Global`ruVar_?NumberQ,Global`epsVar_?NumberQ,
+(Global`del_InterpolatingFunction|Global`del_Function),
+(Global`base_InterpolatingFunction|Global`base_Function)]:=
+With[{dSub=delFuncSub[Global`zzz$1$1,
+Global`del,
+Global`base]},
 FindRoot[
-(Global`zzz$0$1[t]==
-Global`zzz$0$1InterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]/.
-delFuncSub[Function[{xx,yy,zz},0]])/.{Global`qtm1->-.1,Global`rutm1->-.08,Global`eps->0}/.{Global`qtm1->-.1,Global`rutm1->-.08,Global`eps->0},{Global`zzz$0$1[t],0}]
+(Global`zzz$0$1[Global`t]==
+Global`base[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]/.
+dSub/.{Global`qtm1->Global`qqVar,Global`rutm1->Global`ruVar,Global`eps->Global`epsVar}),
+{Global`zzz$0$1[Global`t],0}]]
 
 
 
