@@ -9,7 +9,7 @@ import Jama.Matrix;
 public class experTackVecFun extends FAndG{
 
 	 DoEqns tbm;
-	 experTackCnstrns tcn;
+	 notExperTackCnstrns tcn;
 	 WeightedStochasticBasis thePM;
 
 	 	public ValueDerivative evaluateF(Matrix xx){return(evaluateSumSq(xx));}
@@ -17,7 +17,7 @@ public class experTackVecFun extends FAndG{
 
 
 	
-		 public experTackVecFun(DoEqns theSys,experTackCnstrns theCnstrns,WeightedStochasticBasis theProjModel){
+		 public experTackVecFun(DoEqns theSys,notExperTackCnstrns theCnstrns,WeightedStochasticBasis theProjModel){
 	tbm= theSys;
 	tcn=theCnstrns;
 	thePM=theProjModel;

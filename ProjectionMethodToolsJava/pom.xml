@@ -48,4 +48,16 @@
     </dependency>
   </dependencies>
  
+   <distributionManagement>
+       <snapshotRepository>
+           <id>snapshots-repo</id>
+<url>file:///msu/res1/Software/mavenRepositories/gary-anderson-mvn-repo/snapshots</url>
+       </snapshotRepository>
+       <repository>
+           <id>repo</id>
+<url>file:///msu/res1/Software/mavenRepositories/gary-anderson-mvn-repo/releases</url>
+       </repository>
+   </distributionManagement>
+
+
 </project>
