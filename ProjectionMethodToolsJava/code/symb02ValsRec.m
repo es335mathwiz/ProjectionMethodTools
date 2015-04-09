@@ -23,14 +23,14 @@ Global`zzz$0$1[Global`t]==
 Global`zzz$0$1InterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]
 }
 
-
+(*
 delFuncSub[(Global`xx_InterpolatingFunction|Global`xx_Function)]:=
 Global`zzz$1$1[Global`t]->
 ((Function @@ {{Global`qtm1Arg,Global`rutm1Arg,Global`epsArg},
 Global`xx[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg] +Global`zzz$0$1InterpFunc[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`rutm1,Global`eps])
+*)
 
-
-delFuncSub[targ_Symbol,
+Global`delFuncSub[targ_Symbol,
 (Global`del_InterpolatingFunction|Global`del_Function),
 (Global`base_InterpolatingFunction|Global`base_Function)]:=
 targ[Global`t]->
@@ -44,15 +44,18 @@ Global`base[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`r
 fixZ0[Global`qqVar_?NumberQ,Global`ruVar_?NumberQ,Global`epsVar_?NumberQ,
 (Global`del_InterpolatingFunction|Global`del_Function),
 (Global`base_InterpolatingFunction|Global`base_Function)]:=
-With[{dSub=delFuncSub[Global`zzz$1$1,
+With[{dSub=Global`delFuncSub[Global`zzz$1$1,
 Global`del,
 Global`base]},
-FindRoot[
+With[{theZSubs=Append[Flatten[FindRoot[
 (Global`zzz$0$1[Global`t]==
 Global`base[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]/.
 dSub/.{Global`qtm1->Global`qqVar,Global`rutm1->Global`ruVar,Global`eps->Global`epsVar}),
-{Global`zzz$0$1[Global`t],0}]]
-
+{Global`zzz$0$1[Global`t],0}]],dSub/.{Global`qtm1->Global`qqVar,Global`rutm1->Global`ruVar,Global`eps->Global`epsVar}]},
+Append[({aPath02ValsRec,try02ValsRec,symb02`try02}/.theZSubs)/.
+{Global`qtm1->Global`qqVar,
+Global`rutm1->Global`ruVar,
+Global`eps->Global`epsVar},theZSubs]]]
 
 
 (*Global`zzz$0$1InterpFunc[Global`qq[Global`t],Global`ru[Global`t],0]*)
