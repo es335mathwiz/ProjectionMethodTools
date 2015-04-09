@@ -905,7 +905,7 @@ doJavac[aFile_String] :=
 Directory[]<>
 ":/msu/scratch/m1gsa00/learnProjection/proto:"<>
 $repLoc<>
-"/gov/frb/ma/msu/projection/1.0-SNAPSHOT/projection-1.0-SNAPSHOT.jar:"<>
+"/gov/frb/ma/msu/ProjectionMethodToolsJava/0.0.1-SNAPSHOT/ProjectionMethodToolsJava-0.0.1-SNAPSHOT.jar:"<>
 $repLoc<>
 "/gov/frb/ma/msu/Jama-1.0.2/1.0-SNAPSHOT/Jama-1.0.2-1.0-SNAPSHOT.jar -target 1.5 "<>
 aFile<>
