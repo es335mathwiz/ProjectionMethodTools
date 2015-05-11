@@ -1,12 +1,9 @@
 BeginPackage["symb01`",{"labDocPrep`","ProjectionInterface`"}]
 Print["reading symb01 package"]
-
 (*compute z0 for time zero constraint only *)
-
 Print["for one"]
-
+Print["generate a path of minimal length to impose constraint one period"]
 aPath01=genPath[1]
-
 try01={
 (aPath01[[5,1]]>=0.02&&Global`zzz$0$1[Global`t]==0)||
 (aPath01[[5,1]]==0.02&&Global`zzz$0$1[Global`t]>=0)
@@ -36,7 +33,6 @@ MatrixForm[(Transpose[{eqns01=doRecurIneqOccEqns[{}]/.{Global`eqvdIf->If,Greater
 (*change conditionalExpression of two cases to form to get to piecewise*)
 pairs=Partition[Sort[Flatten[
 Solve[Thread[eqns01==0],{Global`qq[Global`t],Global`ru[Global`t],Global`rr[Global`t],Global`discrep[Global`t],Global`zzz$0$1[Global`t]},Reals]]],2]
-
 
 soln01=(Piecewise[List @@@ Last /@ #]//FullSimplify//Chop)&/@pairs
 

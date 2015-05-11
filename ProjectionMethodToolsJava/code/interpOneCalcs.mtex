@@ -1,9 +1,24 @@
 \newcommand{\aLine}[4]{#1&#2&#3&#4\\ \hline}
 
+%<*Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"]*>
+%<*Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"]*>
+%<*Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"]*>
+
+
+\begin{table}
+  \centering
+
+{\small
+  \caption{Accuracy and Computation Time for Interpolation for One Period}
+
+\begin{minipage}{1.0\linewidth}
 \begin{tabular}{|r|r|
 S[table-format=3.11]|
 S[table-format=3.6]|
 }
+\hline 
+\multicolumn{4}{|c|}{<*DateString[]*>\footnote{Running <*experFile*>: on <*{$System,$ProcessorType}*>,
+num procs=<*numProcs*>, loadAvg=<*loadAvg*>, freeMem=<*freeMem*>. Total interp Time=<*experTime*>}}\\
 %<*theLine=0;*>
 \hline
 \multicolumn{1}{|c|}{Order}&
@@ -254,3 +269,7 @@ S[table-format=3.6]|
 %<*theLine++;*>
 \end{tabular}
 %interOneVals[[n]] {0.501924, {0.00352452, {qq -> 0.0674587, ru -> -0.020129, ep -> 0.0132047}}, 4, 30}}
+\end{minipage}
+}    
+  \label{tab:oneperinterp}
+\end{table}

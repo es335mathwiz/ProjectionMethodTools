@@ -43,9 +43,7 @@ Plot3D @@
 {Global`ru,Global`ruLow,Global`ruHigh}//.Global`lucaSubs//N,PlotRange->All}
 *)
 (*
-Timing[interOneVals=experOrd[]]
-Splice["interpOneCalcs.mtex"]
-Sort[experOrd[],#1[[2,1]]>#2[[2,1]]&]
+
 *)
 
 

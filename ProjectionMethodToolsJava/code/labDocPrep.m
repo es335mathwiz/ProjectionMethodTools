@@ -31,7 +31,7 @@ bmat,phimat,fmat},Print[noCnstr];
 With[{hmat=equationsToMatrix[noCnstr]},Print[hmat];
 {ig,ig,ig,ig,qmat,ig,ig,ig}=numericAMA[hmat,1,1];Print[zf,hf];
 Print["need to generalize to actually compute qmat"];
-{hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat,1]}
+{hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat]}
 ]]
 
 
@@ -274,9 +274,9 @@ Global`timeMakeInterpFunc[theFunc_Function]:=
 Timing[Global`makeInterpFunc[theFunc]]
 
 
-
+a
 Global`timeMakeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
-Timing[Global`timeMakeInterpFunc[theFunc,iOrder,iPts]]
+Timing[Global`makeInterpFunc[theFunc,iOrder,iPts]]
 Print["interp defs"]
 
 
@@ -291,12 +291,20 @@ NMaximize @@
 Print["interp defs"]
 
 
+
+
+
 Global`experOrd[]:=
+Global`experOrd[Global`zzz$0$1Func]
+
+
+Global`experOrd[aFunc_]:=
 Module[{timeInterp=Flatten[
-Table[Join[Global`timeMakeInterpFunc[Global`zzz$0$1Func,io,ip],{io,ip}],
+Table[Join[Global`timeMakeInterpFunc[aFunc,io,ip],{io,ip}],
 {io,1,4},{ip,10,100,10}],1]},
 {#[[1]],Global`infNorm[cmpExct[#[[2]]]],#[[3]],#[[4]],#[[2]]}&/@ timeInterp
 ]
+
 
 Print["interp defs"]
 

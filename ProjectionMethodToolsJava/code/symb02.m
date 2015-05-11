@@ -22,10 +22,17 @@ Print["first solve 02"]
 {symb02FirstSecs,ig02}=Timing[soln02=Flatten[Solve[try02Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]];
 Print["second  solve 02"]
 {symb02SecondSecs,ig02}=Timing[soln02=Flatten[Solve[try02Func[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]];
-condExps=DeleteCases[Global`zzz$1$1[Global`t]/.#&/@soln02,Global`zzz$1$1[Global`t]]
 Print["done solve 02"]
-pw=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps]//FullSimplify
-try02ValsSoln= Function @@ {{Global`qtm1,Global`rutm1,Global`eps},pw}
+
+condExps$1$1=DeleteCases[Global`zzz$1$1[Global`t]/.#&/@soln02,Global`zzz$1$1[Global`t]]
+pw$1$1=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps$1$1]//FullSimplify
+
+condExps$0$1=DeleteCases[Global`zzz$0$1[Global`t]/.#&/@soln02,Global`zzz$0$1[Global`t]]
+pw$0$1=Piecewise[((List @@ #)//Expand//Simplify)&/@condExps$0$1]//FullSimplify
+
+try02ValsSoln= Function @@ {{Global`qtm1,Global`rutm1,Global`eps},
+{pw$0$1,pw$1$1}}
+
 Splice["symb02Secs.mtex"]
 
 
