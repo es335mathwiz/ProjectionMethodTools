@@ -27,6 +27,7 @@ Global`zzz$0$1InterpFunc=Global`makeInterpFunc[Global`zzz$0$1PreInterpFunc]
 
 
 
+
 (*
 Plot3D @@ 
 {Global`zzz$0$1InterpFunc[Global`qq,Global`ru,0]-Global`zzz$0$1Func[Global`qq,Global`ru,0],
