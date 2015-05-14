@@ -273,7 +273,7 @@ FunctionInterpolation[theFunc[Global`qq,Global`ru,Global`ep],
 {Global`ru,Global`rlv,Global`rhv},
 {Global`ep,elv,ehv},
 InterpolationOrder ->iOrder(*default is 3*), 
-InterpolationPoints -> iPts)(*default is 11*)(*, InterpolationPrecision -> 30, 
+InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30, 
  AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)]
 Print["interp defs"]
 

@@ -6,7 +6,7 @@ Print["for 02"]
 
 aPath02ValsRec=genPath[02];
 
-
+(*
 try02ValsRec={
 ((aPath02ValsRec[[5,1]]>=0.02&&Global`zzz$1$1[Global`t]==0)||
 (aPath02ValsRec[[5,1]]==0.02&&Global`zzz$1$1[Global`t]>=0))&&
@@ -15,7 +15,7 @@ Global`ru[Global`t]==aPath02ValsRec[[6,1]]&&
 Global`zzz$0$1[Global`t]==
 Global`zzz$0$1InterpFunc[Global`qq[Global`t],Global`ru[Global`t],0]
 }
-
+*)
 qrTry02ValsRec[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:={
 ((aPath02ValsRec[[5,1]]>=0.02&&Global`zzz$1$1[Global`t]==0)||
 (aPath02ValsRec[[5,1]]==0.02&&Global`zzz$1$1[Global`t]>=0))&&
@@ -32,9 +32,6 @@ Global`ru[Global`t]==aPath02ValsRec[[6,1]]&&
 Global`zzz$0$1[Global`t]==
 Global`zzz$0$1PreInterpFunc[Global`qqTry,Global`ruTry,0]
 }
-
-
-
 qrAccTry02ValsRec[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:={
 ((aPath02ValsRec[[5,1]]>=0.02&&Global`zzz$1$1[Global`t]==0)||
 (aPath02ValsRec[[5,1]]==0.02&&Global`zzz$1$1[Global`t]>=0))&&
@@ -43,7 +40,7 @@ Global`ru[Global`t]==aPath02ValsRec[[6,1]]&&
 Global`zzz$0$1[Global`t]==
 Global`zzz$0$1AccInterpFunc[Global`qqTry,Global`ruTry,0]
 }
-
+(*
 preTry02ValsRec={
 ((aPath02ValsRec[[5,1]]>=0.02&&Global`zzz$1$1[Global`t]==0)||
 (aPath02ValsRec[[5,1]]==0.02&&Global`zzz$1$1[Global`t]>=0))&&
@@ -52,6 +49,8 @@ Global`ru[Global`t]==aPath02ValsRec[[6,1]]&&
 Global`zzz$0$1[Global`t]==
 Global`zzz$0$1PreInterpFunc[Global`qq[Global`t],Global`ru[Global`t],0]
 }
+*)
+
 (*
 try02ValsRec={
 (Global`zzz$0$1[Global`t]>=0&&Global`zzz$1$1[Global`t]>=0)&&
@@ -61,19 +60,22 @@ Global`zzz$0$1[Global`t]==
 Global`zzz$0$1InterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]
 }
 *)
+(*
 try02ValsRecFunc=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},try02ValsRec}
 try02ValsRecVals[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
 vars02/.Flatten[NSolve[FullSimplify[try02ValsRecFunc[Global`qtm1,Global`rutm1,Global`eps]],vars02,Reals]]
 
+*)
+vars02=Cases[Variables[Level[qrTry02ValsRec[0,0],{-2}]],_[Global`t]]
 
 qrTry02ValsRecFunc[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},qrTry02ValsRec[Global`qqTry,Global`ruTry]}
 
 qrTry02ValsRecVals[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ][Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
 vars02/.Flatten[NSolve[FullSimplify[qrTry02ValsRecFunc[Global`qqTry,Global`ruTry][Global`qtm1,Global`rutm1,Global`eps]],vars02,Reals]]
 
-valRec02[theFunc_,
+valRec02[Global`theFunc_,
 Global`qqTry_?NumberQ,Global`ruTry_?NumberQ][Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
-FixedPoint[theFunc[#1[[1]],#1[[2]]][Global`qtm1,Global`rutm1,Global`eps]&,
+FixedPoint[Global`theFunc[#1[[1]],#1[[2]]][Global`qtm1,Global`rutm1,Global`eps]&,
 {Global`qqTry,Global`ruTry}]
 
 qrPreTry02ValsRecFunc[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},qrPreTry02ValsRec[Global`qqTry,Global`ruTry]}
@@ -85,7 +87,7 @@ qrAccTry02ValsRecFunc[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:=Function @@ 
 
 qrAccTry02ValsRecVals[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ][Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
 vars02/.Flatten[NSolve[FullSimplify[qrAccTry02ValsRecFunc[Global`qqTry,Global`ruTry][Global`qtm1,Global`rutm1,Global`eps]],vars02,Reals]]
-
+(*
 vars02Start0={#,.5}&/@vars02;
 
 fmTry02ValsRecVals[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=With[{guts=FullSimplify[
@@ -95,7 +97,7 @@ EvaluationMonitor:>Identity[With[{boo={Global`qtm1,Global`rutm1,Global`eps,Globa
 }]},
 Global`zzz$1$1[Global`t]/.(FindMinimum @@ guts)[[-1]]]
 
-
+*)
 (*
 fmPreTry02ValsRecVals[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
 With[{guts=FullSimplify[{{Global`zzz$1$1[Global`t]^2,
@@ -116,14 +118,14 @@ Global`zzz$1$1[Global`t]/.(FindMinimum @@ guts)[[-1]]]]
 
 *)
 
-
+(*
 huhTry02ValsRec=
 {aPath02ValsRec[[5,1]],GE,0.02,Global`zzz$1$1[Global`t],EQ,0,
 aPath02ValsRec[[5,1]],EQ,0.02,Global`zzz$1$1[Global`t],GE,0,
 Global`zzz$0$1[Global`t],EQ,
 Global`zzz$0$1InterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]}
 huhTry02ValsRecFunc=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},huhTry02ValsRec}
-
+*)
 
 (*
 preTry02ValsRec={
@@ -134,18 +136,19 @@ Global`zzz$0$1[Global`t]==
 Global`zzz$0$1PreInterpFunc[aPath02ValsRec[[4,1]],aPath02ValsRec[[6,1]],0]
 }
 *)
+(*
 preTry02ValsRecFunc=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},preTry02ValsRec}
 preTry02ValsRecVals[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
 vars02/.Flatten[NSolve[preTry02ValsRecFunc[Global`qtm1,Global`rutm1,Global`eps],vars02,Reals]]
 
-
+*)
 (*
 delFuncSub[(Global`xx_InterpolatingFunction|Global`xx_Function)]:=
 Global`zzz$1$1[Global`t]->
 ((Function @@ {{Global`qtm1Arg,Global`rutm1Arg,Global`epsArg},
 Global`xx[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg] +Global`zzz$0$1InterpFunc[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`rutm1,Global`eps])
 *)
-
+(*
 Global`delFuncSub[targ_Symbol,
 (Global`del_InterpolatingFunction|Global`del_Function),
 (Global`base_InterpolatingFunction|Global`base_Function)]:=
@@ -155,7 +158,7 @@ Global`del[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg] +
 Global`base[Global`qtm1Arg,Global`rutm1Arg,Global`epsArg]})[Global`qtm1,Global`rutm1,Global`eps])
 
 
-
+*)
 
 (*
 
@@ -165,7 +168,7 @@ Plot3D @@ {{fmTry02ValsRecVals[qq,ru,0]},{qq,-0.4,0.4},{ru,-.08,.08}}
 Plot3D @@ {{fmPreTry02ValsRecVals[qq,ru,0]},{qq,-0.4,0.4},{ru,-.08,.08}}
 
 *)
-
+(*
 fixZ0[Global`qqVar_?NumberQ,Global`ruVar_?NumberQ,Global`epsVar_?NumberQ,
 (Global`del_InterpolatingFunction|Global`del_Function),
 (Global`base_InterpolatingFunction|Global`base_Function)]:=
@@ -189,6 +192,7 @@ theZSubs}]//N]]
 
 updt[dVal_?NumberQ]:=
 fixZ0[-.1,-.08,0,Function[{Global`x,Global`y,Global`z},dVal],Global`zzz$0$1PreInterpFunc][[2]]//N
+*)
 (*
 fixZ0[.1,.08,0,Function[{x,y,z},0],Global`zzz$0$1PreInterpFunc]
 fixZ0[-.1,-.08,0,Function[{x,y,z},0],Global`zzz$0$1PreInterpFunc]
@@ -196,10 +200,10 @@ With[{cmp=symb02`try02ValsSoln[-.1,-.08,0]},
 fixZ0[-.1,-.08,0,Function[{x,y,z},cmp[[2]]-cmp[[1]]],Global`zzz$0$1PreInterpFunc]]
 *)
 (*Global`zzz$0$1InterpFunc[Global`qq[Global`t],Global`ru[Global`t],0]*)
+(*
 
-vars02=Cases[Variables[Level[try02ValsRec,{-2}]],_[Global`t]]
 
-
+*)
 (*
 
 try02ValsRecq1r1Vals[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
@@ -255,7 +259,7 @@ igVar=Unique[];
 valRec02[qrAccTry02ValsRecVals,.0341293,.015][-.1,-.08,.01]];
 {symb02ValsRecSecondSecs,igVar}=Timing[
 valRec02[qrAccTry02ValsRecVals,.0341293,.015][-.1,-.08,.01]];
-Splice["symb02ValsSecs.mtex"]
+Splice["symb02ValsRecSecs.mtex"]
 
 
 EndPackage[]
