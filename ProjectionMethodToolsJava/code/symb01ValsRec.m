@@ -26,8 +26,15 @@ Print["construct interpolation"]
 Global`zzz$0$1InterpFunc=Global`makeInterpFunc[Global`zzz$0$1PreInterpFunc]
 
 
-
-
+Global`primeFunc[Global`qval_,Global`ruval_,Global`epsval_]:=With[{rawVals=
+Flatten[(aPath01ValsRec/.{
+Global`zzz$0$1[Global`t]->Global`zzz$0$1PreInterpFunc[Global`qval,Global`ruval,Global`epsval],
+Global`qtm1->Global`qval,
+Global`rutm1->Global`ruval,
+Global`eps->Global`epsval
+})[[{4,5}]]]},{
+Max[Min[rawVals[[1]],Global`qhv],Global`qlv],
+Max[Min[rawVals[[2]],Global`qhv],Global`qlv]}]
 (*
 Plot3D @@ 
 {Global`zzz$0$1InterpFunc[Global`qq,Global`ru,0]-Global`zzz$0$1Func[Global`qq,Global`ru,0],

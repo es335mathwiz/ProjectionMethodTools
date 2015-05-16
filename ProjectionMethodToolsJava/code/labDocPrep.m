@@ -4,10 +4,11 @@ PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 BeginPackage["labDocPrep`",{"ProjectionInterface`","JLink`","AMAModel`","NumericAMA`"}]
 
 Needs["JLink`"]
+(*
 SetOptions[InstallJava, JVMArguments->"-Xmx32g"]
 SetOptions[ReinstallJava, JVMArguments->"-Xmx32g"]
 ReinstallJava[JVMArguments -> "-Xmx64g"];
-
+*)
 
 numericLinearizeSystemForOBC::usage="numericLinearizeSystemForOBC[eqns_List]"
 nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]"
@@ -257,21 +258,36 @@ Global`$MaxSolveTime=900;
 
 Print["interp defs"]
 Global`makeInterpFunc[theFunc_Function]:=
-FunctionInterpolation[
-theFunc[Global`qq,Global`ru,Global`ep],
-{Global`qq,Global`qlv,Global`qhv},
-{Global`ru,Global`rlv,Global`rhv},
-{Global`ep,elv,ehv}(*,
+FunctionInterpolation[Sow[
+theFunc[Global`interpqq,Global`interpru,Global`interpep]],
+{Global`interpqq,Global`qlv,Global`qhv},
+{Global`interpru,Global`rlv,Global`rhv},
+{Global`interpep,elv,ehv}(*,
 InterpolationOrder -> 10, InterpolationPrecision -> 30, 
  AccuracyGoal -> 15, PrecisionGoal -> 15, 
  InterpolationPoints -> 100, MaxRecursion -> 25*)]
 
 Print["makeInterpFuncDef"]
 Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
-FunctionInterpolation[theFunc[Global`qq,Global`ru,Global`ep],
-{Global`qq,Global`qlv,Global`qhv},
-{Global`ru,Global`rlv,Global`rhv},
-{Global`ep,elv,ehv},
+FunctionInterpolation[Sow[theFunc[Global`interpqq,Global`interpru,Global`interpep]],
+{Global`interpqq,Global`qlv,Global`qhv},
+{Global`interpru,Global`rlv,Global`rhv},
+{Global`interpep,elv,ehv},
+InterpolationOrder ->iOrder(*default is 3*), 
+InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30, 
+ AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)]
+Print["interp defs"]
+
+
+Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}
+]:=
+FunctionInterpolation[Sow[theFunc[Global`interpqq,Global`interpru,Global`interpep]],
+{Global`interpqq,Global`qLow,Global`qHigh},
+{Global`interpru,Global`ruLow,Global`ruHigh},
+{Global`interpep,Global`epsLow,Global`epsHigh},
 InterpolationOrder ->iOrder(*default is 3*), 
 InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30, 
  AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)]
@@ -288,6 +304,18 @@ Timing[Global`makeInterpFunc[theFunc]]
 Global`timeMakeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
 Timing[Global`makeInterpFunc[theFunc,iOrder,iPts]]
 Print["interp defs"]
+
+Global`timeMakeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}]:=
+Timing[Global`makeInterpFunc[theFunc,iOrder,iPts,
+{Global`qLow,Global`qHigh},
+{Global`ruLow,Global`ruHigh},
+{Global`epsLow,Global`epsHigh}
+]]
+Print["interp defs"]
+
 
 
 Global`infNorm[func_]:=
