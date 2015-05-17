@@ -35,14 +35,29 @@ Print["construct more accurate interpolation"]
 Global`zzz$2$1PreInterpFunc=With[{proc=Global`valRecN[qrAccTry03ValsRecVals]},
 Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps]]]
 theOrd=1;thePts=5;
+boo=Function[{xx,yy,zz},
+With[{theFuncVal=Global`zzz$1$1PreInterpFunc[xx,yy,zz]},
+theFuncVal[[-1]]]]
 {interpTime03ValsRec,ig}=
-Timing[Global`zzz$1$1AccInterpFunc=Global`makeInterpFunc[Global`zzz$1$1PreInterpFunc,theOrd,thePts,
+Timing[Global`zzz$1$1AccInterpFunc=Global`makeInterpFunc[
+boo,
+theOrd,thePts,
 {Global`qlv,Global`qhv},
 {Global`qlv,Global`qhv},
 {Global`elv,Global`ehv}]];
-Print["done interpolation for zzz$2$1"];
+Print["done interpolation for zzz$1$1"];
+boo[xx_?NumberQ,yy_?NumberQ,zz_?NumberQ]:=
+Global`zzz$1$1PreInterpFunc[xx,yy,zz][[-1]];
+{interpTime03ValsRec,ig}=
+Timing[Global`zzz$1$1AccInterpFunc=Global`makeInterpFunc[
+boo,
+theOrd,thePts,
+{Global`qlv,Global`qhv},
+{Global`qlv,Global`qhv},
+{Global`elv,Global`ehv}]];
+Print["done interpolation for zzz$0$1"];
 igVar=Unique[];
-(*
+
 Print["prepare for splicing 03"]
 
 {symb03ValsRecFirstSecs,igVar}=Timing[
@@ -51,7 +66,27 @@ Global`valRecN[qrAccTry03ValsRecVals][-.1,-.08,.01]];
 Global`valRecN[qrAccTry03ValsRecVals][-.1,-.08,.01]];
 Splice["symb03ValsRecSecs.mtex"]
 
-*)
+
+
+
+
+aPath03ValsRecExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
+With[{tp=genPath[03,1]/.{Global`qtm1->qtm1Arg,Global`rutm1->rutm1Arg,Global`eps->epsArg},qrVals=qrAccTry03ValsRecVals[qtm1Arg,rutm1Arg,epsArg],
+tVals=try03ValRecVals[qtm1Arg,rutm1Arg,epsArg]},
+tp/.{
+Global`zzz$0$1[Global`t]:>
+		Global`zzz$0$1AccInterpFunc[qrVals[[1]],qrVals[[2]],0],
+Global`zzz$1$1[Global`t]:>
+		Global`zzz$1$1AccInterpFunc[qrVals[[1]],qrVals[[2]],0],
+Global`zzz$2$1[Global`t]:>
+		Global`zzz$2$1PreInterpFunc[qrVals[[1]],qrVals[[2]],0]
+}]
+
+hmatApp03ValRec[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
+With[{tp=aPath03ValsRecExtFunc[Global`qtm1,Global`rutm1,Global`eps]},
+Join[Global`hmat.tp[[Range[9]]],Global`hmat.tp[[Range[9]+3]],Global`hmat.tp[[Range[9]+6]]]//Chop]
+
+
 EndPackage[]
 Print["done reading symb03ValsRec package"]
 

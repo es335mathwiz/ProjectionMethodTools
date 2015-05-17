@@ -257,12 +257,13 @@ Global`$MaxSolveTime=900;
 
 
 Print["interp defs"]
+(*
 Global`makeInterpFunc[theFunc_Function]:=
 FunctionInterpolation[Sow[
 theFunc[Global`interpqq,Global`interpru,Global`interpep]],
 {Global`interpqq,Global`qlv,Global`qhv},
 {Global`interpru,Global`rlv,Global`rhv},
-{Global`interpep,elv,ehv}(*,
+{Global`interpep,Global`elv,Global`ehv}(*,
 InterpolationOrder -> 10, InterpolationPrecision -> 30, 
  AccuracyGoal -> 15, PrecisionGoal -> 15, 
  InterpolationPoints -> 100, MaxRecursion -> 25*)]
@@ -272,7 +273,7 @@ Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
 FunctionInterpolation[Sow[theFunc[Global`interpqq,Global`interpru,Global`interpep]],
 {Global`interpqq,Global`qlv,Global`qhv},
 {Global`interpru,Global`rlv,Global`rhv},
-{Global`interpep,elv,ehv},
+{Global`interpep,Global`elv,Global`ehv},
 InterpolationOrder ->iOrder(*default is 3*), 
 InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30, 
  AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)]
@@ -293,6 +294,66 @@ InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30,
  AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)]
 Print["interp defs"]
 
+*)
+
+Print["should probably get rid of the others that don't specify location"]
+
+
+Global`valRecN[Global`theFunc_,pos_Integer]:=
+Function[{Global`qtm1,Global`rutm1,Global`eps},
+With[{initVals=Global`primeFunc[Global`qtm1,Global`rutm1,Global`eps],
+fixFunc=With[{fixVal=Global`theFunc[#1[[1]],#1[[2]]][Global`qtm1,Global`rutm1,Global`eps]},Sow[fixVal,"fixVal"];
+fixVal]&},Sow[initVals,"initVals="];Sow[{Global`qtm1,Global`rutm1,Global`eps},"for state="];
+With[{theVal=FixedPoint[
+fixFunc,{initVals[[1]],initVals[[2]]}]},Sow[theVal,"theVal"];theVal[[pos]]]]]
+
+Global`valRecN[Global`theFunc_]:=
+Function[{Global`qtm1,Global`rutm1,Global`eps},
+With[{initVals=Global`primeFunc[Global`qtm1,Global`rutm1,Global`eps],
+fixFunc=With[{fixVal=Global`theFunc[#1[[1]],#1[[2]]][Global`qtm1,Global`rutm1,Global`eps]},Sow[fixVal,"fixVal"];
+fixVal]&},Sow[initVals,"initVals="];Sow[{Global`qtm1,Global`rutm1,Global`eps},"for state="];
+With[{theVal=FixedPoint[
+fixFunc,{initVals[[1]],initVals[[2]]}]},Sow[theVal,"theVal"];theVal]]]
+
+
+
+
+
+
+
+
+Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}
+]:=Module[{},
+FunctionInterpolation@@ {
+Sow[theFunc[Global`interpqq,Global`interpru,Global`interpep]],
+{Global`interpqq,Global`qLow,Global`qHigh},
+{Global`interpru,Global`ruLow,Global`ruHigh},
+{Global`interpep,Global`epsLow,Global`epsHigh},
+InterpolationOrder ->iOrder(*default is 3*), 
+InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30, 
+ AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)}]/;
+NumberQ[theFunc[0,0,0]]
+
+
+
+Global`makeInterpFunc[theFunc_Function,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}
+]:=Global`makeInterpFunc[theFunc,3,11,
+{Global`qLow,Global`qHigh},
+{Global`ruLow,Global`ruHigh},
+{Global`epsLow,Global`epsHigh}]
+
+
+Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
+Global`makeInterpFunc[theFunc,iOrder,iPts,
+{Global`qlv,Global`qhv},
+{Global`rlv,Global`rhv},
+{Global`elv,Global`ehv}]
 
 
 

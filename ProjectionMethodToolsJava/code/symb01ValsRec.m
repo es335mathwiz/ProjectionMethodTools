@@ -53,7 +53,7 @@ Plot3D @@
 (*
 
 *)
-
+Splice["symb01ValsRecSecs.mtex"]
 
 EndPackage[]
 Print["done reading symb01ValsRec package"]

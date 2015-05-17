@@ -38,7 +38,7 @@ Global`zzz$3$1PreInterpFunc=With[{proc=Global`valRecN[qrAccTry03ValsRecVals]},
 Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps]]]
 theOrd=1;thePts=5;
 {interpTime04ValsRec,ig}=
-Timing[Global`zzz$3$1AccInterpFunc=Global`makeInterpFunc[Global`zzz$3$1PreInterpFunc,theOrd,thePts,
+Timing[Global`zzz$2$1AccInterpFunc=Global`makeInterpFunc[Global`zzz$2$1PreInterpFunc,theOrd,thePts,
 {Global`qlv,Global`qhv},
 {Global`qlv,Global`qhv},
 {Global`elv,Global`ehv}]];
