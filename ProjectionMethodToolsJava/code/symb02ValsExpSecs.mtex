@@ -2,7 +2,7 @@
 %<*Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"]*>
 %<*Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"]*>
 %<*experFile=symb02ValsExp.m*>
-<*symb02ValsExpFirstSecs*>&<*symb02ValsExpSecondSecs*>\footnote{<*DateString[]*> Running <*experFile*> ({See Section \ref{sec:symb02ValsExp.m}}): on <*{$System,$ProcessorType}*>,
+<*symb02ValsExpFirstSecs*>&<*symb02ValsExpSecondSecs*>\endnote{<*DateString[]*> Running <*experFile*> ({See Section \ref{sec:symb02ValsExp.m}}): on <*{$System,$ProcessorType}*>,
 num procs=<*numProcs*>, loadAvg=<*loadAvg*>, freeMem=<*freeMem*>.}
 
 

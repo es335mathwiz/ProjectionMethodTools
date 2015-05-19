@@ -24,6 +24,20 @@ vars03=Cases[Variables[Level[qrAccTry03ValsRec[0,0],{-2}]],_[Global`t]]
 
 
 
+theOrd=2;thePts=20;
+{interpTime03ValsRec,ig}=
+Timing[{Global`zzz$0$1AccInterpFunc,Global`zzz$1$1AccInterpFunc}=Global`makeInterpFunc[
+Global`zzz$1$1PreInterpFunc,{-2,-1},
+theOrd,thePts,
+{Global`qlv,Global`qhv},
+{Global`qlv,Global`qhv},
+{Global`elv,Global`ehv}]];
+Print["done interpolation for zzz$1$1"];
+igVar=Unique[];
+
+
+
+
 
 qrAccTry03ValsRecFunc[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},qrAccTry03ValsRec[Global`qqTry,Global`ruTry]}
 
@@ -33,30 +47,8 @@ vars03/.Flatten[NSolve[Identity[qrAccTry03ValsRecFunc[Global`qqTry,Global`ruTry]
 
 Print["construct more accurate interpolation"]
 Global`zzz$2$1PreInterpFunc=With[{proc=Global`valRecN[qrAccTry03ValsRecVals]},
-Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps]]]
-theOrd=1;thePts=5;
-boo=Function[{xx,yy,zz},
-With[{theFuncVal=Global`zzz$1$1PreInterpFunc[xx,yy,zz]},
-theFuncVal[[-1]]]]
-{interpTime03ValsRec,ig}=
-Timing[Global`zzz$1$1AccInterpFunc=Global`makeInterpFunc[
-boo,
-theOrd,thePts,
-{Global`qlv,Global`qhv},
-{Global`qlv,Global`qhv},
-{Global`elv,Global`ehv}]];
-Print["done interpolation for zzz$1$1"];
-boo[xx_?NumberQ,yy_?NumberQ,zz_?NumberQ]:=
-Global`zzz$1$1PreInterpFunc[xx,yy,zz][[-1]];
-{interpTime03ValsRec,ig}=
-Timing[Global`zzz$1$1AccInterpFunc=Global`makeInterpFunc[
-boo,
-theOrd,thePts,
-{Global`qlv,Global`qhv},
-{Global`qlv,Global`qhv},
-{Global`elv,Global`ehv}]];
-Print["done interpolation for zzz$0$1"];
-igVar=Unique[];
+Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps][[-1]]]]
+
 
 Print["prepare for splicing 03"]
 
@@ -71,7 +63,7 @@ Splice["symb03ValsRecSecs.mtex"]
 
 
 aPath03ValsRecExtFunc[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=  
-With[{tp=genPath[03,1]/.{Global`qtm1->qtm1Arg,Global`rutm1->rutm1Arg,Global`eps->epsArg},qrVals=qrAccTry03ValsRecVals[qtm1Arg,rutm1Arg,epsArg],
+With[{tp=genPath[03,1]/.{Global`qtm1->qtm1Arg,Global`rutm1->rutm1Arg,Global`eps->epsArg},qrVals=valRecN[qrAccTry03ValsRecVals][qtm1Arg,rutm1Arg,epsArg],
 tVals=try03ValRecVals[qtm1Arg,rutm1Arg,epsArg]},
 tp/.{
 Global`zzz$0$1[Global`t]:>
@@ -79,7 +71,7 @@ Global`zzz$0$1[Global`t]:>
 Global`zzz$1$1[Global`t]:>
 		Global`zzz$1$1AccInterpFunc[qrVals[[1]],qrVals[[2]],0],
 Global`zzz$2$1[Global`t]:>
-		Global`zzz$2$1PreInterpFunc[qrVals[[1]],qrVals[[2]],0]
+		Global`zzz$2$1PreInterpFunc[qtm1Arg,rutm1Arg,0]
 }]
 
 hmatApp03ValRec[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
