@@ -1,7 +1,9 @@
 %<*Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"]*>
 %<*Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"]*>
 %<*Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"]*>
-%<*experFile=symb03ValsRec.m*>
-<*symb03ValsRecFirstSecs*>\endnote{Interpolation Time=<*interpTime03ValsRec*>(order=<*Global`theOrd*>,points=<*Global`thePts*>)}&<*symb03ValsRecSecondSecs*>\endnote{<*DateString[]*> Running <*experFile*>: on <*{$System,$ProcessorType}*>,
+%<*experFile=symb02Exp.m*>
+<*symb02ExpFirstSecs*>&<*symb02ExpSecondSecs*>\endnote{<*DateString[]*> Running <*experFile*> ({See Section \ref{sec:symb02Exp.m}}): on <*{$System,$ProcessorType}*>,
 num procs=<*numProcs*>, loadAvg=<*loadAvg*>, freeMem=<*freeMem*>.}
+
+
 

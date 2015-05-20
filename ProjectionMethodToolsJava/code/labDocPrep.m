@@ -1,7 +1,7 @@
 PrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
-BeginPackage["labDocPrep`",{"ProjectionInterface`","JLink`","AMAModel`","NumericAMA`"}]
+BeginPackage["labDocPrep`",{"occBindRecur`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`"}]
 
 Needs["JLink`"]
 (*
@@ -9,11 +9,6 @@ SetOptions[InstallJava, JVMArguments->"-Xmx32g"]
 SetOptions[ReinstallJava, JVMArguments->"-Xmx32g"]
 ReinstallJava[JVMArguments -> "-Xmx64g"];
 *)
-
-numericLinearizeSystemForOBC::usage="numericLinearizeSystemForOBC[eqns_List]"
-nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]"
-redoFPart::usage="redoFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,horizon_Integer,numCon_Integer]"
-
 
 Begin["Private`"]
 nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
@@ -30,16 +25,6 @@ horizon_Integer,numCon_Integer,offset_Integer]:=
 With[{zMats=redoGenZVars[horizon,numCon,offset]},
 Plus @@ MapIndexed[ MatrixPower[fmat,(#2[[1]]-1)] . phimat. psiz . #1&,
 Reverse[zMats]]]
-
-
-numericLinearizeSystemForOBC[eqns_List]:=
-Module[{noCnstr=eqns/.{Global`eps[_][_]->0,Global`eqvdIf[_,xx_,_]->xx},zf,hr,
-bmat,phimat,fmat},Print[noCnstr];
-With[{hmat=equationsToMatrix[noCnstr]},Print[hmat];
-{ig,ig,ig,ig,qmat,ig,ig,ig}=numericAMA[hmat,1,1];Print[zf,hf];
-Print["need to generalize to actually compute qmat"];
-{hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat]}
-]]
 
 
 
@@ -189,14 +174,9 @@ rr[t] - Global`eqvdIf[phip*qq[t] >= rUnderBar,rUnderBar, phip*qq[t]]]
 *)
 End[]
 EndPackage[]
-
 Print["done reading labDocPrep package context"]
+(*
 
-Print["changing MatrixPower to produce Identity Matrix for singular matrices raised to 0th power"]
-Unprotect[MatrixPower]
-MatrixPower[xx_?MatrixQ,0]:=IdentityMatrix[Length[xx]]/;
-Length[xx]===Length[xx[[1]]]
-Protect[MatrixPower]
 Global`ridUndef[xx_List]:=DeleteCases[xx,_->Undefined]
 redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600,PlotRange->All]
 
@@ -428,3 +408,5 @@ Function[{Global`qq,Global`ru,Global`ep},Abs[aFunc[Global`qq,Global`ru,Global`ep
 
 
 Print["done defs"]
+Global`theOrd=2;Global`thePts=5;
+*)

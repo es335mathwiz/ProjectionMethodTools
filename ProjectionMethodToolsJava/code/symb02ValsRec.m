@@ -27,12 +27,14 @@ vars02=Cases[Variables[Level[qrAccTry02ValsRec[0,0],{-2}]],_[Global`t]]
 
 
 
-theOrd=2;thePts=20;
+
 Print["Global`zzz$0$1PreInterpFunc not a list yet like others will be"]
-{interpTime03ValsRec,ig}=
+igVar=Unique[];
+
+{interpTime02ValsRec,ig}=
 Timing[Global`zzz$0$1AccInterpFunc=Global`makeInterpFunc[
 Global`zzz$0$1PreInterpFunc,
-theOrd,thePts,
+Global`theOrd,Global`thePts,
 {Global`qlv,Global`qhv},
 {Global`qlv,Global`qhv},
 {Global`elv,Global`ehv}]];
@@ -42,7 +44,6 @@ Print["construct more accurate interpolation"]
 Global`zzz$1$1PreInterpFunc=With[{proc=Global`valRecN[qrAccTry02ValsRecVals]},
 Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps]]]
 
-igVar=Unique[];
 Print["prepare for splicing 02"]
 {symb02ValsRecFirstSecs,igVar}=Timing[
 Global`valRecN[qrAccTry02ValsRecVals][-.1,-.08,.01]];

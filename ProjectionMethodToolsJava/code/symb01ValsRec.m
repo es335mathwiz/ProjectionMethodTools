@@ -13,11 +13,11 @@ try01ValsRec={
 }
 Export["try01ValsRecA.pdf",try01ValsRec[[1,1]]]
 Export["try01ValsRecB.pdf",try01ValsRec[[1,2]]]
-
+igVar=Unique[];
 Print["first solve"]
-{symb01ValsRecFirstSecs,ig01ValsRec}=Timing[slv01ValsRec=Solve[try01ValsRec,{Global`zzz$0$1[Global`t]},Reals]//FullSimplify//Chop]
+{symb01ValsRecFirstSecs,igVar}=Timing[slv01ValsRec=Solve[try01ValsRec,{Global`zzz$0$1[Global`t]},Reals]//FullSimplify//Chop]
 Print["second solve"]
-{symb01ValsRecSecondSecs,ig01ValsRec}=Timing[slv01ValsRec=Solve[try01ValsRec,{Global`zzz$0$1[Global`t]},Reals]//FullSimplify//Chop]
+{symb01ValsRecSecondSecs,igVar}=Timing[slv01ValsRec=Solve[try01ValsRec,{Global`zzz$0$1[Global`t]},Reals]//FullSimplify//Chop]
 Print["construct zzz$0$1Func"]
 Global`zzz$0$1PreInterpFunc= Function @@ {{Global`qtm1,Global`rutm1,Global`eps},Piecewise[List @@@ (Last/@Flatten[slv01ValsRec])]}
 Splice["symb01ValsRecSecs.mtex"]

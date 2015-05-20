@@ -20,16 +20,16 @@ Global`zzz$0$1AccInterpFunc[Global`qqTry,Global`ruTry,0]
 
 vars04=Cases[Variables[Level[qrAccTry04ValsRec[0,0],{-2}]],_[Global`t]]
 
-igVar=Unique[];
-{interpTime04ValsRec,igVar}=
+theOrd=1;thePts=4;
+{interpTime04ValsRec,ig}=
 Timing[{Global`zzz$0$1AccInterpFunc,Global`zzz$1$1AccInterpFunc,Global`zzz$2$1AccInterpFunc}=Global`makeInterpFunc[
 Global`zzz$2$1PreInterpFunc,{-3,-2,-1},
-Global`theOrd,Global`thePts,
+theOrd,thePts,
 {Global`qlv,Global`qhv},
 {Global`qlv,Global`qhv},
 {Global`elv,Global`ehv}]];
 Print["done interpolation for zzz$2$1"];
-
+igVar=Unique[];
 
 qrAccTry04ValsRecFunc[Global`qqTry_?NumberQ,Global`ruTry_?NumberQ]:=Function @@ {{Global`qtm1,Global`rutm1,Global`eps},qrAccTry04ValsRec[Global`qqTry,Global`ruTry]}
 
@@ -38,7 +38,7 @@ vars04/.Flatten[NSolve[Identity[qrAccTry04ValsRecFunc[Global`qqTry,Global`ruTry]
 
 Print["construct more accurate interpolation"]
 Global`zzz$3$1PreInterpFunc=With[{proc=Global`valRecN[qrAccTry04ValsRecVals]},
-Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps]]]
+Function[{Global`qq,Global`ru,Global`eps},proc[Global`qq,Global`ru,Global`eps][[-1]]]]
 
 Print["prepare for splicing 04"]
 {symb04ValsRecFirstSecs,igVar}=Timing[
@@ -59,7 +59,7 @@ Global`zzz$1$1[Global`t]:>
 Global`zzz$2$1[Global`t]:>
 		Global`zzz$2$1AccInterpFunc[qrVals[[1]],qrVals[[2]],0],
 Global`zzz$3$1[Global`t]:>
-		Global`zzz$3$1PreInterpFunc[qtm1Arg,rutm1Arg,0][[-1]]
+		Global`zzz$3$1PreInterpFunc[qtm1Arg,rutm1Arg,0]
 }]
 
 hmatApp04ValRec[Global`qtm1_?NumberQ,Global`rutm1_?NumberQ,Global`eps_?NumberQ]:=
