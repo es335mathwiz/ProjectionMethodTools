@@ -1,0 +1,1604 @@
+%
+\newcommand{\aVar}[4]{\item[$#1(#4)$] \ 
+  \begin{itemize}
+  \item    \includegraphics{#2}
+  \item    \includegraphics{#3}
+  \end{itemize}
+}
+\newcommand{\theSys}[2]{
+  \begin{itemize}
+  \item    \includegraphics{#1}
+  \item    \includegraphics{#2}
+  \end{itemize}
+}
+\newcommand{\mma}{{\bf Mathematica}}
+\newcommand{\mmaF}[1]{{\bf #1}}
+\newcommand{\javaF}[1]{{\bf #1}}
+A list of equations constitutes the model definition\footnote{Shocks are of the
+form eps[name][t]. State and non-state variables are of the form 
+symbName[t-1], symbName[t], symbName[t+1].  The shocks and the variables with
+a t-1 index become the model state variables.\footnote{Although given a time t index, the shocks are treated as known and completely determined as are all the
+t-1 regular state variables. }
+ The remaining symbols become
+the model parameters.}
+
+\includegraphics{lucaEqn.pdf}
+
+
+the \mma\  function \mmaF{GenerateModelCode} uses these equations
+to 
+
+\begin{itemize}
+\item generate and compile java code implementing the \javaF{EqValDrv } class version of the model and returns a symbol providing access to the object
+\item create  \mma\ lists: \mmaF{stateVars}, \mmaF{nonStateVars}, \mma{shockVars} 
+\end{itemize}
+
+
+
+The \mma\  function \mmaF{newWeightedStochasticBasis}
+
+
+
+%\text{Null}
+%\text{Null}
+The state variables\footnote{replacing \$ with X so that \LaTeX is happy.}
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{ridDollar}(\text{getStateVariableNames}())]
+\end{gather*}
+
+The next steps require first providing values for any parameters in the model:
+
+The \mma command will look something like:
+
+
+modEqns[updateParams[modParams]]
+
+Next we will augment the information
+obtained from parsing the model and setting the parameters
+with information specifying the projection method basis:
+
+The state variable ranges, the state variable and polynomial orders,
+
+If the model is stochastic we will specify, in addition to the shock polynomial order, the means, standard deviations and
+the integration order for the gauss hermite integration routines.\footnote{The program infers the range for the shocks from the values needed for the
+integration routine.}
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getRanges}()]  
+\end{gather*}
+
+The polynomial orders
+
+The polynomials for the state variables are:
+
+%\text{Null}
+
+\includegraphics{xFormedChebPolys.pdf}
+
+
+
+
+Orders for outer product
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getTheGrid}()(\text{generatePolyOrdersForOuterProduct}())]
+\end{gather*}
+
+
+
+
+The ordered outer product of these polynomials is:
+
+
+%\text{Null}
+\includegraphics{xFormedOrderedOuter.pdf}
+
+
+
+The transformed Chebyshev nodes 
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getXformedChebNodePts}()]  
+\end{gather*}
+
+
+
+
+The ordered outerproducts evaluated at the eval points
+
+%\text{Null}
+
+\includegraphics{outerXformedEval.pdf}
+
+
+
+The untransformed polynomials would be
+
+
+%\text{Null}
+
+
+\includegraphics{rawChebPolys.pdf}
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{getOrders}()]
+\end{gather*}
+
+
+\mmaF{WeightedStochasticBasis} extends \mmaF{Stochastic Basis} which handles 
+much of the initialization.\footnote{right now it sets perfectforesightQ true and and WeightedStochasticBasis sets this flag false.  Not sure why this is the case. Probably should be changed. At most two shocks.  But, even two shocks needs more testing.}
+
+For a stochastic model, the shock augmented information goes into the
+information  producing the {\bf GridVars } object.  The creation of
+the \javaF{GridPointsSpec} object adds the augmented  state powers.  The weighted stochastic basis has the information describing the parameters for
+the integration routine.
+
+The \javaF{GridPointSpec} resides in an \javaF{StateVariablePolynomials} object.
+
+The locations of the shock variables are  recorded in the \javaF{WeightedStochasticBasis.}
+
+
+Given a \javaF{WeightedStochasticBasis} describing a projection method 
+grid and a matrix of polynomial weights, we can
+evaluate the basis polynomials model at the collocation grid points.
+and iterate these polynomials one period ahead.  We 
+can also compute the derivative with respect to 
+the polynomial weights for the iterated polynomials.
+
+This is done with the \javaF{setAllWeights}:
+
+In \mma one could enter something like
+
+theBasis[setAllWeights[theMat]]
+
+This matrix must include weights for all the unaugmented state variables (not
+including the shocks), $n_s$ as well as the non-state variables $n_{ns}$. 
+
+The \javaF{setAllWeights} method also causes the \javaF{StateVariablePolynomials} to invoke its \javaF{setTheWeights} method.  This populates the matrix with
+the chebyshev node basis polynomial values at the basis point and iterates
+these polynomials forward coputing the values and derivatives of the polynomials at time t.
+
+
+
+The order for shocks are always 1. The weight for the shocks are always (0,1)
+
+
+Given and \javaF{eqValDrv} object describing a model and a
+\javaF{WeightedStochasticBasis} describing a projection method grid and a matrix
+of polynomial weights, we can
+evaluate the model and the derivative with respect to the weights at the
+collocation grid points.
+
+
+
+
+
+
+Untransformed Chebyshev polynomials
+
+
+
+
+The basis at the Chebyshev nodes
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{getBasisAtChebNodes}()]
+\end{gather*}
+
+The state variable polynomial weights
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{getStateVariablePolynomialWeights}()][\text{getArray}()]
+\end{gather*}
+
+
+The non-state variables
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheNonState}()][\text{ridDollar}(\text{getNonStateVariableNames}())]
+\end{gather*}
+
+
+
+
+
+The non-state variable polynomial weights
+
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheNonState}()][\text{getRelevantWeightsNSP}()][\text{getArray}()]
+\end{gather*}
+
+
+Applying the weights to get state and nonstate for time 0 produces
+
+
+\begin{gather*}
+  \left(
+\begin{array}{cccccccccccccccccc}
+ 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 \\
+ 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 \\
+ 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 \\
+\end{array}
+\right).\text{$\$$Failed}[\text{getTheState}()][\text{getBasisAtChebNodes}()]
+\end{gather*}
+
+
+
+In \javaF{StateVariablePolynomials} iterated at cheb nodes
+
+
+t variables
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesAtChebyshevNodesTimeT}()][\text{getArray}()]  
+\end{gather*}
+
+time t derivatives
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesAtChebNodesTimeTDerivWRTWtsNSP}()][\text{getArray}()]  
+\end{gather*}
+
+
+
+
+non state time t
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesAtChebyshevNodesTimeTNSP}()][\text{getArray}()]
+\end{gather*}
+
+
+
+
+t+1
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{getVariablesIteratedFromChebNodesTimeTP1}()][\text{getArray}()]
+\end{gather*}
+
+iterated $t+1$ derivatives
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{getVariablesIteratedFromChebNodesTimeTP1DerivWRTWts}()][\text{getArray}()]
+\end{gather*}
+
+
+non state time tp1
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesIteratedFromChebNodesTimeTP1}()][\text{getArray}()]
+\end{gather*}
+
+
+state tp1 derivatives
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesIteratedFromChebNodesTimeTP1DerivWRTWts}()][\text{getArray}()]  
+\end{gather*}
+
+non state tp1 derivatives 
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesIteratedFromChebNodesTimeTP1DerivWRTWtsNSP}()][\text{getArray}()]  
+\end{gather*}
+
+
+non state tp1 variables
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{getVariablesIteratedFromChebNodesTimeTP1NSP}()][\text{getArray}()]
+\end{gather*}
+
+
+
+
+
+To iterate forward we need to evaluate the basis at the time 0 state variable
+values
+
+
+The time t derivatives wrt weights are just the corresponding rows in the
+orderered outer product.
+
+They are recorded in \javaF{StateVariablePolynomials}
+
+\begin{gather*}
+  \text{$\$$Failed}[\text{getTheState}()][\text{getVariablesAtChebNodesTimeTDerivWRTWts}()][\text{getArray}()]
+\end{gather*}
+
+The shock variable values and derivatives
+
+\begin{description}
+%\text{Null}
+\aVar{\text{uuXShock}}{\text{vFName}}{\text{dFName}}{-1}
+\end{description}
+
+
+
+\includegraphics{uuXShockX-1DrvsXLft.pdf}
+
+\includegraphics{uuXShockX-1DrvsXRght.pdf}
+
+
+
+
+
+State variable values and derivatives
+
+
+\begin{description}
+%\text{Null}
+\aVar{\text{qq}}{\text{vFName}}{\text{dFName}}{-1}
+
+
+\includegraphics{qqX-1DrvsXLft.pdf}
+
+\includegraphics{qqX-1DrvsXRght.pdf}
+
+
+
+
+
+%\text{Null}
+\aVar{\text{qq}}{\text{vFName}}{\text{dFName}}{0}
+
+
+\includegraphics{qqX0DrvsXLft.pdf}
+
+\includegraphics{qqX0DrvsXRght.pdf}
+
+
+
+
+%\text{Null}
+\aVar{\text{qq}}{\text{vFName}}{\text{dFName}}{1}
+\end{description}
+
+\includegraphics{qqX1DrvsXLft.pdf}
+
+\includegraphics{qqX1DrvsXRght.pdf}
+
+
+
+Non-state variable values and derivatives
+
+
+\begin{description}
+%\text{Null}
+\aVar{\text{rr}}{\text{vFName}}{\text{dFName}}{0}
+
+\includegraphics{rrX0DrvsXLft.pdf}
+
+\includegraphics{rrX0DrvsXRght.pdf}
+
+
+%\text{Null}
+\aVar{\text{rr}}{\text{vFName}}{\text{dFName}}{1}
+\end{description}
+
+\includegraphics{rrX1DrvsXLft.pdf}
+
+\includegraphics{rrX1DrvsXRght.pdf}
+
+System equation values
+
+%\text{Null}
+\theSys{\text{sysVals}}{\text{sysDrvs}}
+
+
+\includegraphics{lucaModX1DrvsXLft.pdf}
+
+\includegraphics{lucaModX1DrvsXRght.pdf}
+
+
+
+%\text{Null}
+
+%\text{Null}
+
+The evaluation transformed evaluation points for the state variables are:
+
+
+\begin{gather*}
+\text{$\$$Failed}[\text{getTheState}()][\text{$\$$Failed}[\text{getTheState}()][\text{getTheGrid}()][\text{getXformedChebNodePts}(\text{getStateVariableNames}())]]  
+\end{gather*}
+
+
+
+%\text{Null}
+
+
+%\text{Null}
+
+
+
+
+Before evaluation, the polynomials have the form
+
+\begin{gather*}
+\{\text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed})\}^{\mathsf{T}} 
+\end{gather*}
+
+Evaluating the polynomials at each of the evaluation points produces:\footnote{This is by construction.  The untransformed polynomials can provide these
+values with one computation once the grid dimensions have been specified. I 
+don't think the code takes advantage of this fact.} These values are also
+the derivatives of the state and non state variables
+ with respect to the weights.
+
+\begin{gather*}
+\left(\text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed})\text{/.}\, \{\text{qq}\to \text{$\$$Failed}[\text{getTheState}()][\text{getTheGrid}()][\text{getXformedChebNodePts}(\text{getStateVariableNames}())],\text{uu$\$$Shock}\to \text{$\$$Failed}[\text{getTheState}()][\text{$\$$Failed}[\text{getTheState}()][\text{getTheGrid}()][\text{getXformedChebNodePts}(\text{getStateVariableNames}())]][[2]]\}^{\mathsf{T}}\right)^{\mathsf{T}}
+\end{gather*}
+
+
+
+%\text{Null}
+
+Applying the state and non-state weights produces their time 0 values:
+
+commenting out mma
+
+
+\begin{gather*}
+\text{Null}
+\end{gather*}
+
+%\text{Null}
+%\text{Null}
+%\text{Null}
+
+
+%\text{Null}
+%\text{Null}
+
+\begin{gather*}
+\begin{array}{c}
+ \left(
+\begin{array}{cccccccccccccccccc}
+ 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 \\
+ 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 \\
+ 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 \\
+\end{array}
+\right).(\text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed})) \\
+ \left(
+\begin{array}{cccccccccccccccccc}
+ 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 \\
+ 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 \\
+ 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 \\
+\end{array}
+\right).(\text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed})) \\
+ \left(
+\begin{array}{cccccccccccccccccc}
+ 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 & 0.1 \\
+ 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 & 0.2 \\
+ 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 & 0.3 \\
+\end{array}
+\right).(\text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed})) \\
+\end{array}
+\end{gather*}
+
+
+
+Applying the polynomials and their weights to the time 0 
+state values produces the time t+1 state and non-state values:
+
+
+The variables depend in a somewhat complicated way on the polynomial weights,
+symbolic algebra programs can compute the polynomials and take their derivatives.\footnote{ The program uses operator overloading to accomplish this task.}
+
+%\begin{gather*}
+%\begin{array}{cccccccccccccccccc}
+ \text{aa}(1,1) & \text{aa}(1,2) & \text{aa}(1,3) & \text{aa}(1,4) & \text{aa}(1,5) & \text{aa}(1,6) & \text{aa}(1,7) & \text{aa}(1,8) & \text{aa}(1,9) & \text{aa}(1,10) & \text{aa}(1,11) & \text{aa}(1,12) & \text{aa}(1,13) & \text{aa}(1,14) & \text{aa}(1,15) & \text{aa}(1,16) & \text{aa}(1,17) & \text{aa}(1,18) \\
+ \text{aa}(2,1) & \text{aa}(2,2) & \text{aa}(2,3) & \text{aa}(2,4) & \text{aa}(2,5) & \text{aa}(2,6) & \text{aa}(2,7) & \text{aa}(2,8) & \text{aa}(2,9) & \text{aa}(2,10) & \text{aa}(2,11) & \text{aa}(2,12) & \text{aa}(2,13) & \text{aa}(2,14) & \text{aa}(2,15) & \text{aa}(2,16) & \text{aa}(2,17) & \text{aa}(2,18) \\
+ \text{aa}(3,1) & \text{aa}(3,2) & \text{aa}(3,3) & \text{aa}(3,4) & \text{aa}(3,5) & \text{aa}(3,6) & \text{aa}(3,7) & \text{aa}(3,8) & \text{aa}(3,9) & \text{aa}(3,10) & \text{aa}(3,11) & \text{aa}(3,12) & \text{aa}(3,13) & \text{aa}(3,14) & \text{aa}(3,15) & \text{aa}(3,16) & \text{aa}(3,17) & \text{aa}(3,18) \\
+\end{array}
+%\end{gather*}
+
+
+
+
+%\text{Null}
+
+
+Symbolic function composition and differentiation produces:
+
+%\text{Null}
+%\text{Null}
+%\text{Null}
+
+\begin{gather*}
+\begin{array}{ccc}
+ 
+\begin{array}{cccccccccccccccccc}
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+\end{array}
+ \\
+ 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+\end{array}
+ & 
+\begin{array}{cccccccccccccccccc}
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+\end{array}
+ \\
+\end{array}  
+\end{gather*}
+
+
+
+\begin{gather*}
+\begin{array}{ccc}
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+ \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) & \text{doExportOrderedOuter}(\text{$\$$Failed})\text{/.}\, \text{toSymbSubs}(\text{$\$$Failed}) \\
+\end{array}
+\end{gather*}
+
+
+Numerical derivatives are not very good.
