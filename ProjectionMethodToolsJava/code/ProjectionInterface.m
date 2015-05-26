@@ -2239,7 +2239,7 @@ polyRange = {{Global`qLow, Global`qHigh}, {globalruLow, globalruHigh}} //. Globa
 Global`initPower = {0, 0}; Global`shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. Global`mySubs, Global`initPower, theShock,
-    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$uNot} //. Global`mySubs, 
    Global`integOrder //. Global`mySubs, Global`shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2398,7 +2398,7 @@ polyRange = {{Global`qLow, Global`qHigh}, {globalruLow, globalruHigh}} //. Globa
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$uNot} //. Global`mySubs, 
    Global`integOrder //. Global`mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2467,7 +2467,7 @@ polyRange = {{Global`qLow, Global`qHigh}, {globalruLow, globalruHigh}} //. Globa
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$uNot} //. Global`mySubs, 
    Global`integOrder //. Global`mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2485,7 +2485,7 @@ polyRange = {{Global`qLow, Global`qHigh}, {globalruLow, globalruHigh}} //. Globa
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. Global`mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$u} //. Global`mySubs, 
+    ProtectedSymbols`theMean //. Global`mySubs, {Global`sigma$uNot} //. Global`mySubs, 
    Global`integOrder //. Global`mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2784,15 +2784,15 @@ EndPackage[]
 (*
 Global`lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
   rUnderBar -> 2/100, qLow -> -1/2, qHigh -> 1/2, 
-  ruLow -> -4*sigma$u/(1 - rho$ru), ruHigh ->  4*sigma$u/(1 - rho$ru),
-   integOrder -> {50}, sigma$u ->2/100, theMean -> {0}, rho$ru -> 1/2,
+  ruLow -> -4*sigma$uNot/(1 - rho$ru), ruHigh ->  4*sigma$uNot/(1 - rho$ru),
+   integOrder -> {50}, sigma$uNot ->2/100, theMean -> {0}, rho$ru -> 1/2,
    adj -> 1}; 
 
 
 Global`mySubs={betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
   (*rUnderBar -> rub,*) qLow -> -1/2, qHigh -> 1/2, 
-  ruLow -> -4*sigma$u/(1 - rho$ru), ruHigh ->  4*sigma$u/(1 - rho$ru),
-   integOrder -> {50}, sigma$u ->2/100, theMean -> {0}, rho$ru -> 1/2,
+  ruLow -> -4*sigma$uNot/(1 - rho$ru), ruHigh ->  4*sigma$uNot/(1 - rho$ru),
+   integOrder -> {50}, sigma$uNot ->2/100, theMean -> {0}, rho$ru -> 1/2,
    adj -> 1}
 
 
