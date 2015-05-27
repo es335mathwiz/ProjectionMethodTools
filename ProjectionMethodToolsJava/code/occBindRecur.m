@@ -7,6 +7,7 @@ iterPF::usage="iterPF[iorder,numpts,zFuncsNow_List]"
 iterRE::usage="iterRE[iorder,numpts,zFuncsNow_List]"
 aPath::usage="aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]"  
 hmatApp::usage="hmatApp[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,zFuncs_List]"
+infNorm::usage="infNorm[func_]"
 
 
 
@@ -144,6 +145,18 @@ makeInterpFuncPF[theFunc,pos,iOrder,iPts,
 {ruLow,ruHigh}]]
 
 
+makeInterpFuncRE[theFunc_Function,iOrder_Integer,iPts_Integer,
+{qLow_?NumberQ,qHigh_?NumberQ},
+{ruLow_?NumberQ,ruHigh_?NumberQ}]:=
+With[{theRange=Range[Length[theFunc[[2,4]]]+1]},
+makeInterpFuncRE[theFunc,#,iOrder,iPts,
+{qLow,qHigh},
+{ruLow,ruHigh}]&/@theRange]
+
+
+
+
+
 
 makeInterpFuncRE[theFunc_Function,pos_Integer,iOrder_Integer,iPts_Integer,
 {qLow_?NumberQ,qHigh_?NumberQ},
@@ -153,15 +166,15 @@ gridPts[iPts,
 {qLow,qHigh},
 {ruLow,ruHigh}],
 reFunc=Function @@ {{qq,ru},
-With[{qrSubbed=theFunc[qq,ru,#,thePos]},Print["qrsubbed=",qrSubbed];
+With[{qrSubbed=theFunc[qq,ru,#,thePos]},
 myExpect[Sow[Identity[With[{hoop=(qrSubbed&[tryEps])*PDF[NormalDistribution[0,sigma$u],
-tryEps]/.lucaSubs},(*Print["cur",hoop];*)hoop]]],tryEps]]}},Print["refunc=",reFunc];
+tryEps]/.lucaSubs},hoop]]],tryEps]]}},
 With[{whl={#,reFunc @@ #}& /@
-thePts},Print["whl=",whl//InputForm];
+thePts},
 Sow[theFunc];
 doScalarIntegration[whl,#,iOrder]&@pos]]/;
 With[{theRes=theFunc[0,0,0,1]},Print["iPtsRE:theRes=",theRes];
-NumberQ[Plus @@ theRes[[pos]]]]
+NumberQ[theRes]]
 
 
 
@@ -234,11 +247,10 @@ iterPF[iOrder_Integer,numPts_Integer,zFuncsNow:(_List):fixZ01]:=With[
 makeInterpFuncPF[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
 And[iOrder>0,numPts>1]
 
-iterRE[pos_Integer,
-iOrder_Integer,numPts_Integer,zFuncsNow:(_List):fixZ01]:=With[
+iterRE[iOrder_Integer,numPts_Integer,zFuncsNow:(_List):fixZ01]:=With[
 {fpSolnFunc=Function[{xx,yy,zz,pos},
 fpForInitStateFunc[xx,yy,zz,zFuncsNow,pos]]},
-makeInterpFuncRE[fpSolnFunc,pos,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
+makeInterpFuncRE[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
 And[iOrder>0,numPts>1]
 
 
@@ -365,8 +377,8 @@ test01=Function[{qtm1, rutm1, eps},
 
 z01ExactFunc=Function @@ {{qtm1,rutm1,eps},
 With[{eval=test01[qtm1,rutm1,eps]},
-Append[Flatten[(genPath[1][[{4,6}]])],Global`zzz$0$1[t]]/.
-Global`zzz$0$1[t]->eval]}
+Append[Flatten[(genPath[1][[{4,6}]])],zzz$0$1[t]]/.
+zzz$0$1[t]->eval]}
 
 fixZ01={
 Function[{xx,yy},z01ExactFunc[xx,yy,0][[1]]],
@@ -378,6 +390,18 @@ Function[{xx,yy},z01ExactFunc[xx,yy,0][[3]]]}
 noCnstrnGuess= With[{linPFSys=
 Flatten[bmat . {{qVal},{0},{ruVal}}+psieps.{{0}}]},
 {Function @@ {{qVal,ruVal},linPFSys[[1]]},Function @@ {{qVal,ruVal},linPFSys[[2]]}}]
+
+
+
+infNorm[func_]:=
+NMaximize @@ 
+{{func[qq,ru,ep],
+(((qLow<=qq<=qHigh)//.lucaSubs)//N)&&
+(((ruLow<=ru<=ruHigh)//.lucaSubs)//N)&&
+(((-2*sigma$u<=ep<=2*sigma$u)//.lucaSubs)//N)
+},
+{qq,ru,ep},Method->{"RandomSearch","SearchPoints"->50}}
+Print["interp defs"]
 
 
 
@@ -426,6 +450,10 @@ NestList[iterPF[1,3,#]&,Private`fixZ01,3]
 FixedPointList[iterPF[1,3,#]&,Private`fixZ01,50,SameTest->(
 With[{chk={#1[[1]][-.4,-.1],#2[[1]][-.4,-.1]}},Print["cmp q val",chk,chk[[1]]-chk[[2]]];chk[[1]]==chk[[2]]]&)]
 
+NestList[iterRE[1,3,#]&,Private`fixZ01,3]
+FixedPointList[iterPF[1,3,#]&,Private`fixZ01,50,SameTest->(
+With[{chk={#1[[1]][-.4,-.1],#2[[1]][-.4,-.1]}},Print["cmp q val",chk,chk[[1]]-chk[[2]]];chk[[1]]==chk[[2]]]&)]
+
 
 numPts=2
 Timing[doNow01PF= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,Private`fixZ01]]]
@@ -435,9 +463,7 @@ Timing[nxt01PF=makeInterpFuncPF[doNow01PF,1,numPts,{-.4,.4},{-.1,.1}]]
 
 numPts=2
 Timing[doNow01RE= Function[{xx,yy,zz,qq},fpForInitStateFunc[xx,yy,zz,Private`fixZ01,qq]]]
-Timing[nxt01RE=(makeInterpFuncRE[doNow01RE,#,1,numPts,{-.4,.4},{-.1,.1}])& /@ Range[4]]
-
-
+Timing[nxt01RE=makeInterpFuncRE[doNow01RE,1,numPts,{-.4,.4},{-.1,.1}]]
 
 
 

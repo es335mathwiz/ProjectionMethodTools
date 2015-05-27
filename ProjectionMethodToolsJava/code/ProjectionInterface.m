@@ -2114,7 +2114,7 @@ computeChebCoeffs[theFunc_, thePows_List, theRanges_List] := With[{top =
     theDenoms = Outer @@ Prepend[bottom[[-1]], Times]}, 
    theProds/theDenoms]]
 pFlatten[xx_List] := Plus @@ Flatten[xx]
-
+(*
 doRecurIneqOccEqns[{}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,initPower,shockPower,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
@@ -2131,7 +2131,7 @@ globalrr[ProtectedSymbols`t]-(thePath[[5,1]]),
 Global`zzz$0$1[ProtectedSymbols`t]-(Global`eqvdIf[Global`discrep[ProtectedSymbols`t]>=0,0,zZap//Expand]//Expand)}},Print["variables in alphabetic orderr and grouped state then nonstate"];
 (*Print["theEqns=",theEqn];*)
 theEqn]]]]
-
+*)
 
 newGenSys[{}]:=
 With[{numZs=1},
@@ -2209,7 +2209,7 @@ With[{dSolns=Flatten[Solve[Thread[discEqns==0],dVars]]},
 zEqns/.dSolns/.Global`eqvdIf->If]]]]
 
 
-
+(*
 newDoRecurIneqOccEqns[{}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,initPower,shockPower,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
@@ -2226,7 +2226,7 @@ globalrr[ProtectedSymbols`t]-(thePath[[5,1]]),
 Global`zzz$0$1[ProtectedSymbols`t]-(Global`eqvdIf[Global`discrep[ProtectedSymbols`t]>=0,0,zZap//Expand]//Expand)}},Print["variables in alphabetic orderr and grouped state then nonstate"];
 (*Print["theEqns=",theEqn];*)
 theEqn]]]]
-		
+*)		
 doRecurIneqOcc[{}]:=
 Module[{stateVar,nonStateVar,theShock,polyRange,oldSys,zSubs,discrepSub,polys,betterLHS,betterRHS,betterPolys,
 lucaBasis,simp,resZ10$0$0,modClass=Unique["modClass"],modSymb=Unique["modSymb"]},
@@ -2531,21 +2531,28 @@ Table[
 
 genZVars[horizons_Integer,numConstr_Integer]:=
 genZVars[horizons,numConstr,0]
-
-genZVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+(*
+notgenZVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
 Table[
 {ToExpression["Global`zzz$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[ProtectedSymbols`t"<>"]"]},
 {forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
+*)
+
+genZVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
+Table[
+{makeProtectedSymbol["zzz$"<>ToString[forTime]<>"$"<>ToString[ii]][ProtectedSymbols`t]},
+{forTime,0-offset,horizons},{ii,numConstr,1,-1}]/;offset<=0
+
 redoGenZExpVars[horizons_Integer,numConstr_Integer]:=
 redoGenZExpVars[horizons,numConstr,0]
-
+(*
 redoGenZExpVars[horizons_Integer,numConstr_Integer,offset_Integer]:=
 Table[
 {ToExpression["Global`zzzExp$"<>ToString[forTime]<>"$"<>ToString[ii]<>"[ProtectedSymbols`t"<>"]"]},
 {forTime,0-offset,horizons},{ii,numConstr,1,-1}]
 
-
+*)
 occBindCreatePolynomialsLeadsOK[aMod_,results_?JavaObjectQ]:=
 With[{origPolys=CreatePolynomials[results],
 basis=results[getTheWeightedStochasticBasis[]]},
