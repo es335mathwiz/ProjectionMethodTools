@@ -47,6 +47,7 @@ bmat::usage="simple model matrix"
 phimat::usage="simple model matrix"
 fmat::usage="simple model matrix"
 psiz::usage="simple model matrix"
+psic::usage="simple model matrix"
 psieps::usage="simple model matrix"
 noCnstrnGuess::usage="no constraints guess lin system computation for q and ru"
 
@@ -94,9 +95,9 @@ beenDone[[pos]]]
 
 
 fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
-zFuncs_:fixZ01]:=
+zFuncs_List]:=
 fpForInitStateFunc[qVal,ruVal,epsVal,zFuncs]=
-With[{pathLen=Length[zFuncs]-1,
+With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
 valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},
 With[{csrhs=genCompSlackSysFunc[pathLen]/.valSubs,
 initGuess=If[Length[zFuncs]==0,
@@ -108,7 +109,7 @@ With[{initStateSubbed=csrhs[[1]],
 tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=Function[{qTry,rTry},
-With[{zFuncsApps=Through[Drop[zFuncs,2][qTry,rTry]]},
+With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
 With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
 And[initStateSubbed,zEqns,tryEqnsSubbed]]]]},
 With[{zVars=Union[Cases[initStateSubbed,xx_[t],Infinity]]},
@@ -148,7 +149,7 @@ makeInterpFuncPF[theFunc,pos,iOrder,iPts,
 makeInterpFuncRE[theFunc_Function,iOrder_Integer,iPts_Integer,
 {qLow_?NumberQ,qHigh_?NumberQ},
 {ruLow_?NumberQ,ruHigh_?NumberQ}]:=
-With[{theRange=Range[Length[theFunc[[2,4]]]+1]},
+With[{theRange=Range[Max[2,Length[theFunc[[2,4]]]]+1]},
 makeInterpFuncRE[theFunc,#,iOrder,iPts,
 {qLow,qHigh},
 {ruLow,ruHigh}]&/@theRange]
@@ -204,7 +205,7 @@ Method -> {"NIntegrate",{MinRecursion->1,MaxRecursion->2,AccuracyGoal->2}},
 *)
 
 myExpect[aFunc:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
-zFuncs_:fixZ01,pos_Integer]*_,aVar_]:=
+zFuncs_List,pos_Integer]*_,aVar_]:=
 NIntegrate @@ ({aFunc,{aVar,-4*sigma$u,4*sigma$u},
 AccuracyGoal -> 2, Compiled -> Automatic,
   PrecisionGoal -> 2, WorkingPrecision -> 2}/.lucaSubs)
@@ -242,12 +243,12 @@ Table[ii,{ii,xLow,xHigh,N[xHigh-xLow]/iPts}]
 
 
 
-iterPF[iOrder_Integer,numPts_Integer,zFuncsNow:(_List):fixZ01]:=With[
+iterPF[iOrder_Integer,numPts_Integer,zFuncsNow_List]:=With[
 {fpSolnFunc=Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncsNow]]},
 makeInterpFuncPF[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
 And[iOrder>0,numPts>1]
 
-iterRE[iOrder_Integer,numPts_Integer,zFuncsNow:(_List):fixZ01]:=With[
+iterRE[iOrder_Integer,numPts_Integer,zFuncsNow_List]:=With[
 {fpSolnFunc=Function[{xx,yy,zz,pos},
 fpForInitStateFunc[xx,yy,zz,zFuncsNow,pos]]},
 makeInterpFuncRE[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
@@ -276,14 +277,15 @@ Join@ hApps//Chop]]
 
 
 nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
-bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]:=
-bmat . xtm1 + phimat . psimat . epsilon
+bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ]:=
+bmat . xtm1 + phimat . psimat . epsilon + 
+Inverse[IdentityMatrix[3]-fmat] . phimat . psic
 
 
 genPath[numNonZeroZs_Integer,padZeroZs_Integer]:=
 With[{startPath=genPath[numNonZeroZs]},
 With[{tailPath=NestList[((nonFPart[#,
-{{0}},bmat,phimat,psieps])//numIt)&,startPath[[{-3,-2,-1}]],padZeroZs]},
+{{0}},bmat,phimat,psieps,fmat])//numIt)&,startPath[[{-3,-2,-1}]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
 
 
@@ -294,8 +296,8 @@ genPath[numNonZeroZs_Integer]:=
 With[{xtm1={{qtm1},{rtm1},{rutm1}},
 rawFParts=Reverse[(doFPart[phimat,fmat,psiz,#,1,0] &/@Range[0,numNonZeroZs-1])//numIt]},
 With[{bgn=(nonFPart[xtm1,
-{{ProtectedSymbols`eps}},bmat,phimat,psieps]+rawFParts[[1]])//numIt},
-Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,psieps]+#2//numIt)&,
+{{ProtectedSymbols`eps}},bmat,phimat,psieps,fmat]+rawFParts[[1]])//numIt},
+Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,psieps,fmat]+#2//numIt)&,
 bgn,Drop[rawFParts,1]]]]]
 
 
@@ -352,7 +354,7 @@ Protect[lucaSubs]
 
 lucaEqns = {qq[t] - (betap*(1 - rhop)*qq[t + 1] + rhop*qq[t - 1] - 
       sigmap*rr[t] + ru[t]),
-   ru[t] - rho$ru*ru[t - 1] - adj*eps[uu][t],
+   (ru[t]-rstar) - rho$ru*(ru[t - 1]-rstar) - adj*eps[uu][t],
    rr[t] - eqvdIf[phip*qq[t] >= rUnderBar, phip*qq[t], rUnderBar]};
 Protect[lucaEqns]
 
@@ -361,13 +363,22 @@ Protect[lucaEqns]
 
 
 {hmat,qmat,{bmat,phimat,fmat}}=numericLinearizeSystemForOBC[(lucaEqns//.(lucaSubs)//Rationalize[#,1/100000000]&)];
+psic={{0},{0},{(1-rho$ru)*rstar}};
 psiz={{0},{0},{1}};
 psieps={{0},{1},{0}};
-Protect[hmat,qmat,bmat,phimat,fmat,psiz,psieps];
+Protect[hmat,qmat,bmat,phimat,fmat,psiz,psieps,psic];
+
+aPath01=genPath[1]
+try01={
+(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
+(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
+}
+
+slv01=(Solve[try01,{zzz$0$1[t]},Reals])//FullSimplify//Chop
+zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
 
 
-
-test01=Function[{qtm1, rutm1, eps}, 
+zzz$0$1Func=Function[{qtm1, rutm1, eps}, 
  Piecewise[{{0, eps + 0.433733789322437*qtm1 + 0.5000000000000001*rutm1 > 
      0.03239935157289748}, {0.0430556167081694 - 1.3289036544850497*eps - 
      0.5763904177042353*qtm1 - 0.664451827242525*rutm1, 
@@ -376,14 +387,26 @@ test01=Function[{qtm1, rutm1, eps},
 
 
 z01ExactFunc=Function @@ {{qtm1,rutm1,eps},
-With[{eval=test01[qtm1,rutm1,eps]},
+With[{eval=zzz$0$1Func[qtm1,rutm1,eps]},
 Append[Flatten[(genPath[1][[{4,6}]])],zzz$0$1[t]]/.
 zzz$0$1[t]->eval]}
 
-fixZ01={
+z01ExactInitPF={
 Function[{xx,yy},z01ExactFunc[xx,yy,0][[1]]],
 Function[{xx,yy},z01ExactFunc[xx,yy,0][[2]]],
 Function[{xx,yy},z01ExactFunc[xx,yy,0][[3]]]}
+
+Print["computing exact symbolic expression for z01 expectation"]
+theExp=(Expectation[Private`z01ExactFunc[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0,sigma$u/.lucaSubs]])//FullSimplify
+
+z01ExactExpFunc=Function @@ 
+{{qtm1,rutm1},theExp//FullSimplify}
+
+z01ExactInitRE={
+Function[{xx,yy},z01ExactExpFunc[xx,yy][[1]]],
+Function[{xx,yy},z01ExactExpFunc[xx,yy][[2]]],
+Function[{xx,yy},z01ExactExpFunc[xx,yy][[3]]]}
+
 
 
 
@@ -427,7 +450,7 @@ fpForInitStateFunc[-.4,.1,0]
 
 
 numPts=5
-Timing[doNow01= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,fixZ01]]]
+Timing[doNow01= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,z01ExactInitPF]]]
 Timing[nxt01=makeInterpFuncPF[doNow01,1,numPts,{-.4,.4},{-.1,.1}]]
 
 notnxt01=nxt01[[{1,2,4,4}]]
@@ -446,23 +469,23 @@ notnxt02[[1]][0,0,0]
 
 
 
-NestList[iterPF[1,3,#]&,Private`fixZ01,3]
-FixedPointList[iterPF[1,3,#]&,Private`fixZ01,50,SameTest->(
+NestList[iterPF[1,3,#]&,Private`z01ExactInitPF,3]
+FixedPointList[iterPF[1,3,#]&,Private`z01ExactInitPF,50,SameTest->(
 With[{chk={#1[[1]][-.4,-.1],#2[[1]][-.4,-.1]}},Print["cmp q val",chk,chk[[1]]-chk[[2]]];chk[[1]]==chk[[2]]]&)]
 
-NestList[iterRE[1,3,#]&,Private`fixZ01,3]
-FixedPointList[iterPF[1,3,#]&,Private`fixZ01,50,SameTest->(
+NestList[iterRE[1,3,#]&,Private`z01ExactInitRE,3]
+FixedPointList[iterPF[1,3,#]&,Private`z01ExactInitPF,50,SameTest->(
 With[{chk={#1[[1]][-.4,-.1],#2[[1]][-.4,-.1]}},Print["cmp q val",chk,chk[[1]]-chk[[2]]];chk[[1]]==chk[[2]]]&)]
 
 
 numPts=2
-Timing[doNow01PF= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,Private`fixZ01]]]
+Timing[doNow01PF= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,Private`z01ExactInitPF]]]
 Timing[nxt01PF=makeInterpFuncPF[doNow01PF,1,numPts,{-.4,.4},{-.1,.1}]]
 
 
 
 numPts=2
-Timing[doNow01RE= Function[{xx,yy,zz,qq},fpForInitStateFunc[xx,yy,zz,Private`fixZ01,qq]]]
+Timing[doNow01RE= Function[{xx,yy,zz,qq},fpForInitStateFunc[xx,yy,zz,Private`z01ExactInitRE,qq]]]
 Timing[nxt01RE=makeInterpFuncRE[doNow01RE,1,numPts,{-.4,.4},{-.1,.1}]]
 
 
