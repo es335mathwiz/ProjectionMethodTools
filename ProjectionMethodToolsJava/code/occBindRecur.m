@@ -3,11 +3,16 @@ PrependTo[$Path,"../../../mathAMA/NumericAMA"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 Print["reading occBindRecur.m"]
 BeginPackage["occBindRecur`",{"ProtectedSymbols`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`"}]
+simPFPath::usage="simPFPath[nn_Integer,qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]"
+getNextPt::usage="getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]"
 iterPF::usage="iterPF[iorder,numpts,zFuncsNow_List]"
 iterRE::usage="iterRE[iorder,numpts,zFuncsNow_List]"
 aPath::usage="aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]"  
 hmatApp::usage="hmatApp[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,zFuncs_List]"
 infNorm::usage="infNorm[func_]"
+assessLatestPF::usage="assessLatestPF[zFuncs_List]"
+z01ExactInitRE::usage="exact ratex for one period"
+z01ExactInitPF::usage="exact perfect foresight for one period"
 
 
 
@@ -17,8 +22,13 @@ fpForInitStateFunc::usage="fpForInitVecFunc[qVal,ruVal,epsVal,theCompSlackSysFun
 makeInterpFuncPF::usage="makeInterpFunc";
 makeInterpFuncRE::usage="makeInterpFunc";
 numericLinearizeSystemForOBC::usage="numericLinearizeSystemForOBC[eqns_List]"
-nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]"
+nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ]"
 redoFPart::usage="redoFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,horizon_Integer,numCon_Integer]"
+forIOrdNPtsPF::usage="forIOrdNPtsPF[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]"
+forIOrdNPtsRE::usage="forIOrdNPtsRE[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]"
+doChkLoad::usage="doChkLoad[]"
+
+
 lucaEqns::usage="simple model equations"
 lucaSubs::usage="typical simple model parameters"
 
@@ -73,6 +83,26 @@ Off[InterpolatingFunction::dmval];
 
 numIt[xx_]:=xx//.lucaSubs//myN//Expand//Chop 
  
+forIOrdNPtsPF[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]:=
+NestList[Timing[iterPF[iOrd,nPts,#[[2]]]]&,{{},start},maxLen];
+
+forIOrdNPtsRE[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]:=
+NestList[Timing[iterRE[iOrd,nPts,#[[2]]]]&,{{},start},maxLen];
+doChkLoad[]:=
+Module[{},
+Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"];
+Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"];
+Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"];
+{numProcs,loadAvg,freeMem}//ToString//ToExpression]
+
+
+assessLatestPF[zFuncs_List]:=
+With[{delFunc=
+Function[{xx,yy,zz},With[{fir=fpForInitStateFunc[xx,yy,zz,zFuncs[[-1]],1],
+sec=fpForInitStateFunc[xx,yy,zz,zFuncs[[-2]],1]},
+fir-sec]]},
+delFunc]
+
 
 
 genCompSlackSysFunc[pathLen_Integer]:=
@@ -245,35 +275,83 @@ Table[ii,{ii,xLow,xHigh,N[xHigh-xLow]/iPts}]
 
 iterPF[iOrder_Integer,numPts_Integer,zFuncsNow_List]:=With[
 {fpSolnFunc=Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncsNow]]},
-makeInterpFuncPF[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
-And[iOrder>0,numPts>1]
+makeInterpFuncPF[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.08,.08}]]/;
+And[iOrder>=0,numPts>=iOrder]
 
 iterRE[iOrder_Integer,numPts_Integer,zFuncsNow_List]:=With[
 {fpSolnFunc=Function[{xx,yy,zz,pos},
 fpForInitStateFunc[xx,yy,zz,zFuncsNow,pos]]},
-makeInterpFuncRE[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.1,.1}]]/;
-And[iOrder>0,numPts>1]
+makeInterpFuncRE[fpSolnFunc,iOrder,numPts,{-.4,.4},{-.08,.08}]]/;
+And[iOrder>=0,numPts>=iOrder]
+
+
+simPFPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
+With[{nn=Length[zFuncs]-1},
+With[{firPt=getNextPt[qtm1Arg,rutm1Arg,epsArg,zFuncs[[-1,-1]]]},
+With[{theVals=
+NestList[{getNextPt[#[[1,1,1]],#[[1,3,1]],0,#1[[2,-1,-1]]],
+Drop[#[[2]],-1]}&,{firPt,Drop[zFuncs,-1]},nn-1]},
+Flatten[First/@theVals,1]]]]
+
+
+simPFPath[nn_Integer,qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
+With[{firPt=getNextPt[qtm1Arg,rutm1Arg,epsArg,zFuncs[[-1,-1]]]},
+With[{theVals=
+NestList[{getNextPt[#[[1,1,1]],#[[1,3,1]],0,#1[[2,-1,-1]]],
+Drop[#[[2]],-1]}&,{firPt,Drop[zFuncs,-1]},nn-1]},
+First/@theVals]]
 
 
 
+
+simPFPath[nn_Integer,qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ]:=
+With[{firPt=getNextPt[qtm1Arg,rutm1Arg,epsArg,noCnstrnGuessFuncs]},
+With[{theVals=
+NestList[getNextPt[#[[1,1]],#[[3,1]],0,noCnstrnGuessFuncs]&,firPt,nn-1]},
+Flatten[theVals,1]]]
+
+
+getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
+aPath[qtm1Arg,rutm1Arg,epsArg,zFuncs][[Range[3]+3]]
+(*
 
 aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=  
-With[{pathLen=Length[zFuncs]-2},
+With[{thePathVals=
+Drop[Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
+With[{pathLen=Length[thePathVals]},
 With[{tp=genPath[pathLen,1]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{zLeft=(Drop[theZs,-0]),
-zFuncsApps=Through[Drop[zFuncs,2][qtm1Arg,rutm1Arg]]},
-With[{zAssn=Thread[zLeft->zFuncsApps]},
+With[{zLeft=(Drop[theZs,-0])},
+With[{zAssn=Thread[zLeft->thePathVals]},
+(*
+Print["tp,theZs,zLeft,thePathVals,zAssn",{tp,theZs,zLeft,thePathVals,zAssn}];*)
 tp/.zAssn
-]]]]
+]]]]]
+*)
 
-
+aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List,pad_Integer:0]:=  
+With[{thePathVals=
+Drop[Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
+With[{pathLen=Length[thePathVals]},
+With[{tp=genPath[pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+theZs=Flatten[genZVars[pathLen-1,1]]},
+With[{zLeft=(Drop[theZs,-0])},
+With[{zAssn=Thread[zLeft->thePathVals]},
+(*
+Print["tp,theZs,zLeft,thePathVals,zAssn",{tp,theZs,zLeft,thePathVals,zAssn}];*)
+tp/.zAssn
+]]]]]
 
 
 hmatApp[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,zFuncs_List]:=
 With[{tp=aPath[qtm1,rutm1,eps,zFuncs]},
-With[{hApps=hmat.tp[[Range[9]+3*#]]&/@Range[0,(Length[tp]/3)-3]},
-Join@ hApps//Chop]]
+With[{tpPers=Length[tp]/3},
+With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
+},
+With[{hApps=hmat.tp[[Range[9]+3*#]]&/@Range[0,(tpPers)-3]},
+Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]]
 
 
 nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
@@ -342,10 +420,10 @@ Print["defining luca model equations along with hmat, qmat, bmat, phimat and fma
 
 
 lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
-   rUnderBar -> 0*2/100, qLow -> -.5, qHigh -> .5, 
+   rUnderBar -> 2/100, qLow -> -.5, qHigh -> .5, 
    ruLow -> -4*sigma$u/(1 - rho$ru), 
    ruHigh ->  4*sigma$u/(1 - rho$ru), integOrder -> {20}, 
-   sigma$u -> 0.01, theMean -> {0}, rho$ru -> 0.5, adj -> 1,rstar->3/100};
+   sigma$u -> 0.01, theMean -> {0}, rho$ru -> 0.5, adj -> 1,rstar->0*3/100};
 
    (*modParams = {betap, phip, rhop, rho$ru, sigmap} //. lucaSubs // N;*)
    modParams = {rUnderBar} //. lucaSubs // N;
@@ -370,20 +448,21 @@ Protect[hmat,qmat,bmat,phimat,fmat,psiz,psieps,psic];
 
 aPath01=genPath[1]
 try01={
-(aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
-(aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
+(aPath01[[5,1]]>=(rUnderBar/.lucaSubs)&&zzz$0$1[t]==0)||
+(aPath01[[5,1]]==(rUnderBar/.lucaSubs)&&zzz$0$1[t]>=0)
 }
 
 slv01=(Solve[try01,{zzz$0$1[t]},Reals])//FullSimplify//Chop
 zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
 
 
-zzz$0$1Func=Function[{qtm1, rutm1, eps}, 
- Piecewise[{{0, eps + 0.433733789322437*qtm1 + 0.5000000000000001*rutm1 > 
-     0.03239935157289748}, {0.0430556167081694 - 1.3289036544850497*eps - 
-     0.5763904177042353*qtm1 - 0.664451827242525*rutm1, 
-    eps + 0.433733789322437*qtm1 + 0.5000000000000001*rutm1 < 
-     0.03239935157289748}}, 0]]
+
+
+noCnstrnGuessFuncs={
+Function[{xx,yy},noCnstrnGuess[xx,yy][[1]]],
+Function[{xx,yy},noCnstrnGuess[xx,yy][[2]]],
+Function[{xx,yy},0]}
+
 
 
 z01ExactFunc=Function @@ {{qtm1,rutm1,eps},
@@ -397,7 +476,7 @@ Function[{xx,yy},z01ExactFunc[xx,yy,0][[2]]],
 Function[{xx,yy},z01ExactFunc[xx,yy,0][[3]]]}
 
 Print["computing exact symbolic expression for z01 expectation"]
-theExp=(Expectation[Private`z01ExactFunc[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0,sigma$u/.lucaSubs]])//FullSimplify
+theExp=(Expectation[z01ExactFunc[qtm1,rutm1,eps],eps \[Distributed] NormalDistribution[0,sigma$u/.lucaSubs]])//FullSimplify
 
 z01ExactExpFunc=Function @@ 
 {{qtm1,rutm1},theExp//FullSimplify}
@@ -410,20 +489,31 @@ Function[{xx,yy},z01ExactExpFunc[xx,yy][[3]]]}
 
 
 
+(*always used with epsVal=0*)
 noCnstrnGuess= With[{linPFSys=
-Flatten[bmat . {{qVal},{0},{ruVal}}+psieps.{{0}}]},
+Flatten[bmat . {{qVal},{0},{ruVal}}+phimat . (psieps *0+psic)]},
 {Function @@ {{qVal,ruVal},linPFSys[[1]]},Function @@ {{qVal,ruVal},linPFSys[[2]]}}]
 
 
 
 infNorm[func_]:=
-NMaximize @@ 
-{{func[qq,ru,ep],
+NMaximize[
+{Norm[func[qq,ru,ep],Infinity],
 (((qLow<=qq<=qHigh)//.lucaSubs)//N)&&
 (((ruLow<=ru<=ruHigh)//.lucaSubs)//N)&&
-(((-2*sigma$u<=ep<=2*sigma$u)//.lucaSubs)//N)
-},
-{qq,ru,ep},Method->{"RandomSearch","SearchPoints"->50}}
+(((-2*sigma$u<=ep<=2*sigma$u)//.lucaSubs)//N)},
+{qq,ru,ep},StepMonitor:>Print["step",{{qq,ru,ep},func[qq,ru,ep],Abs[func[qq,ru,ep]]}],EvaluationMonitor:>Print[{{qq,ru,ep},func[qq,ru,ep],Abs[func[qq,ru,ep]]}],Method->{"RandomSearch","SearchPoints"->50}]
+Print["interp defs"]
+
+
+
+pNorm[func_,pval_]:=
+NMaximize[
+{Norm[func[qq,ru,ep],p],
+(((qLow<=qq<=qHigh)//.lucaSubs)//N)&&
+(((ruLow<=ru<=ruHigh)//.lucaSubs)//N)&&
+(((-2*sigma$u<=ep<=2*sigma$u)//.lucaSubs)//N)},
+{qq,ru,ep}(*,StepMonitor:>Print["step",{{qq,ru,ep},func[qq,ru,ep],Abs[func[qq,ru,ep]]}],EvaluationMonitor:>Print[{{qq,ru,ep},func[qq,ru,ep],Abs[func[qq,ru,ep]]}]*),Method->{"RandomSearch","SearchPoints"->50}]
 Print["interp defs"]
 
 
@@ -469,24 +559,33 @@ notnxt02[[1]][0,0,0]
 
 
 
-NestList[iterPF[1,3,#]&,Private`z01ExactInitPF,3]
-FixedPointList[iterPF[1,3,#]&,Private`z01ExactInitPF,50,SameTest->(
+NestList[iterPF[1,3,#]&,z01ExactInitPF,3]
+FixedPointList[iterPF[1,3,#]&,z01ExactInitPF,50,SameTest->(
 With[{chk={#1[[1]][-.4,-.1],#2[[1]][-.4,-.1]}},Print["cmp q val",chk,chk[[1]]-chk[[2]]];chk[[1]]==chk[[2]]]&)]
 
-NestList[iterRE[1,3,#]&,Private`z01ExactInitRE,3]
-FixedPointList[iterPF[1,3,#]&,Private`z01ExactInitPF,50,SameTest->(
+NestList[iterRE[1,3,#]&,z01ExactInitRE,3]
+FixedPointList[iterPF[1,3,#]&,z01ExactInitPF,50,SameTest->(
 With[{chk={#1[[1]][-.4,-.1],#2[[1]][-.4,-.1]}},Print["cmp q val",chk,chk[[1]]-chk[[2]]];chk[[1]]==chk[[2]]]&)]
 
 
 numPts=2
-Timing[doNow01PF= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,Private`z01ExactInitPF]]]
+Timing[doNow01PF= Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,z01ExactInitPF]]]
 Timing[nxt01PF=makeInterpFuncPF[doNow01PF,1,numPts,{-.4,.4},{-.1,.1}]]
 
 
 
 numPts=2
-Timing[doNow01RE= Function[{xx,yy,zz,qq},fpForInitStateFunc[xx,yy,zz,Private`z01ExactInitRE,qq]]]
+Timing[doNow01RE= Function[{xx,yy,zz,qq},fpForInitStateFunc[xx,yy,zz,z01ExactInitRE,qq]]]
 Timing[nxt01RE=makeInterpFuncRE[doNow01RE,1,numPts,{-.4,.4},{-.1,.1}]]
+
+numPts=2
+
+do03=NestList[iterPF[1,3,#]&,{},3]
+do03[[3,-1]]
+do03[[2]]
+better={do03[[3,{1,2}]],do03[[3,{3}]]]
+
+
 
 
 

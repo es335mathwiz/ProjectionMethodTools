@@ -1,11 +1,11 @@
-BeginPackage["symb01ValsRec`",{"labDocPrep`","ProjectionInterface`"}]
+BeginPackage["symb01ValsRec`",{"occBindRecur`","ProjectionInterface`"}]
 Print["reading symb01ValsRec package"]
 
 (*compute z0 for time zero constraint only *)
 
 Print["for one"]
 
-aPath01ValsRec=genPath[1]
+aPath01ValsRec=Private`genPath[1]
 
 try01ValsRec={
 (aPath01ValsRec[[5,1]]>=2/100&&Global`zzz$0$1[Global`t]==0)||

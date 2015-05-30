@@ -1,9 +1,9 @@
-BeginPackage["symb01`",{"occBindRecur`","ProtectedSymbols`","ProjectionInterface`"}]
+BeginPackage["symb01`",{"ProtectedSymbols`","occBindRecur`","ProjectionInterface`"}]
 Print["reading symb01 package"]
 (*compute z0 for time zero constraint only *)
 Print["for one"]
 Print["generate a path of minimal length to impose constraint one period"]
-aPath01=genPath[1]
+aPath01=Private`genPath[1]
 try01={
 (aPath01[[5,1]]>=0.02&&zzz$0$1[t]==0)||
 (aPath01[[5,1]]==0.02&&zzz$0$1[t]>=0)
@@ -23,7 +23,7 @@ Export["red01A.pdf",red01[[1,1]]]
 Export["red01B.pdf",red01[[1,2]]]
 Export["red01C.pdf",red01[[2]]]
 
-hmatApp01NotFunc=hmat .(aPath01Ext=genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
+hmatApp01NotFunc=hmat .(aPath01Ext=Private`genPath[1,1]/.zzz$0$1[t]->zzz$0$1Func[qtm1,rutm1,eps]//FullSimplify//Chop)//FullSimplify//Chop
 Export["prettyhmatApp01.pdf",MatrixForm[hmatApp01NotFunc//.latexSubs/.morePaperSubs]]
 Export["prettyPath01.pdf",MatrixForm[aPath01Ext//.latexSubs/.morePaperSubs]]
 
