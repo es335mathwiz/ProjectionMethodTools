@@ -124,7 +124,20 @@ Out[25]= {{-0.4}, {rtm1}, {-0.02}, {-0.489917}, {0.02}, {-0.02}, {-0.504884},
 huh10$02=forIOrdNPtsPF[1,10,{},2]
 fpForInitStateFunc[-.4,0,0,huh10$02[[-1,-1]]]
 
-*)
+iterateDR::usage="iterateDR[drFunc_Function,initVec:{initQ_?NumberQ,initRu_?NumberQ,initEps_?NumberQ},numPers_Integer,stdev_?NumberQ]"
+
+
+
+whole=Table[genFinalPF[1,4,z01ExactInitPF,ii],{ii,5,10}]
+try=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,whole[[-1,-1]]][[3+Range[3]]]]]
+iterateDR[try,{-.4,0,0},2,sigma$u//.lucaSubs]
+
+
+wholeRE=Table[genFinalRE[1,4,z01ExactInitPF,ii],{ii,5,10}]
+try=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,whole[[-1,-1]]][[3+Range[3]]]]]
+iterateDR[try,{-.4,0,0},2,sigma$u//.lucaSubs]
 
 
 notassessPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
@@ -138,11 +151,11 @@ iOrd,nPts,
 ({qLow,qHigh}//.lucaSubs)//N,
 ({ruLow,ruHigh}//.lucaSubs)//N,
 ({-2*sigma$u,2*sigma$u}//.lucaSubs)//N]},
-{zFuncs,preInterpFunc}]]]]
+{zFuncs,preInterpFunc,interpFuncFinal}]]]]
 
 
 
-
+*)
 
 
 

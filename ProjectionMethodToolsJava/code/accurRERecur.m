@@ -6,21 +6,19 @@
 <*symb02ValsRecFirstSecs*>\endnote{Interpolation Time=<*interpTime02ValsRec*>(order=<*theOrd*>,points=<*thePts*>)}&<*symb02ValsRecSecondSecs*>\endnote{<*DateString[]*> Running <*experFile*>: on <*{$System,$ProcessorType}*>,
 num procs=<*numProcs*>, loadAvg=<*loadAvg*>, freeMem=<*freeMem*>.}
 *)
-BeginPackage["accurPFRecur`",{"occBindRecur`"}]
+BeginPackage["accurRERecur`",{"occBindRecur`","ProtectedSymbols`"}]
 
 
 
 
-thePFMaxOrder=2;
-thePFMinOrder=0;
-thePFMinPts=3;
-thePFMaxPts=4;
-thePFPeriods=2;
-
-preCompPF=doChkLoad[];
-compsPFNull=Table[assessPF[ii,jj,{},thePFPeriods],{ii,thePFMinOrder,thePFMaxOrder},{jj,ii+1,thePFMaxPts}];
-postCompPF=doChkLoad[];
-Save["accurPFRecur"<>ToString[AbsoluteTime[]//Floor//InputForm]<>".m","accurPFRecur`"]
-
+theREMaxOrder=2;
+theREMinOrder=0;
+theREMinPts=3;
+theREMaxPts=4;
+theREPeriods=2;
+preCompRE=doChkLoad[];
+compsRENull=Table[assessRE[ii,jj,{},theREPeriods],{ii,theREMinOrder,theREMaxOrder},{jj,ii+1,theREMaxPts}];
+postCompRE=doChkLoad[];
+Save["accurRERecur"<>ToString[AbsoluteTime[]//Floor//InputForm]<>".m","accurRERecur`"]
 
 EndPackage[]
