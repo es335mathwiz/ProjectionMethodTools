@@ -128,16 +128,17 @@ iterateDR::usage="iterateDR[drFunc_Function,initVec:{initQ_?NumberQ,initRu_?Numb
 
 
 
-whole=Table[genFinalPF[1,4,z01ExactInitPF,ii],{ii,5,10}]
-try=Function[{qq,ru,eps},
+whole=Table[genFinalPF[1,10,z01ExactInitPF,ii],{ii,1,2}]
+trypf=Function[{qq,ru,eps},
 Flatten[aPathFinal[qq,ru,eps,whole[[-1,-1]]][[3+Range[3]]]]]
-iterateDR[try,{-.4,0,0},2,sigma$u//.lucaSubs]
+{tmpf,tsdpf}=iterateDR[trypf,{-.4,0,0},sigma$u//.lucaSubs,2,40]
+hmat . tmpf[[Range[9]]]  -psic//numIt
 
-
-wholeRE=Table[genFinalRE[1,4,z01ExactInitPF,ii],{ii,5,10}]
-try=Function[{qq,ru,eps},
-Flatten[aPathFinal[qq,ru,eps,whole[[-1,-1]]][[3+Range[3]]]]]
-iterateDR[try,{-.4,0,0},2,sigma$u//.lucaSubs]
+wholeRE=Table[genFinalRE[1,10,z01ExactInitRE,ii],{ii,1,2}]
+tryre=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,wholeRE[[-1,-1]]][[3+Range[3]]]]]
+{tmre,tsdre}=iterateDR[tryre,{-.4,0,0},sigma$u//.lucaSubs,2,40]
+hmat . tmre[[Range[9]]]  -psic//numIt
 
 
 notassessPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
@@ -180,6 +181,24 @@ hmatAppFinal[-.4,-.020,-.01,donow]
 smallestRVal[donow]
 assessPF[1,4,z01ExactInitPF]
 
+
+
+wholeRE=Table[genFinalRE[1,10,{},ii],{ii,1,2}]
+tryre=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,wholeRE[[-1,-1]]][[3+Range[3]]]]]
+{tmre,tsdre}=iterateDR[tryre,{-.4,0,0},2,sigma$u//.lucaSubs]
+
+
+
+wholePF=Table[genFinalPF[1,10,{},ii],{ii,1,2}]
+tryre=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,wholePF[[-1,-1]]][[3+Range[3]]]]]
+{tmpf,tsdpf}=iterateDR[tryre,{-.4,0,0},2,sigma$u//.lucaSubs]
+
+
+hmat . tmpf[[Range[9]]]  -psic//numIt
+
+hmat . tmre[[Range[9]]]  -psic//numIt
 
 
 *)

@@ -283,9 +283,10 @@ Method -> {"NIntegrate",{MinRecursion->1,MaxRecursion->2,AccuracyGoal->2}},
 
 myExpect[aFunc:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
 zFuncs_List,pos_Integer]*_,aVar_]:=
+Module[{},Print["myExpect:",{aFunc,aVar}//InputForm];
 NIntegrate @@ ({aFunc,{aVar,-4*sigma$u,4*sigma$u},
 AccuracyGoal -> 2, Compiled -> Automatic,
-  PrecisionGoal -> 2, WorkingPrecision -> 2}/.lucaSubs)
+  PrecisionGoal -> 2, WorkingPrecision -> 2}/.lucaSubs)]
 
 
 
@@ -664,7 +665,7 @@ assessPF[interpFuncFinal_List]:=
 {smallestRVal[interpFuncFinal],infNormFinal[interpFuncFinal]}
 
 
-
+(*
 genFinalPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
 With[{zFuncs=forIOrdNPtsPF[iOrd,nPts,initFuncs,iters]},
 With[{preInterpFunc=
@@ -677,9 +678,11 @@ iOrd,nPts,
 ({ruLow,ruHigh}//.lucaSubs)//N,
 ({-2*sigma$u,2*sigma$u}//.lucaSubs)//N]},
 {{iOrd,nPts},{},zFuncs,interpFuncFinal}]]]]
-
-trythis[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
+*)
+genFinalPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
 genFinalWorker[forIOrdNPtsPF,iOrd,nPts,initFuncs,iters]
+genFinalRE[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
+genFinalWorker[forIOrdNPtsRE,iOrd,nPts,initFuncs,iters]
 
 
 genFinalWorker[forIOrdNPtsFunc_,
@@ -720,11 +723,16 @@ With[{firVal=drFunc @@ initVec},
 With[{allReps=
 Table[
 NestList[drFunc @@ {#[[1]],#[[3]],RandomVariate[NormalDistribution[0,stdev]]}&,firVal,numPers-1],{reps}]},
-With[{theMean=Mean[allReps]},
-If[reps==1,theMean,{theMean,StandardDeviation[allReps]}]]]]/;
+With[{theMean=prepMeansForHApp[Mean[allReps],initVec]},
+If[reps==1,theMean,
+{theMean,prepStdDevsForHApp[StandardDeviation[allReps]]}]]]]/;
 And[reps>0,numPers>0]
 
+prepMeansForHApp[theMeans_List,initVec_List]:=
+Join[Transpose[{initVec}],Transpose[{Flatten[theMeans,1]}]]
 
+prepStdDevsForHApp[theStdDevs_List]:=
+Join[Transpose[{{0,0,0}}],Transpose[{Flatten[theStdDevs,1]}]]
 
 (*
 
