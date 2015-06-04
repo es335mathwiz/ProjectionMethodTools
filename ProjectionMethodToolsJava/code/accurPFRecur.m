@@ -14,13 +14,17 @@ BeginPackage["accurPFRecur`",{"occBindRecur`"}]
 thePFMaxOrder=2;
 thePFMinOrder=0;
 thePFMinPts=3;
-thePFMaxPts=4;
-thePFPeriods=2;
+thePFMaxPts=10;
+thePFPeriods=10;
 
 preCompPF=doChkLoad[];
-compsPFNull=Table[assessPF[ii,jj,{},thePFPeriods],{ii,thePFMinOrder,thePFMaxOrder},{jj,ii+1,thePFMaxPts}];
+compsPFNull=Table[assessPF[genFinalPF[ii,jj,{},thePFPeriods]],{ii,thePFMinOrder,thePFMaxOrder},{jj,ii+1,thePFMaxPts}];
 postCompPF=doChkLoad[];
 Save["accurPFRecur"<>ToString[AbsoluteTime[]//Floor//InputForm]<>".m","accurPFRecur`"]
 
 
 EndPackage[]
+SendMail["From"->"gary.anderson@frb.gov","To"->"asymptoticallystable@gmail.com","Server"->"mail.rsma.frb.gov", "Body"->"accurPFRecur.m done"]
+(*
+ using port 25
+*)

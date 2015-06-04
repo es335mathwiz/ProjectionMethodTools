@@ -1,30 +1,36 @@
+BeginPackage["timePFRERecur`",{"occBindRecur`"}]
+
 (*
 %<*Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"]*>
 %<*Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"]*>
 %<*Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"]*>
-%<*experFile=symb02ValsRec.m*>
-<*symb02ValsRecFirstSecs*>\endnote{Interpolation Time=<*interpTime02ValsRec*>(order=<*Global`theOrd*>,points=<*Global`thePts*>)}&<*symb02ValsRecSecondSecs*>\endnote{<*DateString[]*> Running <*experFile*>: on <*{$System,$ProcessorType}*>,
-num procs=<*numProcs*>, loadAvg=<*loadAvg*>, freeMem=<*freeMem*>.}
 *)
-BeginPackage["timePFRERecur`",{"occBindRecur`"}]
+theMinNesting=1;
+theMaxNesting=2;
+theMinOrder=1;
+theMaxOrder=2;
+theMaxPts=2;
+indices=Flatten[Table[{ii+(1-theMinOrder),jj+(1-Max[1,ii]),kk+(1-theMinNesting)},{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}],2];
 
 
 
-theMaxNesting=25;
-theMaxOrder=4;
-theMaxPts=20;
+
 
 preComp01=doChkLoad[]
-compsPFNull=Table[forIOrdNPtsPF[ii,jj,{},theMaxNesting],{ii,0,theMaxOrder},{jj,ii,theMaxPts}];
-(*
+compsPFNull=Table[Timing[{{ii,jj,kk},genFinalPF[ii,jj,{},kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}];
 preComp02=doChkLoad[]
-compsRENull=Table[forIOrdNPtsRE[ii,jj,{},theMaxNesting],{ii,0,theMaxOrder},{jj,ii,theMaxPts}];
+compsRENull=Table[Timing[{{ii,jj,kk},genFinalRE[ii,jj,{},kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}];
 preComp03=doChkLoad[]
-compsPFExact=Table[forIOrdNPtsPF[ii,jj,z01ExactInitPF,theMaxNesting],{ii,0,theMaxOrder},{jj,ii,theMaxPts}];
+compsPFExact=Table[Timing[{{ii,jj,kk},genFinalPF[ii,jj,z01ExactInitPF,kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,Max[1,ii]],theMaxPts},{kk,theMinNesting,theMaxNesting}];
 preComp04=doChkLoad[]
-compsREExact=Table[forIOrdNPtsRE[ii,jj,z01ExactInitRE,theMaxNesting],{ii,0,theMaxOrder},{jj,ii,theMaxPts}];
+compsREExact=Table[Timing[{{ii,jj,kk},genFinalRE[ii,jj,z01ExactInitRE,kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,Max[1,ii]],theMaxPts},{kk,theMinNesting,theMaxNesting}];
 preComp05=doChkLoad[]
-*)
-Save["timePFRERecur"<>ToString[AbsoluteTime[]//Floor//InputForm]<>".m","timePFRERecur`"]
 
+
+Save["timePFRERecur"<>(timeStamp=ToString[AbsoluteTime[]//Floor//InputForm])<>".m","timePFRERecur`"]
+doCSVExport[theVals_List,fName_String,tStamp_String]:=
+Export[fName<>tStamp<>".csv",Flatten[{#[[2,1]],#[[1]]}]&/@ Flatten[theVals,2]]
+
+
+experFile="timePFRERecur.m "<>timeStamp<> " on "<> $System <>$ProcessorType;
 EndPackage[]

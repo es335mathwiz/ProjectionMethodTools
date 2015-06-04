@@ -186,14 +186,14 @@ assessPF[1,4,z01ExactInitPF]
 wholeRE=Table[genFinalRE[1,10,{},ii],{ii,1,2}]
 tryre=Function[{qq,ru,eps},
 Flatten[aPathFinal[qq,ru,eps,wholeRE[[-1,-1]]][[3+Range[3]]]]]
-{tmre,tsdre}=iterateDR[tryre,{-.4,0,0},2,sigma$u//.lucaSubs]
+{tmre,tsdre}=iterateDR[tryre,{-.4,0,0},sigma$u//.lucaSubs,2,20]
 
 
 
 wholePF=Table[genFinalPF[1,10,{},ii],{ii,1,2}]
 tryre=Function[{qq,ru,eps},
 Flatten[aPathFinal[qq,ru,eps,wholePF[[-1,-1]]][[3+Range[3]]]]]
-{tmpf,tsdpf}=iterateDR[tryre,{-.4,0,0},2,sigma$u//.lucaSubs]
+{tmpf,tsdpf}=iterateDR[tryre,{-.4,0,0},sigma$u//.lucaSubs,2,20]
 
 
 hmat . tmpf[[Range[9]]]  -psic//numIt
@@ -201,4 +201,129 @@ hmat . tmpf[[Range[9]]]  -psic//numIt
 hmat . tmre[[Range[9]]]  -psic//numIt
 
 
+
+
+
+Through[z01ExactInitPF[-.4,.1]] == Through[finRE[-.4,.1,0]]==Through[finPF[-.4,.1,0]]
+Through[finRE[-.4,.1,-.01]]==Through[finPF[-.4,.1,-.01]]
+
+Through[z01ExactInitPF[0,.1]] == Through[finRE[0,.1,0]]==Through[finPF[0,.1,0]]
+Through[finRE[0,.1,-.01]]==Through[finPF[0,.1,-.01]]
+
+
+
+
+tryPF=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finPF][[3+Range[3]]]]]
+{tmPF,tsdPF}=iterateDR[tryPF,{0,0,0},sigma$u//.lucaSubs,7,200];
+
+
+tryRE=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finRE][[3+Range[3]]]]]
+{tmRE,tsdRE}=iterateDR[tryRE,{0,0,0},sigma$u//.lucaSubs,7,200];
+
+
+hmat . aPathFinal[0,0,0,finPF][[Range[9]]] - psic//numIt
+
+hmat . tmRE[[Range[9]]]  -psic//numIt
+hmat . tmPF[[Range[9]]]  -psic//numIt
+
+
+
+hmatAppGeneric[tmRE,eps]
+
+hmatAppGeneric[tmPF,eps]
+
+aPathFinal[qq,ru,eps,finPF][[3+Range[3]]
+
+
+
+tmPF1=iterateDR[tryPF,{0,0,0},sigma$u//.lucaSubs,1];
+tmRE1=iterateDR[tryRE,{0,0,0},sigma$u//.lucaSubs,1];
+
+
+Private`z01ExactFunc[0.00406726,0.015,0] == Through[z01ExactInitPF[0.00406726,0.015]]
+
+
+{ig,ig,ig,finPFA}=genFinalPF[1,10,{},0];
+{ig,ig,ig,finREA}=genFinalRE[1,10,{},0];
+
+tryPFA=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finPFA][[3+Range[3]]]]];
+tryREA=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finREA][[3+Range[3]]]]];
+
+{tmPFA2,tmsdPFA2}=iterateDR[tryPFA,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryPFA@@ Flatten[#])& @ tmPFA2[[3+Range[3]]],Flatten[tmPFA2[[6+Range[3]]]]}
+{tmREA2,tmsdREA2}=iterateDR[tryREA,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryREA@@ Flatten[#])& @ tmREA2[[3+Range[3]]],Flatten[tmREA2[[6+Range[3]]]]}
+
+
+
+{ig,ig,ig,finPFB}=genFinalPF[1,10,{},1];
+{ig,ig,ig,finREB}=genFinalRE[1,10,{},1];
+
+tryPFB=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finPFB][[3+Range[3]]]]];
+tryREB=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finREB][[3+Range[3]]]]];
+
+{tmPFB2,tmsdPFB2}=iterateDR[tryPFB,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryPFB@@ Flatten[#])& @ tmPFB2[[3+Range[3]]],Flatten[tmPFB2[[6+Range[3]]]]}
+{tmREB2,tmsdREB2}=iterateDR[tryREB,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryREB@@ Flatten[#])& @ tmREB2[[3+Range[3]]],Flatten[tmREB2[[6+Range[3]]]]}
+
+
+{ig,ig,ig,finPFB}=genFinalPF[1,10,{},1];
+{ig,ig,ig,finREB}=genFinalRE[1,10,{},1];
+
+tryPFB=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finPFB][[3+Range[3]]]]];
+tryREB=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finREB][[3+Range[3]]]]];
+
+{tmPFB2,tmsdPFB2}=iterateDR[tryPFB,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryPFB@@ Flatten[#])& @ tmPFB2[[3+Range[3]]],Flatten[tmPFB2[[6+Range[3]]]]}
+{tmREB2,tmsdREB2}=iterateDR[tryREB,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryREB@@ Flatten[#])& @ tmREB2[[3+Range[3]]],Flatten[tmREB2[[6+Range[3]]]]}
+
+
+
+
+nPtsNow=10
+{ig,ig,ig,finPFC}=genFinalPF[1,nPtsNow,z01ExactInitPF,1];
+{ig,ig,ig,finREC}=genFinalRE[1,nPtsNow,z01ExactInitRE,1];
+
+tryPFC=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finPFC][[3+Range[3]]]]];
+tryREC=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finREC][[3+Range[3]]]]];
+
+{tmPFC2,tmsdPFC2}=iterateDR[tryPFC,{0,0,0},sigma$u//.lucaSubs,2,2000];
+{(tryPFC@@ Flatten[#])& @ Join[tmPFC2[[3+{1,3}]],{0}],Flatten[tmPFC2[[6+Range[3]]]]}
+{tmREC2,tmsdREC2}=iterateDR[tryREC,{0,0,0},sigma$u//.lucaSubs,2,2000];
+{(tryREC@@ Flatten[#])& @ Join[tmREC2[[3+{1,3}]],{0}],Flatten[tmREC2[[6+Range[3]]]]}
+
+
+
+
+
+(*
+{ig,ig,ig,finPF}=genFinalPF[1,10,{},1]
+{ig,ig,ig,finRE}=genFinalRE[1,10,{},1]
+
+tryPF=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finPF][[3+Range[3]]]]]
+tryRE=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finRE][[3+Range[3]]]]]
+
+{tmPF2,tmsdPF2}=iterateDR[tryPF,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryPF@@ Flatten[#])& @ tmPF2[[3+Range[3]]],Flatten[tmPF2[[6+Range[3]]]]}
+{tmRE2,tmsdPRE}=iterateDR[tryRE,{0,0,0},sigma$u//.lucaSubs,2,200];
+{(tryRE@@ Flatten[#])& @ tmRE2[[3+Range[3]]],Flatten[tmRE2[[6+Range[3]]]]}
+		  			   
 *)
+
+*)
+
+

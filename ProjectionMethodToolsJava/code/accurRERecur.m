@@ -10,15 +10,19 @@ BeginPackage["accurRERecur`",{"occBindRecur`","ProtectedSymbols`"}]
 
 
 
-
+r
 theREMaxOrder=2;
 theREMinOrder=0;
-theREMinPts=3;
-theREMaxPts=4;
+theREMinPts=4;
+theREMaxPts=10;
 theREPeriods=2;
 preCompRE=doChkLoad[];
-compsRENull=Table[assessRE[ii,jj,{},theREPeriods],{ii,theREMinOrder,theREMaxOrder},{jj,ii+1,theREMaxPts}];
+compsRENull=Table[assessRE[genFinalRE[ii,jj,{},theREPeriods]],{ii,theREMinOrder,theREMaxOrder},{jj,ii+1,theREMaxPts}];
 postCompRE=doChkLoad[];
 Save["accurRERecur"<>ToString[AbsoluteTime[]//Floor//InputForm]<>".m","accurRERecur`"]
 
 EndPackage[]
+
+
+
+SendMail["From"->"gary.anderson@frb.gov","To"->"asymptoticallystable@gmail.com","Server"->"mail.rsma.frb.gov", "Body"->"accurRERecur.m done"]

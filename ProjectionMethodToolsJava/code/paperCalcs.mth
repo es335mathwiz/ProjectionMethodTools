@@ -1,0 +1,7 @@
+Needs["occBindRecur`"]
+
+impactFuture=
+Table[Norm[(Inverse[IdentityMatrix[3]- fmat].MatrixPower[fmat,kk+1] . phimat)//numIt,Infinity],{kk,1,20}];
+
+Splice["impactFuture.mtex"]
+
