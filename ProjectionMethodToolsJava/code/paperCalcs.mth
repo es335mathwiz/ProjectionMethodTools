@@ -1,7 +1,7 @@
 Needs["occBindRecur`"]
-
+Print["fmat,evls now",({thisFmat,thisEvls}=({fmatSymb,evlsSymb}/.betap->0.01)//.lucaSubs)//InputForm];
 impactFuture=
-Table[Norm[(Inverse[IdentityMatrix[3]- fmat].MatrixPower[fmat,kk+1] . phimat)//numIt,Infinity],{kk,1,20}];
+Table[Norm[(Inverse[IdentityMatrix[3]- thisFmat].MatrixPower[thisFmat,kk+1] . phimat)//numIt,Infinity],{kk,1,20}];
 
 Splice["impactFuture.mtex"]
 

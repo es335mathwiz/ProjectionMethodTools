@@ -340,6 +340,3 @@ Cases[fourList,{#,_,_,_}]&/@theShocks]
 
 
 
-
-
-

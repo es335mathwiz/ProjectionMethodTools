@@ -1,58 +1,23 @@
-\newcommand{\timeRow}[4]{$#1$&$#2$&$#3$&$#4$\\ \hline}
-%<*idxNum=0*>
-\begin{tabular}{|c|c|r|r|}
+\newcommand{\tabHead}[1]{%table head for the first example you sent
 \hline
-\multicolumn{4}{|c|}{Rational Expectations, Null initial\footnote{Pre <*preComp03*>}\footnote{Post <*preComp04*>}\footnote{<*experFile*>}}\\
+\multicolumn{5}{|c|}{#1\footnote{Pre <*preComp*>}\footnote{Post <*preComp*>}\footnote{<*experFile*>}}\\
 \hline
-Interpolation& Interpolation&\multicolumn{1}{|c|}{\multirow{2}{*}{$path length$}}&\multicolumn{1}{|c|}{\multirow{2}{*}{$time (mSecs)$}}\\
-Order&Points&&\\
-\hline
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-%<*idxNum++;{tabRow,tabCol,tabDpth}=indices[[idxNum]]*>
-\timeRow
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
-{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
-\end{tabular}
+\multicolumn{1}{|c|}{Interpolation}&\multicolumn{1}{|c|}{Interpolation}&\multicolumn{1}{|c|}{\multirow{2}{*}{path length}}&\multicolumn{2}{|c|}{\multirow{2}{*}{time (mSecs)}}\\
+\multicolumn{1}{|c|}{Order}&\multicolumn{1}{|c|}{Points}&\multicolumn{1}{|c|}{}&\multicolumn{2}{|c|}{}\\
+\hline}
+\begin{document}
+\pgfplotstabletypeset[
+col sep=comma,header=false,
+    every head row/.style={ 
+        output empty row,
+    },
+columns/0/.style={int detect}%,
+columns/1/.style={int detect},
+columns/2/.style={int detect},
+columns/3/.style={fixed zerofill,precision=8,dec sep align={|c|},column type/.add={|}{|}},
+every row no 0/.style=
+{before row=\tabHead{<*tabHead*>}},
+column type/.add={|}{},
+every last row/.style={after row={\hline}}
+]{<*csvName*>}
+
