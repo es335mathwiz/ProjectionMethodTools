@@ -35,7 +35,7 @@ igVar=Unique[];
 (*
 {symb03RecFirstSecs,igVar}=Timing[soln03Rec=Flatten[Solve[try03RecFunc[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]];
 {symb03RecSecondSecs,igVar}=Timing[soln03Rec=Flatten[Solve[try03RecFunc[Global`qtm1,Global`rutm1,Global`eps],{Global`zzz$1$1[Global`t],Global`zzz$0$1[Global`t]},Reals]]];
-Splice["symb03RecSecs.mtex"]
+Splice["symb03RecSecsNot.mtex"]
 
 
 

@@ -1,0 +1,283 @@
+Needs["occBindRecur`"]
+
+(*impose one period*)
+
+chkPts=20;chkOrd=2;
+{ig,ig,zFuncsOne,finFuncOne}=genFinalPF[chkOrd,chkPts,{},2];
+fdrOne=genFinalDR[finFuncOne];
+
+
+(*impose one period*)
+
+{ig,ig,zFuncsOneREPF,finFuncOneREPF}=genFinalRE[chkOrd,chkPts,{},0*sigma$u//.lucaSubs,2];
+fdrOneREPF=genFinalDR[finFuncOneREPF];
+
+
+
+
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[chkOrd,chkPts,{},sigma$u//.lucaSubs,2];
+fdrOneRE=genFinalDR[finFuncOneRE];
+
+
+
+
+
+
+(*set up to solve system t and honor constraints*)
+assessPF[finFuncOne]
+
+
+(*applying decision rule leads to different solution than the expected path
+after the first period*)
+apOne=aPathFinal[-.4,0,0,finFuncOne]
+iterateOne=iterateDR[fdrOne,{-.4,0,0},sigma$u/.lucaSubs,2]
+
+toCmpOne={iterateOne[[6+Range[3]]],
+apOne[[6+Range[3]]]}
+
+
+(*a handy function for iterating the dr*)
+reArrange[{{qtm1_},{_},{rutm1_}}]:={qtm1,rutm1,0}
+
+
+
+
+(*impose two periods*)
+chkPts=20;chkOrd=2;
+{ig,ig,zFuncsTwo,finFuncTwo}=genFinalPF[chkOrd,chkPts,{},1];
+fdrTwo=genFinalDR[finFuncTwo];
+
+
+iterateTwo=iterateDR[fdrTwo,{-.4,0,0},0*sigma$u/.lucaSubs,6]
+apTwo=aPathFinal[-.4,0,0,finFuncTwo]
+(*agree for first period*)
+toCmpTwo={iterateTwo[[3+Range[3]]],
+apTwo[[3+Range[3]]]}
+(*not second*)
+toCmpTwo={iterateTwo[[6+Range[3]]],
+apTwo[[6+Range[3]]]}
+
+
+
+
+
+(*impose three periods*)
+chkPts=20;chkOrd=2;
+{ig,ig,zFuncsThree,finFuncThree}=genFinalPF[chkOrd,chkPts,{},2];
+fdrThree=genFinalDR[finFuncThree];
+
+
+iterateThree=iterateDR[fdrThree,{-.4,0,0},0*sigma$u/.lucaSubs,6]
+apThree=aPathFinal[-.4,0,0,finFuncThree]
+(*agree for first period*)
+toCmpThree={iterateThree[[3+Range[3]]],
+apThree[[3+Range[3]]]}
+(*for second*)
+toCmpThree={iterateThree[[6+Range[3]]],
+apThree[[6+Range[3]]]}
+(*not third*)
+toCmpThree={iterateThree[[9+Range[3]]],
+apThree[[9+Range[3]]]}
+
+
+
+
+
+
+(*impose four periods*)
+chkPts=20;chkOrd=2;
+{ig,ig,zFuncsFour,finFuncFour}=genFinalPF[chkOrd,chkPts,{},3];
+fdrFour=genFinalDR[finFuncFour];
+
+
+iterateFour=iterateDR[fdrFour,{-.4,0,0},0*sigma$u/.lucaSubs,6]
+apFour=aPathFinal[-.4,0,0,finFuncFour]
+(*agree for first period*)
+toCmpFour={iterateFour[[3+Range[3]]],
+apFour[[3+Range[3]]]}
+(*for second*)
+toCmpFour={iterateFour[[6+Range[3]]],
+apFour[[6+Range[3]]]}
+(*for third*)
+toCmpFour={iterateFour[[9+Range[3]]],
+apFour[[9+Range[3]]]}
+(*not fourth*)
+toCmpFour={iterateFour[[12+Range[3]]],
+apFour[[12+Range[3]]]}
+
+
+
+
+
+
+
+
+(*impose five periods*)
+chkPts=20;chkOrd=2;
+{ig,ig,zFuncsFive,finFuncFive}=genFinalPF[chkOrd,chkPts,{},7];
+fdrFive=genFinalDR[finFuncFive];
+
+
+iterateFive=iterateDR[fdrFive,{-.4,0,0},0*sigma$u/.lucaSubs,6]
+apFive=aPathFinal[-.4,0,0,finFuncFive]
+(*agree for first period*)
+toCmpFive={iterateFive[[3+Range[3]]],
+apFive[[3+Range[3]]]}
+(*for second*)
+toCmpFive={iterateFive[[6+Range[3]]],
+apFive[[6+Range[3]]]}
+(*for third*)
+toCmpFive={iterateFive[[9+Range[3]]],
+apFive[[9+Range[3]]]}
+(*not fourth*)
+toCmpFive={iterateFive[[12+Range[3]]],
+apFive[[12+Range[3]]]}
+
+
+encLen=7;
+(*impose Six periods*)
+chkPts=20;chkOrd=2;
+{ig,ig,zFuncsSix,finFuncSix}=genFinalPF[chkOrd,chkPts,{},5];
+fdrSix=genFinalDR[finFuncSix];
+
+
+iterateOne=iterateDR[fdrOne,{-.4,0,0},sigma$u/.lucaSubs,encLen]
+iterateTwo=iterateDR[fdrTwo,{-.4,0,0},0*sigma$u/.lucaSubs,encLen]
+iterateThree=iterateDR[fdrThree,{-.4,0,0},0*sigma$u/.lucaSubs,encLen]
+iterateFour=iterateDR[fdrFour,{-.4,0,0},0*sigma$u/.lucaSubs,encLen]
+iterateFive=iterateDR[fdrFive,{-.4,0,0},0*sigma$u/.lucaSubs,encLen]
+iterateSix=iterateDR[fdrSix,{-.4,0,0},0*sigma$u/.lucaSubs,encLen]
+apSix=aPathFinal[-.4,0,0,finFuncSix]
+(*agree for first period*)
+toCmpSix={iterateSix[[3+Range[3]]],
+apSix[[3+Range[3]]]}
+(*for second*)
+toCmpSix={iterateSix[[6+Range[3]]],
+apSix[[6+Range[3]]]}
+(*for third*)
+toCmpSix={iterateSix[[9+Range[3]]],
+apSix[[9+Range[3]]]}
+(*for fourth*)
+toCmpSix={iterateSix[[12+Range[3]]],
+apSix [[12+Range[3]]]}
+(*for fifth*)
+toCmpSix={iterateSix[[12+Range[3]]],
+apSix [[15+Range[3]]]}
+(*not sixth*)
+toCmpSix={iterateSix[[12+Range[3]]],
+apSix [[18+Range[3]]]}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(*must apply the dr imposing the rule for one period to get agreement*)
+drToNewPath=iterateDR[fdrOne,
+(reArrange[aPathFinal[-.4,0,0,finFuncTwo][[3+Range[3]]]]),sigma$u/.lucaSubs,2]
+
+(*try two period path from the second period*)
+aPathFinal @@  Append[reArrange[apTwo[[6+Range[3]]]],finFuncTwo]
+
+
+reDoTwo[nowFuncTwo_List]:=subEpsZero/@Drop[nowFuncTwo,{3}]
+
+subEpsZero[zFunc_InterpolatingFunction]:=
+Function[{qq,ru},zFunc[qq,ru,0]]
+
+
+zTwoBetter=reDoTwo[finFuncTwo];
+
+
+{ig,ig,moreZ,finFuncTwoBetter}=genFinalPF[chkOrd,chkPts,zTwoBetter,0]
+fdrTwoBetter=genFinalDR[finFuncTwoBetter];
+iterateTwoBetter=iterateDR[fdrTwoBetter,{-.4,0,0},0*sigma$u/.lucaSubs,encLen]
+apTwoBetter=aPathFinal[-.4,0,0,finFuncTwoBetter]
+
+
+
+zTwoBetter=reDoTwo[finFuncTwoBetter];
+
+
+
+
+
+
+
+
+
+
+
+(*impose three periods*)
+chkPts=10;chkOrd=2;
+{ig,ig,zFuncsThree,finFuncThree}=genFinalPF[chkOrd,chkPts,{},2];
+fdrThree=genFinalDR[finFuncThree];
+
+
+iterateThree=iterateDR[fdrThree,{-.4,0,0},sigma$u/.lucaSubs,4]
+apThree=aPathFinal[-.4,0,0,finFuncThree]
+(*agree for first period*)
+toCmpThree={iterateThree[[3+Range[3]]],
+apThree[[3+Range[3]]]}
+(*not second*)
+toCmpThree={iterateThree[[6+Range[3]]],
+apThree[[6+Range[3]]]}
+(*must apply the dr imposing the rule for one period to get agreement*)
+drToNewPath=iterateDR[fdrOne,
+(reArrange[aPathFinal[-.4,0,0,finFuncThree][[3+Range[3]]]]),sigma$u/.lucaSubs,2]
+
+(*try three period path from the second period*)
+aPathFinal @@  Append[reArrange[apThree[[6+Range[3]]]],finFuncThree]
+
+
+
+
+
+
+
+
+(*setup to solve first period*)
+ap=aPathFinal[-.4,0,0,onePeriodFunc]
+hmatAppFinal[-.4,0,0,onePeriodFunc]
+hmatAppGeneric[ap]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(*solves unconstrained system but violates constraints in tp1*)
+(*set up to solve system but violates constraints in tp1 and tp2*)
+apPlus=aPathFinal[-.4,0,0,onePeriodFunc,1]
+hmatAppGeneric[apPlus]

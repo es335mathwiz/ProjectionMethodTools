@@ -1,0 +1,27 @@
+\newcommand{\timeRow}[4]{$#1$&$#2$&$#3$&$#4$\\ \hline}
+
+%<*tabRow=0*>
+%<*tabCol=0*>
+%<*tabDpth=0*>
+\begin{tabular}{|c|c|r|r|}
+\hline
+Interpolation& Interpolation&\multicolumn{1}{|c|}{\multirow{2}{*}{$path length$}}&\multicolumn{1}{|c|}{\multirow{2}{*}{$time (mSecs)$}}\\
+Order&Points&&\\
+\hline
+%<*tabRow++*>
+%<*tabCol++*>
+%<*tabDpth++*>
+\timeRow
+{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
+{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
+{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
+{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
+%<*tabRow++*>
+%<*tabCol++*>
+%<*tabDpth++*>
+\timeRow
+{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,1]]*>}
+{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,2]]*>}
+{<*compsRENull[[tabRow,tabCol,tabDpth,2,1,3]]*>}
+{<*compsRENull[[tabRow,tabCol,tabDpth,1]]*>}
+\end{tabular}

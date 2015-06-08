@@ -1,2 +1,7 @@
-<*symb04ValsFirstSecs*>&<*symb04ValsSecondSecs*>
+%<*Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"]*>
+%<*Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"]*>
+%<*Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"]*>
+%<*experFile=symb04.m*>
+<*symb04ValsFirstSecs*>&<*symb04ValsSecondSecs*>\endnote{From symb04Vals.m  <*DateString[]*> Running <*experFile*>: on <*{$System,$ProcessorType}*>,
+num procs=<*numProcs*>, loadAvg=<*loadAvg*>, freeMem=<*freeMem*>.}
 

@@ -1,12 +1,14 @@
 PrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
-BeginPackage["labDocPrep`",{"ProjectionInterface`","JLink`","AMAModel`","NumericAMA`"}]
+BeginPackage["labDocPrep`",{"occBindRecur`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`"}]
 
-numericLinearizeSystemForOBC::usage="numericLinearizeSystemForOBC[eqns_List]"
-nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ]"
-redoFPart::usage="redoFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,horizon_Integer,numCon_Integer]"
-
+Needs["JLink`"]
+(*
+SetOptions[InstallJava, JVMArguments->"-Xmx32g"]
+SetOptions[ReinstallJava, JVMArguments->"-Xmx32g"]
+ReinstallJava[JVMArguments -> "-Xmx64g"];
+*)
 
 Begin["Private`"]
 nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
@@ -182,14 +184,9 @@ rr[t] - Global`eqvdIf[phip*qq[t] >= rUnderBar,rUnderBar, phip*qq[t]]]
 *)
 End[]
 EndPackage[]
-
 Print["done reading labDocPrep package context"]
+(*
 
-Print["changing MatrixPower to produce Identity Matrix for singular matrices raised to 0th power"]
-Unprotect[MatrixPower]
-MatrixPower[xx_?MatrixQ,0]:=IdentityMatrix[Length[xx]]/;
-Length[xx]===Length[xx[[1]]]
-Protect[MatrixPower]
 Global`ridUndef[xx_List]:=DeleteCases[xx,_->Undefined]
 redExport[fName_String,gObj_Graphics3D]:=Export[fName,gObj,"AllowRasterization" -> True,ImageSize -> 360, ImageResolution -> 600,PlotRange->All]
 
@@ -244,30 +241,125 @@ Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs//N]];
 
 Global`$MaxSolveTime=900;
 
+{Global`qlv,Global`qhv}={Global`qLow, Global`qHigh} //. lucaSubs//N
+{Global`rlv,Global`rhv}={Global`ruLow, Global`ruHigh} //. lucaSubs//N
+{Global`elv,Global`ehv}={-2*Global`sigma$u,2*Global`sigma$u} //. lucaSubs//N
+
 
 Print["interp defs"]
-Global`makeInterpFunc[theFunc_Function]:=
-FunctionInterpolation @@ {theFunc[Global`qq,Global`ru,Global`ep],
-{Global`qq,Global`qLow,Global`qHigh}//.Global`lucaSubs//N,
-{Global`ru,Global`ruLow,Global`ruHigh}//.Global`lucaSubs//N,
-{Global`ep,-2*Global`sigma$u,2*Global`sigma$u}//.Global`lucaSubs//N(*,
-InterpolationOrder -> 10, InterpolationPrecision -> 30, 
- AccuracyGoal -> 15, PrecisionGoal -> 15, 
- InterpolationPoints -> 100, MaxRecursion -> 25*)}
+
+
+Print["should probably get rid of the others that don't specify location"]
+
+Global`valRecN[Global`theFunc_]:=
+Function[{Global`qtm1,Global`rutm1,Global`eps},
+With[{initVals=Global`primeFunc[Global`qtm1,Global`rutm1,Global`eps],
+fixFunc=With[{fixVal=Global`theFunc[#1[[1]],#1[[2]]][Global`qtm1,Global`rutm1,Global`eps]},Sow[fixVal,"fixVal"];
+fixVal]&},Sow[initVals,"initVals="];Sow[{Global`qtm1,Global`rutm1,Global`eps},"for state="];
+With[{theVal=FixedPoint[
+fixFunc,{initVals[[1]],initVals[[2]]}]},Sow[theVal,"theVal"];theVal]]]
+
+
+
+
+
+
+
+
+Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}
+]:=Module[{},
+FunctionInterpolation@@ {
+Sow[theFunc[Global`interpqq,Global`interpru,Global`interpep]],
+{Global`interpqq,Global`qLow,Global`qHigh},
+{Global`interpru,Global`ruLow,Global`ruHigh},
+{Global`interpep,Global`epsLow,Global`epsHigh},
+InterpolationOrder ->iOrder(*default is 3*), 
+InterpolationPoints -> iPts(*default is 11*)(*, InterpolationPrecision -> 30, 
+ AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)}]/;
+With[{theRes=theFunc[0,0,0]},Print["first:theRes=",theRes];
+NumberQ[theRes]]
+
+Global`makeInterpFunc[theFunc_Function,pos_List,iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}
+]:=Module[{thePts=
+Global`gridPts[iPts,
+{Global`qLow,Global`qHigh},
+{Global`ruLow,Global`ruHigh},
+{Global`epsLow,Global`epsHigh}]},
+With[{whl={#,theFunc @@ #}& /@
+thePts},
+Sow[theFunc];
+doScalarInterp[whl,#,iOrder]&/@pos]]/;
+With[{theRes=theFunc[0,0,0]},Print["iPts:theRes=",theRes];
+NumberQ[Plus @@ theRes[[pos]]]]
+
+
+Global`makeInterpFuncPre[theFunc_Function,pos_List,
+{fns_List,evals_List,thePre_InterpolatingFunction}]:=Module[
+{thePts=First/@evals},
+With[{theFuncVals=theFunc @@ #& /@ thePts},
+With[{theSubs=Thread[fns->theFuncVals[[All,#]]]&/@pos},
+With[{theSubbed=(thePre/.Thread[fns->theFuncVals[[All,#]]])& /@pos},
+{theSubs,theSubbed}]]]]/;
+With[{theRes=theFunc[0,0,0]},Print["pre:theRes=",theRes];
+NumberQ[Plus @@ theRes[[pos]]]]
+
+
+
+doScalarInterp[whlList:{{{_?NumberQ..},{_?NumberQ..}}..},pos_Integer,iOrder_Integer]:=
+With[{prtList={#[[1]],#[[2,pos]]}&/@whlList},
+Interpolation[prtList,InterpolationOrder->iOrder]]
+
+Global`preCalcInterp[iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}]:=
+With[{theGrid=Global`gridPts[iPts,
+{Global`qLow,Global`qHigh},
+{Global`ruLow,Global`ruHigh},
+{Global`epsLow,Global`epsHigh}],
+fns=Table[Unique["fnVal"],{(iPts+1)^3}]},
+With[{evals=Transpose[{theGrid,fns}]},
+{fns,evals,Interpolation[evals,InterpolationOrder->iOrder]}]]
+
+
+Global`gridPts[iPts_Integer,
+qRng:{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+rRng:{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+eRng:{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}]:=
+With[{
+qPts=oneDimGridPts[iPts,qRng],
+rPts=oneDimGridPts[iPts,rRng],
+ePts=oneDimGridPts[iPts,eRng]},
+Flatten[Outer[List,qPts,rPts,ePts],2]]
+
+
+
+oneDimGridPts[iPts_Integer,{xLow_?NumberQ,xHigh_?NumberQ}]:=
+Table[ii,{ii,xLow,xHigh,N[xHigh-xLow]/iPts}]
+
+
+Global`makeInterpFunc[theFunc_Function,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}
+]:=Global`makeInterpFunc[theFunc,3,11,
+{Global`qLow,Global`qHigh},
+{Global`ruLow,Global`ruHigh},
+{Global`epsLow,Global`epsHigh}]
 
 
 Global`makeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
-FunctionInterpolation @@ {theFunc[Global`qq,Global`ru,Global`ep],
-{Global`qq,Global`qLow,Global`qHigh}//.Global`lucaSubs//N,
-{Global`ru,Global`ruLow,Global`ruHigh}//.Global`lucaSubs//N,
-{Global`ep,-2*Global`sigma$u,2*Global`sigma$u}//.Global`lucaSubs//N,
-InterpolationOrder ->iOrder, 
-InterpolationPoints -> iPts(*, InterpolationPrecision -> 30, 
- AccuracyGoal -> 15, PrecisionGoal -> 15, MaxRecursion -> 25*)}
-Print["interp defs"]
+Global`makeInterpFunc[theFunc,iOrder,iPts,
+{Global`qlv,Global`qhv},
+{Global`rlv,Global`rhv},
+{Global`elv,Global`ehv}]
 
-
-Print["interp defs"]
 
 
 Global`timeMakeInterpFunc[theFunc_Function]:=
@@ -276,8 +368,20 @@ Timing[Global`makeInterpFunc[theFunc]]
 
 
 Global`timeMakeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer]:=
-Timing[Global`timeMakeInterpFunc[theFunc,iOrder,iPts]]
+Timing[Global`makeInterpFunc[theFunc,iOrder,iPts]]
 Print["interp defs"]
+
+Global`timeMakeInterpFunc[theFunc_Function,iOrder_Integer,iPts_Integer,
+{Global`qLow_?NumberQ,Global`qHigh_?NumberQ},
+{Global`ruLow_?NumberQ,Global`ruHigh_?NumberQ},
+{Global`epsLow_?NumberQ,Global`epsHigh_?NumberQ}]:=
+Timing[Global`makeInterpFunc[theFunc,iOrder,iPts,
+{Global`qLow,Global`qHigh},
+{Global`ruLow,Global`ruHigh},
+{Global`epsLow,Global`epsHigh}
+]]
+Print["interp defs"]
+
 
 
 Global`infNorm[func_]:=
@@ -291,12 +395,20 @@ NMaximize @@
 Print["interp defs"]
 
 
+
+
+
 Global`experOrd[]:=
+Global`experOrd[Global`zzz$0$1Func]
+
+
+Global`experOrd[aFunc_]:=
 Module[{timeInterp=Flatten[
-Table[Join[Global`timeMakeInterpFunc[Global`zzz$0$1Func,io,ip],{io,ip}],
+Table[Join[Global`timeMakeInterpFunc[aFunc,io,ip],{io,ip}],
 {io,1,4},{ip,10,100,10}],1]},
 {#[[1]],Global`infNorm[cmpExct[#[[2]]]],#[[3]],#[[4]],#[[2]]}&/@ timeInterp
 ]
+
 
 Print["interp defs"]
 
@@ -306,3 +418,5 @@ Function[{Global`qq,Global`ru,Global`ep},Abs[aFunc[Global`qq,Global`ru,Global`ep
 
 
 Print["done defs"]
+Global`theOrd=2;Global`thePts=5;
+*)

@@ -1,0 +1,95 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\begin{document}
+
+The model we are solving can be written as:
+
+
+\begin{gather*}
+q_{t} +\beta_p(1 - \rho_p)q_{t + 1} + \rho_pq_{t - 1} - \sigma_pr_{t} +
+     r_{ut}=0\\
+ r_{t} = \max (\bar{r}, \phi_pq_{t}) \\
+ r_{ut} = \rho_{ru} r_{ut - 1} + \eta \epsilon_{y,t}
+\end{gather*}
+
+Then 
+\newcommand{\xtmVec}{  \begin{bmatrix}
+    q_t\\r_{t}\\r_{ut}
+  \end{bmatrix}
+}
+
+
+\begin{gather*}
+  x_t=\xtmVec
+\end{gather*}
+
+We are setting the parameters as follows:
+
+\begin{gather*}
+  \beta_p = 0.99, \phi_p = 1, 
+\rho_p = 0.5, \sigma_p = 1, \rho_{ru} = 0.5,
+  \bar{r} = 0.02 \\
+ q^L = -10, q^H = 10, 
+\sigma_u = 0.02,\\
+   r_u^L = -5\sigma_u/(1 - \rho_{ru})=-.16, r_u^H=  5\sigma_u/(1 - \rho_{ru})=.16,
+    \eta = 1
+\end{gather*}
+In order to debug our code, consider employing very low order polynomials --
+first order for $q$ and second order for $r_u$.
+
+We will have the following six chebyshev polynomials for a basis
+
+\begin{gather*}
+ \begin{array}{c}
+                  1. \\
+                  2. \text{qq} \\
+                  6.25 \text{ru} \\
+                  12.5 \text{qq} \text{ru} \\
+                  78.125 \text{ru}^2-1. \\
+                  156.25 \text{qq} \text{ru}^2-2. \text{qq} \\
+                 \end{array}
+\end{gather*}
+
+We will have the following six evaluation points for $qq=q_{t-1}\, \text{and}\, ru=r_{ut-1}$
+
+\begin{gather*}
+   \begin{array}{cc}
+                   \text{qq}\to 0.353553 & \text{ru}\to 0.138564 \\
+                   \text{qq}\to -0.353553 & \text{ru}\to 0.138564 \\
+                   \text{qq}\to 0.353553 & \text{ru}\to 0. \\
+                   \text{qq}\to -0.353553 & \text{ru}\to 0. \\
+                   \text{qq}\to 0.353553 & \text{ru}\to -0.138564 \\
+                   \text{qq}\to -0.353553 & \text{ru}\to -0.138564 \\
+                  \end{array}
+\end{gather*}
+
+Evaluating the polynomials at each of the points produces:
+
+\begin{gather*}
+P=     \begin{array}{cccccc}
+    1. & 1. & 1. & 1. & 1. & 1. \\
+    0.707107 & -0.707107 & 0.707107 & -0.707107 & 0.707107 & -0.707107 \\
+    0.866025 & 0.866025 & 0 & 0 & -0.866025 & -0.866025 \\
+    0.612372 & -0.612372 & 0 & 0 & -0.612372 & 0.612372 \\
+    0.5 & 0.5 & -1. & -1. & 0.5 & 0.5 \\
+    0.353553 & -0.353553 & -0.707107 & 0.707107 & 0.353553 & -0.353553 \\
+   \end{array}
+\end{gather*}
+
+In what follows, I'm trying to go step by step through the calculations 
+I think are in your MATLAB code. 
+
+Your code computes residuals for the model equations at each node using a weighted sum of the polynomials to characterize the following term from the model:
+\begin{gather*}
+  \left [ \beta_p(1 - \rho_p)q_{t + 1}\right ]_i = \sum_{i} A_{i} P_{ij}
+\end{gather*}
+
+We can use the chebyshev node points and the integration nodes to determine
+$q_{t-1},r_{ut-1},\epsilon_{yt}$
+These determine $r_{ut}$
+\begin{gather*}
+ r_{ut} = \rho_{ru} r_{ut - 1} + \eta \epsilon_{y,t}
+\end{gather*}
+
+
+\end{document}
