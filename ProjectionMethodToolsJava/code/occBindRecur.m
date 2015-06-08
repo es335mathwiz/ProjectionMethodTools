@@ -251,8 +251,7 @@ gridPts[iPts,
 {ruLow,ruHigh}],
 reFunc=Function @@ {{qq,ru},
 With[{qrSubbed=theFunc[qq,ru,#,thePos]},Print["about to use myExpect in func"];
-myExpect[Identity[Identity[With[{hoop=(qrSubbed&[tryEps])*PDF[NormalDistribution[0,sigma$u],
-tryEps]/.lucaSubs},hoop]]],Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
+myExpect[Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
 With[{whl={#,reFunc @@ #}& /@
 thePts},(*Print["done making whl"];*)
 doScalarIntegration[whl,#,iOrder]&@pos]]/;
@@ -272,22 +271,10 @@ Module[{},(*Print["doScalarIntegration:",whlList//InputForm];*)
 With[{prtList={#[[1]],(#[[2]]/.thePos->pos)}&/@whlList},
 Interpolation[prtList,InterpolationOrder->iOrder]]]
 
-(*
-myExpect[aFunc:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
-zFuncs_List,pos_Integer]*_,aFuncNow:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
-zFuncs_List,pos_Integer],aVar_]:=
-Module[{},(*Print["myExpect:",{aFunc,aVar}//InputForm];*)
-With[{theIntBody=({aFunc,{aVar,-4*sigma$u,4*sigma$u}(*,
-AccuracyGoal -> 2, Compiled -> Automatic,
-  PrecisionGoal -> 2, WorkingPrecision -> 2*)}/.lucaSubs)},(*Print["myExpect:intBody=",theIntBody//InputForm];*)
-NIntegrate @@ theIntBody]]
-*)
-
-myExpect[aFunc:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
-zFuncs_List,pos_Integer]*_,aFuncNow:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
+myExpect[aFuncNow:fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_,
 zFuncs_List,pos_Integer],aVar_,stdev_?NumberQ]:=
-Module[{},Print["myExpect:",{aFunc,aVar,aFuncNow,stdev}//InputForm];
-If[stdev==0,Print["aFunc subbed:",{aFunc/.aVar->0,aFuncNow/.aVar->0}];aFuncNow/.aVar->0,
+Module[{},(*Print["myExpect:",{aFunc,aVar,aFuncNow,stdev}//InputForm];*)
+If[stdev==0,(*Print["aFunc subbed:",{aFunc/.aVar->0,aFuncNow/.aVar->0}];*)aFuncNow/.aVar->0,
 With[{theIntBody=({aFuncNow*PDF[NormalDistribution[0,stdev],tryEps],{aVar,-4*sigma$u,4*sigma$u}(*,
 AccuracyGoal -> 2, Compiled -> Automatic,
   PrecisionGoal -> 2, WorkingPrecision -> 2*)}/.lucaSubs)},(*Print["myExpect:intBody=",theIntBody//InputForm];*)

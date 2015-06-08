@@ -2,7 +2,7 @@ Needs["occBindRecur`"]
 
 (*impose one period*)
 
-chkPts=4;chkOrd=1;
+chkPts=20;chkOrd=2;
 {ig,ig,zFuncsOne,finFuncOne}=genFinalPF[chkOrd,chkPts,{},2];
 fdrOne=genFinalDR[finFuncOne];
 
