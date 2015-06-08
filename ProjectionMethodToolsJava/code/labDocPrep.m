@@ -31,7 +31,7 @@ bmat,phimat,fmat},Print[noCnstr];
 With[{hmat=equationsToMatrix[noCnstr]},Print[hmat];
 {ig,ig,ig,ig,qmat,ig,ig,ig}=numericAMA[hmat,1,1];Print[zf,hf];
 Print["need to generalize to actually compute qmat"];
-{hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat,1]}
+{hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat]}
 ]]
 
 
