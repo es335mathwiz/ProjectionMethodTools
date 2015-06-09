@@ -81,8 +81,8 @@ SendMail["From"->"gary.anderson@frb.gov","To"->"asymptoticallystable@gmail.com",
 {preComp,postComp,theComps,csvName,experFile}]
 (*
 {preComp,postComp,theComps,csvName,experFile}=doSplice[genFinalPF,{},
-0,2,1,2,0,2]
-tabHead="Perfect Forsight: Null Initial Functions"
+0,2,1,2,0,2];
+tabHead="Perfect Forsight: Null Initial Functions";
 Splice["timeRecurTable.mtex","timePFNullRecurNow.tex",FormatType->OutputForm]
 *)
 
