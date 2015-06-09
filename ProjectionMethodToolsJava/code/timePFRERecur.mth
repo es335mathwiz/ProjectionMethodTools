@@ -1,4 +1,4 @@
-BeginPackage["timePFRERecur`,{"occBindRecur`"}]
+BeginPackage["timePFRERecur`",{"occBindRecur`"}]
 
 (*
 %<*Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"]*>
