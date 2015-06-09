@@ -7,9 +7,9 @@
 \hline}
 \pgfplotstabletypeset[
 col sep=comma,header=false,
-    every head row/.style={ 
-        output empty row,
-    },
+    % every head row/.style={ 
+    %     output empty row
+    % },
 columns/0/.style={int detect},
 columns/1/.style={int detect},
 columns/2/.style={int detect},
@@ -17,6 +17,7 @@ columns/3/.style={fixed zerofill,precision=8,dec sep align={|c|},column type/.ad
 every row no 0/.style=
 {before row=\tabHead{<*tabHead*>}},
 column type/.add={|}{},
-every last row/.style={after row={\hline}}
+every last row/.style={after row={\hline}},
+omit header
 ]{../../../ProjectionMethodTools/ProjectionMethodToolsJava/code/<*csvName*>}
 

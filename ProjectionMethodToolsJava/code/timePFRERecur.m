@@ -5,42 +5,14 @@ BeginPackage["timePFRERecur`",{"occBindRecur`"}]
 %<*Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"]*>
 %<*Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"]*>
 *)
-(*
-theMinNesting=0;
-theMaxNesting=3;
-theMinOrder=2;
-theMaxOrder=3;
-theMaxPts=4;
-indices=Flatten[Table[{ii+(1-theMinOrder),jj+(1-Max[1,ii]),kk+(1-theMinNesting)},{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}],2];
-
-
-
-
-
-
-
-preComp01=doChkLoad[]
-compsPFNull=Table[Timing[{{ii,jj,kk},genFinalPF[ii,jj,{},kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}];
-preComp02=doChkLoad[]
-
-
-
-compsRENull=Table[Timing[{{ii,jj,kk},genFinalRE[ii,jj,{},kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}];
-preComp03=doChkLoad[]
-compsPFExact=Table[Timing[{{ii,jj,kk},genFinalPF[ii,jj,z01ExactInitPF,kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,Max[1,ii]],theMaxPts},{kk,theMinNesting,theMaxNesting}];
-preComp04=doChkLoad[]
-compsREExact=Table[Timing[{{ii,jj,kk},genFinalRE[ii,jj,z01ExactInitRE,kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,Max[1,ii]],theMaxPts},{kk,theMinNesting,theMaxNesting}];
-preComp05=doChkLoad[]
-
-
-Save["timePFRERecur"<>(timeStamp=ToString[AbsoluteTime[]//Floor//InputForm])<>".m","timePFRERecur`"]
-
-*)
 
 doCSVExport[theVals_List,csvName_String]:=
 Export[csvName,Flatten[{#[[2,1]],#[[1]]}]&/@ Flatten[theVals,2]]
 
-initName[{}]="Null"
+initName[{}]="Null";
+initName[z01ExactInitPF]="z01ExactInitPF";
+initName[z01ExactInitRE]="z01ExactInitRE";
+
 doSplice[genFunc_,initFuncs_,
 theMinOrder_Integer,theMaxOrder_Integer,
 theMinPts_Integer,theMaxPts_Integer,
@@ -84,7 +56,55 @@ SendMail["From"->"gary.anderson@frb.gov","To"->"asymptoticallystable@gmail.com",
 0,2,1,2,0,2];
 tabHead="Perfect Forsight: Null Initial Functions";
 Splice["timeRecurTable.mtex","timePFNullRecurNow.tex",FormatType->OutputForm]
+{preComp,postComp,theComps,csvName,experFile}=doSplice[genFinalPF,z01ExactInitPF,
+0,2,1,2,0,2];
+tabHead="Perfect Forsight: Exact Initial Functions";
+Splice["timeRecurTable.mtex","timePFExactRecurNow.tex",FormatType->OutputForm]
+{preComp,postComp,theComps,csvName,experFile}=doSplice[genFinalPF,{},
+0,2,1,2,0,2];
+tabHead="Rational Expectations: Null Initial Functions";
+Splice["timeRecurTable.mtex","timeRENullRecurNow.tex",FormatType->OutputForm]
+{preComp,postComp,theComps,csvName,experFile}=doSplice[genFinalPF,z01ExactInitRE,
+0,2,1,2,0,2];
+tabHead="Rational Expectations: Exact Initial Functions";
+Splice["timeRecurTable.mtex","timeREExactRecurNow.tex",FormatType->OutputForm]
 *)
+
+
+
+EndPackage[]
+(*
+theMinNesting=0;
+theMaxNesting=3;
+theMinOrder=2;
+theMaxOrder=3;
+theMaxPts=4;
+indices=Flatten[Table[{ii+(1-theMinOrder),jj+(1-Max[1,ii]),kk+(1-theMinNesting)},{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}],2];
+
+
+
+
+
+
+
+preComp01=doChkLoad[]
+compsPFNull=Table[Timing[{{ii,jj,kk},genFinalPF[ii,jj,{},kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}];
+preComp02=doChkLoad[]
+
+
+
+compsRENull=Table[Timing[{{ii,jj,kk},genFinalRE[ii,jj,{},kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,ii],theMaxPts},{kk,theMinNesting,theMaxNesting}];
+preComp03=doChkLoad[]
+compsPFExact=Table[Timing[{{ii,jj,kk},genFinalPF[ii,jj,z01ExactInitPF,kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,Max[1,ii]],theMaxPts},{kk,theMinNesting,theMaxNesting}];
+preComp04=doChkLoad[]
+compsREExact=Table[Timing[{{ii,jj,kk},genFinalRE[ii,jj,z01ExactInitRE,kk]}],{ii,theMinOrder,theMaxOrder},{jj,Max[1,Max[1,ii]],theMaxPts},{kk,theMinNesting,theMaxNesting}];
+preComp05=doChkLoad[]
+
+
+Save["timePFRERecur"<>(timeStamp=ToString[AbsoluteTime[]//Floor//InputForm])<>".m","timePFRERecur`"]
+
+*)
+
 
 (*
 preComp=preComp01;postCom=preComp02;
@@ -114,5 +134,3 @@ Splice["timeRecurTable.mtex","timeREExactRecurNow.tex",FormatType->OutputForm]
 
 SendMail["From"->"gary.anderson@frb.gov","To"->"asymptoticallystable@gmail.com","Server"->"mail.rsma.frb.gov", "Body"->"tmePFRERecur.m done"]
 *)
-
-EndPackage[]
