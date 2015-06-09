@@ -139,11 +139,12 @@ NestList[Identity[iterPF[iOrd,nPts,#]]&,start,maxLen];
 forIOrdNPtsRE[iOrd_Integer,nPts_Integer,start_List,stdev_?NumberQ,maxLen_Integer]:=
 NestList[Identity[iterRE[iOrd,nPts,#,stdev]]&,start,maxLen];
 doChkLoad[]:=
+If[$OperatingSystem=="Windows",{0,0,0,0,0},
 Module[{},
 Run["cat /proc/cpuinfo | grep processor | wc -l>numProcs"];numProcs=Get["numProcs"];
 Run["uptime | tr -s ' ' ' ' | cut -d' ' -f11->loadAvg"];loadAvg=Import["loadAvg"];
 Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["freeMem"];
-{numProcs,loadAvg,freeMem}//ToString//ToExpression]
+{numProcs,loadAvg,freeMem}//ToString//ToExpression]]
 
 genCompSlackSysFunc[pathLen_Integer]:=
 With[{aPath=genPath[pathLen],
