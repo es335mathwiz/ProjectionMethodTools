@@ -1,7 +1,7 @@
-Needs["JLink`"]; (*Needs["OccasionallyBindingConstraints`"]; *)
-Get["prepPackages.mth"]; Get["applyReliable.mth"];
+Needs["occBindRecur`"];
+(*Get["prepPackages.mth"]; Get["applyReliable.mth"];*)
 <<JavaGraphics`
-
+(*
 lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
   rUnderBar -> 2/100, qLow -> -1/2, qHigh -> 1/2, 
   ruLow -> -4*sigma$u/(1 - rho$ru), ruHigh ->  4*sigma$u/(1 - rho$ru),
@@ -55,10 +55,10 @@ fzIterComp[
 Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
 {{eps}},{{zz}},{{zz/.zsubNow/.{eps->0,qtm1->qt,rtm1->rt,rutm1->rut}}}]//.lucaSubs//myN//Expand//Chop
 
+*)
 
 
-
-forSimp = Union[Cases[bmat, Sqrt[___], Infinity]][[1]];
+forSimp = Union[Cases[bmatSymb, Sqrt[___], Infinity]][[1]];
 latexSubs = Join[N[lucaSubs],{(*forSimp -> \[Nu],*) 
 betap -> Subscript[\[Beta], p], 
    phip -> Subscript[\[Phi], p], rhop -> Subscript[\[Rho], p], 
@@ -67,17 +67,17 @@ xx_[yy:t+_.]->Subscript[xx,yy],zt0->Subscript[z,0],
 uu$Shock->Subscript[\[Epsilon],t],
 Subscript[discrep,t]->\[Delta],eqvdIf->\[CurlyTheta],
 Subscript[ru,y:t+_.]->Subscript[Subscript[r,u],y]}];
-Export["prettyHmat.pdf", MatrixForm[hmat //. latexSubs]];
-Export["prettyBmat.pdf", MatrixForm[bmat //. latexSubs]];
-Export["prettyPhimat.pdf", MatrixForm[phimat //. latexSubs]];
-Export["prettyFmat.pdf", MatrixForm[fmat //. latexSubs]];
-Export["prettyHmatCons.pdf", MatrixForm[hmatCons //. latexSubs]];
-Export["prettyBmatCons.pdf", MatrixForm[bmatCons //. latexSubs]];
-Export["prettyPhimatCons.pdf", MatrixForm[phimatCons //. latexSubs]];
-Export["prettyFmatCons.pdf", MatrixForm[fmatCons //. latexSubs]];
+Export["prettyHmatSymb.pdf", MatrixForm[hmatSymb //. latexSubs]];
+Export["prettyBmatSymb.pdf", MatrixForm[bmatSymb //. latexSubs]];
+Export["prettyPhimatSymb.pdf", MatrixForm[phimatSymb //. latexSubs]];
+Export["prettyFmatSymb.pdf", MatrixForm[fmatSymb //. latexSubs]];
+Export["prettyHmatSymbCons.pdf", MatrixForm[hmatSymbCons //. latexSubs]];
+Export["prettyBmatSymbCons.pdf", MatrixForm[bmatSymbCons //. latexSubs]];
+Export["prettyPhimatSymbCons.pdf", MatrixForm[phimatSymbCons //. latexSubs]];
+Export["prettyFmatSymbCons.pdf", MatrixForm[fmatSymbCons //. latexSubs]];
 
-applyBmat[xtm1_?MatrixQ,bmat_?MatrixQ,num_?NumberQ]:=
-ArrayFlatten[Transpose[{NestList[bmat . #&,xtm1,num]}]]
+applyBmatSymb[xtm1_?MatrixQ,bmatSymb_?MatrixQ,num_?NumberQ]:=
+ArrayFlatten[Transpose[{NestList[bmatSymb . #&,xtm1,num]}]]
 
 applyFormula[xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1_?MatrixQ]:=
 With[{xt=forFzComp[xtm1,epst,zt,ztp1]},xt]
@@ -182,11 +182,11 @@ Print["got to end uncommented"]
 Print["compute values to sub into system"]
 xtm1={{qq[t-1]},{rr[t-1]},{ru[t-1]}};
 xt={{q1RHS},{r1RHS},{ru1RHS}};
-xtp1=bmat . xt;
+xtp1=bmatSymb . xt;
 
 
 xVec=Join[xtm1,xt,xtp1];
-resid0=hmat.xVec//.lucaSubs
+resid0=hmatSymb.xVec//.lucaSubs
 Export["prettyResid0.pdf", 
   MatrixForm[resid0//Simplify//Chop/. latexSubs]];
 
@@ -271,7 +271,7 @@ xtm1={{qq},{rr},{ru}};
 xt={{q2RHS},{r2RHS},{ru2RHS}};
 xtp1={{q1ExpRHS},{r1ExpRHS},{ru1ExpRHS}}/.{qq[t-1]->q2RHS,rr[t-1]->r2RHS,ru[t-1]->ru2RHS};
 xVec=Join[xtm1,xt,xtp1];
-resid1=(hmat.xVec//.lucaSubs)//FullSimplify;
+resid1=(hmatSymb.xVec//.lucaSubs)//FullSimplify;
 Export["prettyResid0.pdf", 
   MatrixForm[resid0/. latexSubs]];
 
