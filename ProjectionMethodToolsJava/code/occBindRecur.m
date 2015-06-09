@@ -59,7 +59,7 @@ doChkLoad::usage="doChkLoad[]->{numProcs,loadavgs..,freemem}"
 
 lucaEqns::usage="simple model equations"
 lucaSubs::usage="typical simple model parameters"
-
+latexSubs::usage="latex simplifying subs"
 qq::usage="variable for model"
 rr::usage="variable for model"
 ru::usage="variable for model"
@@ -578,6 +578,24 @@ try01={
 slv01=(Solve[try01,{zzz$0$1[t]},Reals])//FullSimplify//Chop
 zzz$0$1Func= Function @@ {{qtm1,rutm1,eps},Piecewise[List @@@ (Last/@Flatten[slv01])]}
 
+
+
+forSimp = Union[Cases[bmatSymb, Sqrt[___], Infinity]][[1]];
+latexSubs = Join[N[lucaSubs],{(*forSimp -> \[Nu],*) 
+betap -> Subscript[\[Beta], p], 
+   phip -> Subscript[\[Phi], p], rhop -> Subscript[\[Rho], p], 
+   rho$ru -> Subscript[\[Rho], ru], sigmap -> Subscript[\[Sigma], p],
+xx_[yy:t+_.]->Subscript[xx,yy],zt0->Subscript[z,0],
+uu$Shock->Subscript[\[Epsilon],t],
+Subscript[discrep,t]->\[Delta],eqvdIf->\[CurlyTheta],
+Subscript[ru,y:t+_.]->Subscript[Subscript[r,u],y]}];
+Export["prettyHmatSymb.pdf", MatrixForm[hmatSymb //. latexSubs]];
+Export["prettyBmatSymb.pdf", MatrixForm[bmatSymb //. latexSubs]];
+Export["prettyPhimatSymb.pdf", MatrixForm[phimatSymb //. latexSubs]];
+Export["prettyFmatSymb.pdf", MatrixForm[fmatSymb //. latexSubs]];
+Export["prettyPsiEps.pdf", 
+ MatrixForm[psieps]]; Export["prettyPsiZ.pdf", 
+ MatrixForm[psiz]]; Export["prettyPsiEps.pdf", MatrixForm[psieps]];
 
 
 
