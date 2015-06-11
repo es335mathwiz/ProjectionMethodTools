@@ -8,7 +8,7 @@ Table order by pts
         infnormFinal[interpFuncFinal]}
 postloads
 *)
-PFtimeVal="3642333354"
+PFtimeVal="3643017501"
 REtimeVal="3642340478"
 
 (*
@@ -20,7 +20,8 @@ Get["accurPFRecur"<>PFtimeVal<>".m"]
 Splice["accurTables.mtex","accurPFRecur<>PFtimeVal<>".tex"]
 Splice["accurTables.mtex","accurPFRecurNow.tex"]
 
-
+(*
 Get["accurRERecur"<>REtimeVal<>".m"]
 Splice["accurTables.mtex","accurRERecur<>REtimeVal<>".tex"]
 Splice["accurTables.mtex","accurRERecurNow.tex"]
+*)
