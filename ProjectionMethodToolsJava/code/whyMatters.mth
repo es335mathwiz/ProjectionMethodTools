@@ -2,8 +2,38 @@ Needs["occBindRecur`"]
 
 (*impose one period*)
 
-chkPts=20;chkOrd=2;
-{ig,ig,zFuncsOne,finFuncOne}=genFinalPF[chkOrd,chkPts,{},2];
+chkPts=10;chkOrd=2;
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[chkOrd,chkPts,{},sigma$u//.lucaSubs,1];
+(*
+
+
+chkPts=10;chkOrd=2;
+hmm=NestList[iterRE[chkOrd,chkPts,#,sigma$u//.lucaSubs]&,{},1]
+
+*)
+(*
+{ig,ig,zFuncsTwoRE,finFuncTwoRE}=genFinalRE[chkOrd,chkPts,zFuncsOneRE,sigma$u//.lucaSubs,2];
+
+
+
+Through[zFuncsOne[[3]][-.1,-.1]]//InputForm
+
+
+Out[54]//InputForm= 
+{-0.1053762385197114, -0.035, 0.09524770394232991, 0.12537623851971127}
+
+In[55]:=                                                                        Through[zFuncsOne[[2]][-0.1053762385197114, -0.035]]//InputForm
+
+
+Out[55]//InputForm= 
+{-0.07524770394233012, -0.0025000000000000022, 0.09524770394233012}
+*)
+
+
+(*
+
+chkPts=30;chkOrd=2;
+{ig,ig,zFuncsOne,finFuncOne}=genFinalPF[chkOrd,chkPts,{},3];
 fdrOne=genFinalDR[finFuncOne];
 
 
@@ -281,3 +311,4 @@ hmatAppGeneric[ap]
 (*set up to solve system but violates constraints in tp1 and tp2*)
 apPlus=aPathFinal[-.4,0,0,onePeriodFunc,1]
 hmatAppGeneric[apPlus]
+*)
