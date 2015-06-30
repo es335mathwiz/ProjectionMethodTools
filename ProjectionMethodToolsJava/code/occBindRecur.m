@@ -369,10 +369,11 @@ forRu=makeInterpFuncRE[fpSolnFunc,2,iOrder,numPts,
 ({ruLow,ruHigh}//.lucaSubs)//N,stdev],
 forNewZ=makeInterpFuncRE[fpSolnFunc,-1,iOrder,numPts,
 ({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,stdev]},Sow[Join[{forQ,forRu},agedZs,{forNewZ}]];
-With[{oldRes=makeInterpFuncRE[fpSolnFunc,iOrder,numPts,
+({ruLow,ruHigh}//.lucaSubs)//N,stdev]},
+With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}],
+oldRes=makeInterpFuncRE[fpSolnFunc,iOrder,numPts,
 ({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,stdev]},oldRes[[2]]]]]/;
+({ruLow,ruHigh}//.lucaSubs)//N,stdev]},newRes]]]/;
 And[iOrder>=0,numPts>=iOrder]
 
 ageOneZFunc[qFunc_,ruFunc_,zFunc_]:=
