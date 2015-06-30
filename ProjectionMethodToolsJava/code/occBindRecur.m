@@ -370,10 +370,7 @@ forRu=makeInterpFuncRE[fpSolnFunc,2,iOrder,numPts,
 forNewZ=makeInterpFuncRE[fpSolnFunc,-1,iOrder,numPts,
 ({qLow,qHigh}//.lucaSubs)//N,
 ({ruLow,ruHigh}//.lucaSubs)//N,stdev]},
-With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}],
-oldRes=makeInterpFuncRE[fpSolnFunc,iOrder,numPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,stdev]},newRes]]]/;
+With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}]},newRes]]]/;
 And[iOrder>=0,numPts>=iOrder]
 
 ageOneZFunc[qFunc_,ruFunc_,zFunc_]:=
