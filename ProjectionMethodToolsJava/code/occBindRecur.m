@@ -26,7 +26,6 @@ assessPF::usage="assessPF[interpFuncFinal_List]"
 assessRE::usage="assessPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
 newAssessRE::usage="assessPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
 makeInterpFuncFinal::usage="makeInterpFuncFinal[theFunc_Function,pos_List,iOrder_Integer,iPts_Integer,{qLow_?NumberQ,qHigh_?NumberQ},{ruLow_?NumberQ,ruHigh_?NumberQ},{epsLow_?NumberQ,epsHigh_?NumberQ}]"
-newMakeInterpFuncFinal::usage="newMakeInterpFuncFinal[theFunc_Function,pos_List,iOrder_Integer,iPts_Integer,{qLow_?NumberQ,qHigh_?NumberQ},{ruLow_?NumberQ,ruHigh_?NumberQ},{epsLow_?NumberQ,epsHigh_?NumberQ}]"
 
 smallestRVal::usage="smallestRVal[finalFuncs_List]"
 simPFPath::usage="simPFPath[nn_Integer,qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]"
@@ -54,7 +53,6 @@ fpForInitStateFunc::usage="fpForInitVecFunc[qVal,ruVal,epsVal,theCompSlackSysFun
 newFpForInitStateFunc::usage="fpForInitVecFunc[qVal,ruVal,epsVal,theCompSlackSysFunc_,zFuncs:{_Function...}]"
 makeInterpFuncPF::usage="makeInterpFunc";
 makeInterpFuncRE::usage="makeInterpFunc";
-newMakeInterpFuncRE::usage="newMakeInterpFunc";
 numericLinearizeSystemForOBC::usage="numericLinearizeSystemForOBC[eqns_List]"
 symbolicLinearizeSystemForOBC::usage="symbolicLinearizeSystemForOBC[eqns_List]"
 nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ]"
@@ -141,11 +139,11 @@ Off[InterpolatingFunction::dmval];
 
 numIt[xx_]:=xx//.lucaSubs//myN//Expand//Chop 
  
-forIOrdNPtsPF[iOrd_Integer,nPts_Integer,start_List,ignore,maxLen_Integer]:=
-NestList[Identity[iterPF[iOrd,nPts,#]]&,start,maxLen];
+forIOrdNPtsPF[iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
+NestList[Identity[iterPF[iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
-forIOrdNPtsRE[iOrd_Integer,nPts_Integer,start_List,stdev_?NumberQ,maxLen_Integer]:=
-NestList[Identity[iterRE[iOrd,nPts,#,stdev]]&,start,maxLen];
+forIOrdNPtsRE[iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
+NestList[Identity[iterRE[iOrd,gSpec,#,stdev]]&,start,maxLen];
 
 doChkLoad[]:=
 If[$OperatingSystem=="Windows",{0,0,0,0,0},
@@ -206,29 +204,22 @@ NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
-makeInterpFuncFinal[theFunc_Function,pos_List,iOrder_Integer,iPts_Integer,
-{qLow_?NumberQ,qHigh_?NumberQ},
-{ruLow_?NumberQ,ruHigh_?NumberQ},
-{epsLow_?NumberQ,epsHigh_?NumberQ}
+makeInterpFuncFinal[theFunc_Function,pos_List,iOrder_Integer,
+gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
+{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ},
+{_Integer,epsLow_?NumberQ,epsHigh_?NumberQ}}
 ]:=Module[{thePts=
-gridPts[iPts,
-{{qLow,qHigh},
-{ruLow,ruHigh},
-{epsLow,epsHigh}}
-]},
+gridPts[gSpec]},
 With[{whl={#,theFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]/;
 With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
-makeInterpFuncPF[theFunc_Function,pos_List,iOrder_Integer,iPts_Integer,
-{qLow_?NumberQ,qHigh_?NumberQ},
-{ruLow_?NumberQ,ruHigh_?NumberQ}
-]:=Module[{thePts=
-gridPts[iPts,
-{{qLow,qHigh},
-{ruLow,ruHigh}}],
+makeInterpFuncPF[theFunc_Function,pos_List,iOrder_Integer,
+gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
+{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}
+]:=Module[{thePts=gridPts[gSpec],
 pfFunc=Function[{qq,ru},theFunc[qq,ru,0]]},
 With[{whl={#,pfFunc @@ #}& /@
 thePts},
@@ -236,33 +227,25 @@ doScalarInterp[whl,#,iOrder]&/@pos]]/;
 With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
-makeInterpFuncPF[theFunc_Function,iOrder_Integer,iPts_Integer,
-{qLow_?NumberQ,qHigh_?NumberQ},
-{ruLow_?NumberQ,ruHigh_?NumberQ}
-]:=With[{pos=Range[Length[theFunc[0,0,0]]]},
-makeInterpFuncPF[theFunc,pos,iOrder,iPts,
-{qLow,qHigh},
-{ruLow,ruHigh}]]
-
-
-makeInterpFuncRE[theFunc_Function,iOrder_Integer,iPts_Integer,
-{qLow_?NumberQ,qHigh_?NumberQ},
-{ruLow_?NumberQ,ruHigh_?NumberQ},stdev_?NumberQ]:=
+makeInterpFuncPF[theFunc_Function,iOrder_Integer,
+gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
+{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}]:=
+With[{pos=Range[Length[theFunc[0,0,0]]]},
+makeInterpFuncPF[theFunc,pos,iOrder,gSpec]]
+(*
+Print["need to eliminate double call!!!!!!!!!!!!!!!!!!!!!!"]
+makeInterpFuncRE[theFunc_Function,iOrder_Integer,
+gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
+{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}},stdev_?NumberQ]:=
 With[{theRange=Range[Max[2,Length[theFunc[[2,4]]]]+1]},
-{{makeInterpFuncRE[theFunc,-1,iOrder,iPts,
-{qLow,qHigh},
-{ruLow,ruHigh},stdev]},
-makeInterpFuncRE[theFunc,#,iOrder,iPts,
-{qLow,qHigh},
-{ruLow,ruHigh},stdev]&/@theRange}]
-
-makeInterpFuncRE[theFunc_Function,pos_Integer,iOrder_Integer,iPts_Integer,
-{qLow_?NumberQ,qHigh_?NumberQ},
-{ruLow_?NumberQ,ruHigh_?NumberQ},stdev_?NumberQ
-]:=Module[{thePts=
-gridPts[iPts,
-{{qLow,qHigh},
-{ruLow,ruHigh}}],
+{{makeInterpFuncRE[theFunc,-1,iOrder,gSpec,stdev]},
+makeInterpFuncRE[theFunc,#,iOrder,gSpec,stdev]&/@theRange}]
+*)
+makeInterpFuncRE[theFunc_Function,pos_Integer,iOrder_Integer,
+gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
+{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ},
+{_Integer,epsLow_?NumberQ,epsHigh_?NumberQ}},stdev_?NumberQ]:=
+Module[{thePts=gridPts[gSpec[[{1,2}]]],
 reFunc=Function @@ {{qq,ru},
 With[{qrSubbed=theFunc[qq,ru,#,thePos]},Print["about to use myExpect in func"];
 myExpect[Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
@@ -308,17 +291,6 @@ NIntegrate @@ theIntBody]]]
 doScalarInterp[whlList:{{{_?NumberQ..},{_?NumberQ..}}..},pos_Integer,iOrder_Integer]:=
 With[{prtList={#[[1]],#[[2,pos]]}&/@whlList},
 Interpolation[prtList,InterpolationOrder->iOrder]]
-(*
-preCalcInterp[iOrder_Integer,iPts_Integer,
-{qLow_?NumberQ,qHigh_?NumberQ},
-{ruLow_?NumberQ,ruHigh_?NumberQ}]:=
-With[{theGrid=gridPts[iPts,
-{{qLow,qHigh},
-{ruLow,ruHigh}}],
-fns=Table[Unique["fnVal"],{(iPts+1)^3}]},
-With[{evals=Transpose[{theGrid,fns}]},
-{fns,evals,Interpolation[evals,InterpolationOrder->iOrder]}]]
-*)
 
 
 
@@ -360,29 +332,28 @@ glug=silly02[silly01[x0]
 
 
 
-iterPF[iOrder_Integer,numPts_Integer,zFuncsNow_List]:=With[
+iterPF[iOrder_Integer,gSpec:{qPts_Integer,rPts_Integer},zFuncsNow_List]:=With[
 {fpSolnFunc=Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncsNow]]},
-makeInterpFuncPF[fpSolnFunc,iOrder,numPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N]]/;
-And[iOrder>=0,numPts>=iOrder]
+makeInterpFuncPF[fpSolnFunc,iOrder,
+{{qPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
+{rPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N}}]]/;
+And[iOrder>=0,Min[gSpec]>=iOrder]
 
-iterRE[iOrder_Integer,numPts_Integer,zFuncsNow_List,stdev_?NumberQ]:=
-With[{agedZs=ageZFuncs[zFuncsNow],
+iterRE[iOrder_Integer,pSpec:{qPts_Integer,rPts_Integer,ePts_Integer},
+zFuncsNow_List,stdev_?NumberQ]:=
+With[{gSpec=
+{{qPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
+{rPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
+{ePts,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}},
+agedZs=ageZFuncs[zFuncsNow],
 fpSolnFunc=Function[{xx,yy,zz,pos},
 fpForInitStateFunc[xx,yy,zz,zFuncsNow,pos]]},
 With[
-{forQ=makeInterpFuncRE[fpSolnFunc,1,iOrder,numPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,stdev],
-forRu=makeInterpFuncRE[fpSolnFunc,2,iOrder,numPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,stdev],
-forNewZ=makeInterpFuncRE[fpSolnFunc,-1,iOrder,numPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,stdev]},
+{forQ=makeInterpFuncRE[fpSolnFunc,1,iOrder,gSpec,stdev],
+forRu=makeInterpFuncRE[fpSolnFunc,2,iOrder,gSpec,stdev],
+forNewZ=makeInterpFuncRE[fpSolnFunc,-1,iOrder,gSpec,stdev]},
 With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}]},newRes]]]/;
-And[iOrder>=0,numPts>=iOrder]
+And[iOrder>=0,Min[pSpec]>=iOrder]
 
 ageOneZFunc[qFunc_,ruFunc_,zFunc_]:=
 Function[{qq,rr},zFunc[qFunc[qq,rr],ruFunc[qq,rr]]]
@@ -764,42 +735,46 @@ Flatten[aPathFinal[qq,ru,eps,finFuncs][[3+Range[3]]]]]
 
 
 
-genFinalPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
-genFinalWorker[forIOrdNPtsPF,iOrd,nPts,initFuncs,ignore,iters]
+genFinalPF[iOrd_Integer,{qPts_Integer,rPts_Integer,ePts_Integer},
+initFuncs_List,iters_Integer:1]:=
+genFinalWorker[forIOrdNPtsPF,iOrd,{qPts,rPts,ePts},
+initFuncs,ignore,iters]
 
-genFinalRE[iOrd_Integer,nPts_Integer,initFuncs_List,stdev_?NumberQ,iters_Integer:1]:=
-genFinalWorker[forIOrdNPtsRE,iOrd,nPts,initFuncs,stdev,iters]
+genFinalRE[iOrd_Integer,{qPts_Integer,rPts_Integer,ePts_Integer},
+initFuncs_List,stdev_?NumberQ,iters_Integer:1]:=
+genFinalWorker[forIOrdNPtsRE,iOrd,{qPts,rPts,ePts},
+initFuncs,stdev,iters]
 (*put std dev = 0 in ratex*)
 
 genFinalWorker[forIOrdNPtsFunc_,
-iOrd_Integer,nPts_Integer,initFuncs_List,
+iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},initFuncs_List,
 stdev:(_?NumberQ|ignore),iters_Integer:1]:=
-With[{zFuncs=forIOrdNPtsFunc[iOrd,nPts,initFuncs,stdev,iters]},
+With[{zFuncs=forIOrdNPtsFunc[iOrd,gSpec,initFuncs,stdev,iters]},
 With[{preInterpFunc=
 Function[{qq,ru,eps},fpForInitStateFunc[qq,ru,eps,zFuncs[[-1]]]]},
 With[{numVals=Length[preInterpFunc[0,0,0]]},
 With[{interpFuncFinal=
 makeInterpFuncFinal[preInterpFunc,Range[numVals],
-iOrd,nPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,
-({-2*sigma$u,2*sigma$u}//.lucaSubs)//N]},
-{{iOrd,nPts},{},zFuncs,interpFuncFinal}]]]]
+iOrd,{
+{qPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
+{rPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
+{ePts,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}}]},
+{{iOrd,{qPts,rPts,ePts}},{},zFuncs,interpFuncFinal}]]]]
 
 
 
-assessRE[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]:=
-With[{zFuncs=forIOrdNPtsRE[iOrd,nPts,initFuncs,iters]},
+assessRE[iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},initFuncs_List,iters_Integer:1]:=
+With[{zFuncs=forIOrdNPtsRE[iOrd,gSpec,initFuncs,iters]},
 With[{preInterpFunc=
 Function[{qq,ru,eps},fpForInitStateFunc[qq,ru,eps,zFuncs[[-1]]]]},
 With[{numVals=Length[preInterpFunc[0,0,0]]},
 With[{interpFuncFinal=
 makeInterpFuncFinal[preInterpFunc,Range[numVals],
-iOrd,nPts,
-({qLow,qHigh}//.lucaSubs)//N,
-({ruLow,ruHigh}//.lucaSubs)//N,
-({-2*sigma$u,2*sigma$u}//.lucaSubs)//N]},
-{{iOrd,nPts},{},zFuncs,interpFuncFinal,smallestRVal[interpFuncFinal],infNormFinal[interpFuncFinal]}]]]]
+iOrd,
+{{qPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
+{rPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
+{ePts,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}}]},
+{{iOrd,gSpec},{},zFuncs,interpFuncFinal,smallestRVal[interpFuncFinal],infNormFinal[interpFuncFinal]}]]]]
 
 
 
@@ -852,3 +827,13 @@ Print["done reading occBindRecur.m"]
 
 
 
+(*
+preCalcInterp[iOrder_Integer,iPts_Integer,
+{qLow_?NumberQ,qHigh_?NumberQ},
+{ruLow_?NumberQ,ruHigh_?NumberQ}]:=
+With[{theGrid=gridPts[{{iPts,qLow,qHigh},
+{iPts,ruLow,ruHigh}}],
+fns=Table[Unique["fnVal"],{(iPts+1)^3}]},
+With[{evals=Transpose[{theGrid,fns}]},
+{fns,evals,Interpolation[evals,InterpolationOrder->iOrder]}]]
+*)
