@@ -227,8 +227,8 @@ makeInterpFuncPF[theFunc_Function,pos_List,iOrder_Integer,iPts_Integer,
 {ruLow_?NumberQ,ruHigh_?NumberQ}
 ]:=Module[{thePts=
 gridPts[iPts,
-{qLow,qHigh},
-{ruLow,ruHigh}],
+{{qLow,qHigh},
+{ruLow,ruHigh}}],
 pfFunc=Function[{qq,ru},theFunc[qq,ru,0]]},
 With[{whl={#,pfFunc @@ #}& /@
 thePts},
@@ -261,8 +261,8 @@ makeInterpFuncRE[theFunc_Function,pos_Integer,iOrder_Integer,iPts_Integer,
 {ruLow_?NumberQ,ruHigh_?NumberQ},stdev_?NumberQ
 ]:=Module[{thePts=
 gridPts[iPts,
-{qLow,qHigh},
-{ruLow,ruHigh}],
+{{qLow,qHigh},
+{ruLow,ruHigh}}],
 reFunc=Function @@ {{qq,ru},
 With[{qrSubbed=theFunc[qq,ru,#,thePos]},Print["about to use myExpect in func"];
 myExpect[Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
@@ -308,17 +308,17 @@ NIntegrate @@ theIntBody]]]
 doScalarInterp[whlList:{{{_?NumberQ..},{_?NumberQ..}}..},pos_Integer,iOrder_Integer]:=
 With[{prtList={#[[1]],#[[2,pos]]}&/@whlList},
 Interpolation[prtList,InterpolationOrder->iOrder]]
-
+(*
 preCalcInterp[iOrder_Integer,iPts_Integer,
 {qLow_?NumberQ,qHigh_?NumberQ},
 {ruLow_?NumberQ,ruHigh_?NumberQ}]:=
 With[{theGrid=gridPts[iPts,
-{qLow,qHigh},
-{ruLow,ruHigh}],
+{{qLow,qHigh},
+{ruLow,ruHigh}}],
 fns=Table[Unique["fnVal"],{(iPts+1)^3}]},
 With[{evals=Transpose[{theGrid,fns}]},
 {fns,evals,Interpolation[evals,InterpolationOrder->iOrder]}]]
-
+*)
 
 
 
@@ -330,6 +330,16 @@ Flatten[theOuter,Depth[theOuter]-3]]]]
 
 
 
+
+gridPts[rngs:{{_?NumberQ,_?NumberQ,_?NumberQ}..}]:=
+With[{funcForPts=(Function[xx,oneDimGridPts[xx[[1]],xx[[{2,3}]]]] @#) &},
+With[{oneDimPts=funcForPts/@rngs},
+With[{theOuter=Outer[List,Sequence@@#]&[oneDimPts]},
+Flatten[theOuter,Depth[theOuter]-3]]]]
+
+
+
+(*
 gridPts[iPts_Integer,
 qRng:{qLow_?NumberQ,qHigh_?NumberQ},
 rRng:{ruLow_?NumberQ,ruHigh_?NumberQ}]:=
@@ -337,7 +347,7 @@ With[{
 qPts=oneDimGridPts[iPts,qRng],
 rPts=oneDimGridPts[iPts,rRng]},
 Flatten[Outer[List,qPts,rPts],1]]
-
+*)
 
 
 oneDimGridPts[iPts_Integer,{xLow_?NumberQ,xHigh_?NumberQ}]:=
