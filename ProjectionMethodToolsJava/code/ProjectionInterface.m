@@ -2,7 +2,6 @@
 (*ToDo make sure rationals mapped to numbers beofre java sees them otherwise obscure error MLGet out of sequence
 *)
 BeginPackage["ProjectionInterface`", {"ProtectedSymbols`", "JLink`"}]
-
 Print["reading ProjectionInterface`"];
 (* Exported symbols added here with SymbolName::usage *)  
 (* Exported symbols added here with SymbolName::usage *) 
@@ -51,7 +50,7 @@ genPolys::usage = "genPolys[theWts_?MatrixQ,theStateVars_List,theRanges_?MatrixQ
 nearestLQ::usage="nearestLQ[theSolnSubs_List,thePhi_?NumberQ,thePoly_,theSubs_List]"
 *)
 fromChebyshevInterval::usage = "fromChebyshevInterval[xVal_,theMin_,theMax_]"
-    theMin+((xVal+1)*(theMax-theMin)/2)
+   (* theMin+((xVal+1)*(theMax-theMin)/2)*)
 ComputeInitialCollocationWeights::usage=
 "ComputeCollocationWeights[basis,initWts,modEqns]"
 ComputeCollocationWeightsToOrder::usage=
@@ -2786,6 +2785,8 @@ ridTSubs=xx_[ProtectedSymbols`t]->xx;
 genPathNoT[len_Integer]:=genPath[len]/.ridTSubs
 
 
+myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
+
 End[]
 
 EndPackage[]
@@ -2809,7 +2810,5 @@ mySubs={betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
 (*
 numIt[xx_]:=xx//.lucaSubs//Expand//Chop;Print["ProjectionInterface: taking //N out of numIt"];*)
 
-
-myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
 
 Print["done reading ProjectionInterface"]
