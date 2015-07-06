@@ -2,8 +2,12 @@ Needs["occBindRecur`"]
 
 (*impose one period*)
 
-chkPts=10;chkOrd=2;
+chkPts=10*{3,3,3};chkOrd=2;
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[chkOrd,chkPts,{},1];
+assessFunc[finFuncOnePF]
 {ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[chkOrd,chkPts,{},sigma$u//.lucaSubs,1];
+assessFunc[finFuncOnePF]
+
 (*
 
 

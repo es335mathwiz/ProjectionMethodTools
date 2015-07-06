@@ -25,7 +25,7 @@ GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_L
 tryNow::usage=""
 occBindCreatePolynomials::usage="occBindCreatePolynomials"
 CreateRHSPolynomials::usage="CreateRHSPolynomials[aMod_,results_?JavaObjectQ]"
-eqvdif::usage="eqvdif placeholder for EquationValDrv in substitutions";
+eqvdIf::usage="eqvdif placeholder for EquationValDrv in substitutions";
 EquationValDrv::usage="java class for projection";
 doRecurIneqOcc::usage="doRecurIneqOcc[{}]";
 doRecurIneqOccEqns::usage="doRecurIneqOcc[{}]";
@@ -2239,7 +2239,7 @@ polyRange = {{qLow, qHigh}, {globalruLow, globalruHigh}} //. mySubs;
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. mySubs, {sigma$uNot} //. mySubs, 
+    theMean //. mySubs, {sigma$uNot} //. mySubs, 
    integOrder //. mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2398,7 +2398,7 @@ polyRange = {{qLow, qHigh}, {globalruLow, globalruHigh}} //. mySubs;
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. mySubs, {sigma$uNot} //. mySubs, 
+    theMean //. mySubs, {sigma$uNot} //. mySubs, 
    integOrder //. mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2467,7 +2467,7 @@ polyRange = {{qLow, qHigh}, {globalruLow, globalruHigh}} //. mySubs;
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. mySubs, {sigma$uNot} //. mySubs, 
+    theMean //. mySubs, {sigma$uNot} //. mySubs, 
    integOrder //. mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
@@ -2485,7 +2485,7 @@ polyRange = {{qLow, qHigh}, {globalruLow, globalruHigh}} //. mySubs;
 initPower = {0, 0}; shockPower = {0};
 lucaBasis = 
   GenerateBasis[stateVar, polyRange //. mySubs, initPower, theShock,
-    ProtectedSymbols`theMean //. mySubs, {sigma$uNot} //. mySubs, 
+    theMean //. mySubs, {sigma$uNot} //. mySubs, 
    integOrder //. mySubs, shockPower, nonStateVar];
 simp = JavaNew[
    "gov.frb.ma.msu.ProjectionMethodToolsJava.SimpleFindZeroStrategy"];
