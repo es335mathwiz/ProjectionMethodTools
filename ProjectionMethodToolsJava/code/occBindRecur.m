@@ -160,11 +160,13 @@ mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
  
-forIOrdNPtsPF[iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
-NestList[Identity[iterPF[iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
+forIOrdNPtsPF[compCon_Function,stateSel_Function,
+iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
+NestList[Identity[iterPF[compCon,stateSel,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
-forIOrdNPtsRE[iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
-NestList[Identity[iterRE[iOrd,gSpec,#,stdev]]&,start,maxLen];
+forIOrdNPtsRE[compCon_Function,stateSel_Function,
+iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
+NestList[Identity[iterRE[compCon,stateSel,iOrd,gSpec,#,stdev]]&,start,maxLen];
 
 doChkLoad[]:=
 If[$OperatingSystem=="Windows",{0,0,0,0,0},
@@ -190,7 +192,8 @@ doScalarInterp[whl,#,iOrder]&/@pos]]/;
 With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
-makeInterpFuncPF[theFunc_Function,pos_List,iOrder_Integer,
+makeInterpFuncPF[conGen_Function,stateSel_Function,
+theFunc_Function,pos_List,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}
 ]:=Module[{thePts=gridPts[gSpec],
@@ -201,11 +204,12 @@ doScalarInterp[whl,#,iOrder]&/@pos]]/;
 With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
-makeInterpFuncPF[theFunc_Function,iOrder_Integer,
+makeInterpFuncPF[conGen_Function,stateSel_Function,
+theFunc_Function,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}]:=
 With[{pos=Range[Length[theFunc[0,0,0]]]},
-makeInterpFuncPF[theFunc,pos,iOrder,gSpec]]
+makeInterpFuncPF[conGen,stateSel,theFunc,pos,iOrder,gSpec]]
 
 
 
