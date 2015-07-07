@@ -256,16 +256,14 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 
 
 
-genCompSlackSysFunc[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+genCompSlackSysFunc[conGen_Function,stateSel_Function,
+xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
 pathLen_Integer]:=
 With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{compCon=(((aPath[[5,1]])>=(0.02(*rUnderBar//.lucaSimpleModel`lucaSubs*))&&theZs[[-1]]==0)||
-((aPath[[5,1]])==(0.02(*rUnderBar//.lucaSimpleModel`lucaSubs*))&&theZs[[-1]]>=0)),
-rhsEqns={aPath[[4,1]],aPath[[6,1]]}},
-With[{zLeft=(Drop[theZs,-1])},
-With[{theSys=And[compCon,zEqns]},
-{compCon,rhsEqns}]]]]/;
+With[{compCon=conGen[aPath,theZs],
+rhsEqns=stateSel[aPath]},
+{compCon,rhsEqns}]]/;
 And[pathLen>0]
 
 
