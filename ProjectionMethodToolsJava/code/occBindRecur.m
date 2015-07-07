@@ -5,6 +5,9 @@ PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
 Print["reading occBindRecur.m"]
 BeginPackage["occBindRecur`",{"ProtectedSymbols`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`","SymbolicAMA`","mathSmolyak`"}]
 
+genPath::usage="genPath[bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,numNonZeroZs_Integer,padZeroZs_Integer]"
+
+
 iterateDR::usage="iterateDR[drFunc_Function,initVec:{initQ_?NumberQ,initRu_?NumberQ,initEps_?NumberQ},stdev_?NumberQ,numPers_Integer,reps_Integer:1]"
 hmatAppGeneric::usage="hmatAppGeneric[tp_?MatrixQ]"
 
@@ -253,6 +256,41 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 
 
 
+genCompSlackSysFunc[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+pathLen_Integer]:=
+With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen],
+theZs=Flatten[genZVars[pathLen-1,1]]},
+With[{compCon=(((aPath[[5,1]])>=(0.02(*rUnderBar//.lucaSimpleModel`lucaSubs*))&&theZs[[-1]]==0)||
+((aPath[[5,1]])==(0.02(*rUnderBar//.lucaSimpleModel`lucaSubs*))&&theZs[[-1]]>=0)),
+rhsEqns={aPath[[4,1]],aPath[[6,1]]}},
+With[{zLeft=(Drop[theZs,-1])},
+With[{theSys=And[compCon,zEqns]},
+{compCon,rhsEqns}]]]]/;
+And[pathLen>0]
+
+
+
+
+genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+numNonZeroZs_Integer,padZeroZs_Integer]:=
+With[{startPath=
+genPath[xtm1,bmat,phimat,fmat,psieps,psic,numNonZeroZs]},
+With[{tailPath=NestList[((nonFPart[#,
+{{0}},bmat,phimat,fmat,psieps,psic]))&,startPath[[{-3,-2,-1}]],padZeroZs]},
+Join[startPath,Join@@Drop[tailPath,1]]]]
+
+
+genPath[xtm1_?MatrixQ,
+bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+numNonZeroZs_Integer]:=
+With[{rawFParts=Reverse[(doFPart[phimat,fmat,psiz,#,1,0] &/@Range[0,numNonZeroZs-1])]},
+With[{bgn=(nonFPart[xtm1,
+{{ProtectedSymbols`eps}},bmat,phimat,fmat,psieps,psic]+rawFParts[[1]])},
+Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,psieps,fmat]+#2)&,bgn,Drop[rawFParts,1]]]]]
+
+
+
+
 getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
 aPath[qtm1Arg,rutm1Arg,epsArg,zFuncs][[Range[3]+3]]
 
@@ -260,7 +298,7 @@ aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List,pad_Integer
 With[{thePathVals=
 Drop[Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
 With[{pathLen=Length[thePathVals]},
-With[{tp=genPath[pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{zLeft=(Drop[theZs,-0])},
 With[{zAssn=Thread[zLeft->thePathVals]},
@@ -273,7 +311,7 @@ aPathFinal[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,finalFuncs_List,pa
 With[{thePathVals=
 Drop[Through[finalFuncs[qtm1Arg,rutm1Arg,epsArg]],2]},
 With[{pathLen=Length[thePathVals]},
-With[{tp=genPath[pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{zLeft=(Drop[theZs,-0])},
 With[{zAssn=Thread[zLeft->thePathVals]},
@@ -285,7 +323,7 @@ tp/.zAssn
 
 
 nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
-bmat_?MatrixQ,phimat_?MatrixQ,psimat_?MatrixQ,fmat_?MatrixQ]:=
+bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psimat_?MatrixQ,psic_?MatrixQ]:=
 bmat . xtm1 + phimat . psimat . epsilon + 
 Inverse[IdentityMatrix[3]-fmat] . phimat . psic
 
@@ -320,7 +358,7 @@ Reverse[zMats]]]
 numericLinearizeSystemForOBC[eqns_List]:=
 Module[{noCnstr=eqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx},zf,hr,
 bmat,phimat,fmat},(*Print[noCnstr];*)
-With[{hmat=equationsToMatrix[noCnstr]//myN},(*Print[hmat];*)
+With[{hmat=equationsToMatrix[noCnstr]},(*Print[hmat];*)
 {ig,ig,ig,ig,qmat,ig,ig,ig}=numericAMA[hmat,1,1];(*Print[zf,hf];*)
 Print["need to generalize to actually compute qmat"];
 {hmat,qmat,{bmat,phimat,fmat}=numericComputeBPhiF[hmat,qmat]}
