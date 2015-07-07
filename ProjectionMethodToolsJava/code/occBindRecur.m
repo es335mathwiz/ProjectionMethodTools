@@ -123,10 +123,6 @@ Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["f
 {numProcs,loadAvg,freeMem}//ToString//ToExpression]]
 
 
-fpForInitStateFunc[qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
-zFuncs_List,(pos_List)|(pos_Integer)]:=
-With[{beenDone=fpForInitStateFunc[qVal,ruVal,epsVal,zFuncs]},
-beenDone[[pos]]]
 
 
 
