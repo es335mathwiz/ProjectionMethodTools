@@ -134,7 +134,8 @@ Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 {zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
 pathLen=If[zFuncs==={},1,Length[zFuncs]-1]},
 With[{theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,valSubs,pathLen]},
+With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,
+{{qtm1},{rtm1},{rutm1}},valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
@@ -147,9 +148,10 @@ mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
 makeInitStateTryEqnsSubbed[compCon:{_Function...},stateSel_Function,
+xtm1_?MatrixQ,
 valSubs_List,pathLen_Integer]:=
 With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
-{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
+xtm1,bmat,phimat,fmat,psieps,
 psic,psiz,pathLen]/.valSubs},
 With[{initStateSubbed=And @@ (csrhs[[1]]),
 tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
