@@ -165,41 +165,42 @@ fpForInitStateFunc[compCon,stateSel,
 qVal,ruVal,epsVal,zFuncs]=(*Print["disabled memoizing"];*)
 With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
 valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},
-With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
-{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
-psic,psiz,pathLen]/.valSubs,
-initGuess=If[Length[zFuncs]==0,
+With[{initGuess=If[Length[zFuncs]==0,
 Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 {zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
 aPath=genPath[{{qtm1},{rtm1},{rutm1}},
-bmat,phimat,fmat,psieps,psic,psiz,pathLen],
+bmat,phimat,fmat,psieps,psic,psiz,Length[compCon],pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{initStateSubbed=And @@ (csrhs[[1]]),
-tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
+With[{andinittry=
+makeInitStateTryEqnsSubbed[compCon,stateSel,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=
 makeSysFunction[pathLen,
-zFuncs,zLeft,And[initStateSubbed,tryEqnsSubbed],True]},
+zFuncs,zLeft,andinittry]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]/;
 Or[zFuncs==={},
-(*Print["make",{Through[(zFuncs[[-1]])[0,0]],(zFuncs)//InputForm}];*)
 NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
 
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
-(*
-makeInitStateTryEqnsSubbed[]:=
-And @@ (csrhs[[1]])
-*)
+
+makeInitStateTryEqnsSubbed[compCon:{_Function...},stateSel_Function,
+valSubs_List,pathLen_Integer]:=
+With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
+{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
+psic,psiz,pathLen]/.valSubs},
+With[{initStateSubbed=And @@ (csrhs[[1]]),
+tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
+And[initStateSubbed,tryEqnsSubbed]]]
 
 makeSysFunction[pathLen_Integer,
-zFuncs_List,zLeft_List,initStateSubbed_,tryEqnsSubbed_]:=
+zFuncs_List,zLeft_List,initStateSubbedtryEqnsSubbed_]:=
 Function[{qTry,rTry},
 With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
 With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
-And[initStateSubbed,zEqns,tryEqnsSubbed]]]]
+And[initStateSubbedtryEqnsSubbed,zEqns]]]]
 
 
 
@@ -376,7 +377,7 @@ And[pathLen>0]
 genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,
 numNonZeroZs_Integer,padZeroZs_Integer]:=
 With[{startPath=
-genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,numNonZeroZs]},
+genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,numCon,numNonZeroZs]},
 With[{tailPath=NestList[((nonFPart[#,
 {{0}},bmat,phimat,fmat,psieps,psic]))&,startPath[[{-3,-2,-1}]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
