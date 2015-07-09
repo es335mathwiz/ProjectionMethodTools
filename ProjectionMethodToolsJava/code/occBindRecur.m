@@ -108,12 +108,12 @@ Protect[MatrixPower]
 Print["occBindRecur: Turning off extrapolation warning messages"]
 Off[InterpolatingFunction::dmval];
 
-
+Print["need to split eps from other state vars"]
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
 xtm1_?MatrixQ,
-{qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
+xtm1Vals:{_?NumberQ..},
 zFuncs_List,(pos_List)|(pos_Integer)]:=
-With[{beenDone=fpForInitStateFunc[compCon,stateSel,xtm1,{qVal,ruVal,epsVal},zFuncs]},
+With[{beenDone=fpForInitStateFunc[compCon,stateSel,xtm1,xtm1Vals,zFuncs]},
 beenDone[[pos]]]
 
 
@@ -130,20 +130,20 @@ Module[{},
 fpForInitStateFunc[compCon,stateSel,
 xtm1,
 xtm1Val,zFuncs]=(*Print["disabled memoizing"];*)
-With[{zArgs=stateSel[xtm1Val]},
+With[{zValArgs=stateSel[xtm1Val],zArgs=Table[Unique["xNow"],{Length[stateSel[xtm1]]}]},
 With[{lhRule=(First/@stateSel[xtm1]),
 initGuess=If[Length[zFuncs]==0,
-Through[noCnstrnGuess@@#&[zArgs]][[{1,2}]],
-{zFuncs[[1]]@@zArgs,zFuncs[[2]]@@zArgs}],
+Through[noCnstrnGuess@@#&[zValArgs]][[{1,2}]],
+{zFuncs[[1]]@@zValArgs,zFuncs[[2]]@@zValArgs}],
 pathLen=If[zFuncs==={},1,Length[zFuncs]-1]},
 With[{valSubs=Append[Thread[lhRule->(xtm1Val[[Range[Length[lhRule]]]])],
 eps->epsVal],
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,
-xtm1,valSubs,pathLen]},
+xtm1,zArgs,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry]},
-With[{fpTarget=Join[{qTry,rTry},theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];*)
+With[{fpTarget=Join[zArgs,theZs]},Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]]/;
 Or[zFuncs==={},
@@ -153,19 +153,19 @@ mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
 makeInitStateTryEqnsSubbed[compCon:{_Function...},stateSel_Function,
-xtm1_?MatrixQ,
+xtm1_?MatrixQ,zArgs_List,
 valSubs_List,pathLen_Integer]:=
 With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
 xtm1,bmat,phimat,fmat,psieps,
 psic,psiz,pathLen]/.valSubs},
 With[{initStateSubbed=And @@ (csrhs[[1]]),
-tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
+tryEqnsSubbed=And @@Thread[zArgs==(csrhs[[2]])]},
 And[initStateSubbed,tryEqnsSubbed]]]
 
 makeSysFunction[pathLen_Integer,
 zFuncs_List,zLeft_List,initStateSubbedtryEqnsSubbed_]:=
-Function[{qTry,rTry},
-With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
+Function[{xqTry,rTry},
+With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][xqTry,rTry]]]},
 With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
 And[initStateSubbedtryEqnsSubbed,zEqns]]]]
 
