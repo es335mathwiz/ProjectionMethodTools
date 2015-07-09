@@ -124,16 +124,17 @@ Print["fpForInitStateFunc still model specific"]
 Print["fpForInitStateFunc still model specific"]
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
 xtm1_?MatrixQ,
-xtm1Val:{qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
+xtm1Val:{_?NumberQ..,epsVal_?NumberQ},
 zFuncs_List]:=
 Module[{},
 fpForInitStateFunc[compCon,stateSel,
 xtm1,
-{qVal,ruVal,epsVal},zFuncs]=(*Print["disabled memoizing"];*)
+xtm1Val,zFuncs]=(*Print["disabled memoizing"];*)
+With[{zArgs=stateSel[xtm1Val]},
 With[{lhRule=(First/@stateSel[xtm1]),
 initGuess=If[Length[zFuncs]==0,
-Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
-{zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
+Through[noCnstrnGuess@@#&[zArgs]][[{1,2}]],
+{zFuncs[[1]]@@zArgs,zFuncs[[2]]@@zArgs}],
 pathLen=If[zFuncs==={},1,Length[zFuncs]-1]},
 With[{valSubs=Append[Thread[lhRule->(xtm1Val[[Range[Length[lhRule]]]])],
 eps->epsVal],
@@ -144,7 +145,7 @@ With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];*)
 getFixedPoint[fpTarget,theSys,initGuess]
-]]]]]]]/;
+]]]]]]]]/;
 Or[zFuncs==={},
 NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
 
