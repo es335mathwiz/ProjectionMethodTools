@@ -111,58 +111,23 @@ Off[InterpolatingFunction::dmval];
 
 
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
-qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
+{qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
 zFuncs_List,(pos_List)|(pos_Integer)]:=
-With[{beenDone=fpForInitStateFunc[compCon,stateSel,qVal,ruVal,epsVal,zFuncs]},
+With[{beenDone=fpForInitStateFunc[compCon,stateSel,{qVal,ruVal,epsVal},zFuncs]},
 beenDone[[pos]]]
 
 
 Print["fpForInitStateFunc still model specific"]
 
-(*before refactor to split
 
-fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
-qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
-zFuncs_List]:=
-Module[{},
-fpForInitStateFunc[compCon,stateSel,
-qVal,ruVal,epsVal,zFuncs]=(*Print["disabled memoizing"];*)
-With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
-valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},(*Print["valsubs",valSubs];*)
-With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
-{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
-psic,psiz,pathLen]/.valSubs,
-initGuess=If[Length[zFuncs]==0,
-Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
-{zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
-aPath=genPath[{{qtm1},{rtm1},{rutm1}},
-bmat,phimat,fmat,psieps,psic,psiz,pathLen],
-theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{initStateSubbed=And @@ (csrhs[[1]]),
-tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
-With[{zLeft=(Drop[theZs,-1])},
-With[{theSys=Function[{qTry,rTry},
-With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
-With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
-And[initStateSubbed,zEqns,tryEqnsSubbed]]]]},
-With[{zVars=Union[Cases[initStateSubbed,xx_[t],Infinity]]},
-With[{fpTarget=Join[{qTry,rTry},theZs]},
-If[Drop[Union[fpTarget],2]=!=Union[theZs],Print["diff zs",Drop[Union[fpTarget],2],Union[theZs],zEqns]];(*Print["tosolve",{csrhs,theSys,fpTarget,initGuess,zFuncs}//InputForm];*)
-FixedPoint[fpTarget/.With[{soln=
-Flatten[NSolve[theSys @@ #,fpTarget]]},(*Print["soln=",soln,fpTarget];*)
-If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys,fpTarget}}],soln]]&,initGuess,SameTest->mySameQ]]]]]]]]]/;
-Or[zFuncs==={},
-(*Print["make",{Through[(zFuncs[[-1]])[0,0]],(zFuncs)//InputForm}];*)
-NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
-*)
 
 Print["fpForInitStateFunc still model specific"]
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
-qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
+{qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
 zFuncs_List]:=
 Module[{},
 fpForInitStateFunc[compCon,stateSel,
-qVal,ruVal,epsVal,zFuncs]=(*Print["disabled memoizing"];*)
+{qVal,ruVal,epsVal},zFuncs]=(*Print["disabled memoizing"];*)
 With[{valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal},
 initGuess=If[Length[zFuncs]==0,
 Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
@@ -392,9 +357,11 @@ Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,fmat,psieps,psic]+#2)&
 getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
 aPath[qtm1Arg,rutm1Arg,epsArg,zFuncs][[Range[3]+3]]
 
-aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List,pad_Integer:0]:=  
+aPath[compCon:{_Function...},stateSel_Function,
+{qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ},zFuncs_List,pad_Integer:0]:=  
 With[{thePathVals=
-Drop[Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
+Drop[Function[{xx,yy,zz},
+fpForInitStateFunc[compCon,stateSel,{xx,yy,zz},zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
 With[{pathLen=Length[thePathVals]},
 With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
@@ -473,3 +440,39 @@ Print["done reading occBindRecur.m"]
 
 
 
+(*before refactor to split
+
+fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
+qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
+zFuncs_List]:=
+Module[{},
+fpForInitStateFunc[compCon,stateSel,
+qVal,ruVal,epsVal,zFuncs]=(*Print["disabled memoizing"];*)
+With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
+valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},(*Print["valsubs",valSubs];*)
+With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
+{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
+psic,psiz,pathLen]/.valSubs,
+initGuess=If[Length[zFuncs]==0,
+Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
+{zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
+aPath=genPath[{{qtm1},{rtm1},{rutm1}},
+bmat,phimat,fmat,psieps,psic,psiz,pathLen],
+theZs=Flatten[genZVars[pathLen-1,1]]},
+With[{initStateSubbed=And @@ (csrhs[[1]]),
+tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
+With[{zLeft=(Drop[theZs,-1])},
+With[{theSys=Function[{qTry,rTry},
+With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
+With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
+And[initStateSubbed,zEqns,tryEqnsSubbed]]]]},
+With[{zVars=Union[Cases[initStateSubbed,xx_[t],Infinity]]},
+With[{fpTarget=Join[{qTry,rTry},theZs]},
+If[Drop[Union[fpTarget],2]=!=Union[theZs],Print["diff zs",Drop[Union[fpTarget],2],Union[theZs],zEqns]];(*Print["tosolve",{csrhs,theSys,fpTarget,initGuess,zFuncs}//InputForm];*)
+FixedPoint[fpTarget/.With[{soln=
+Flatten[NSolve[theSys @@ #,fpTarget]]},(*Print["soln=",soln,fpTarget];*)
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys,fpTarget}}],soln]]&,initGuess,SameTest->mySameQ]]]]]]]]]/;
+Or[zFuncs==={},
+(*Print["make",{Through[(zFuncs[[-1]])[0,0]],(zFuncs)//InputForm}];*)
+NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
+*)
