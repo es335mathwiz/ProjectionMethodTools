@@ -118,6 +118,9 @@ beenDone[[pos]]]
 
 
 Print["fpForInitStateFunc still model specific"]
+
+(*before refactor to split
+
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
 qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
 zFuncs_List]:=
@@ -151,10 +154,49 @@ If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{t
 Or[zFuncs==={},
 (*Print["make",{Through[(zFuncs[[-1]])[0,0]],(zFuncs)//InputForm}];*)
 NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
+*)
+
+Print["fpForInitStateFunc still model specific"]
+fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
+qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
+zFuncs_List]:=
+Module[{},
+fpForInitStateFunc[compCon,stateSel,
+qVal,ruVal,epsVal,zFuncs]=(*Print["disabled memoizing"];*)
+With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
+valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},(*Print["valsubs",valSubs];*)
+With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
+{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
+psic,psiz,pathLen]/.valSubs,
+initGuess=If[Length[zFuncs]==0,
+Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
+{zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
+aPath=genPath[{{qtm1},{rtm1},{rutm1}},
+bmat,phimat,fmat,psieps,psic,psiz,pathLen],
+theZs=Flatten[genZVars[pathLen-1,1]]},
+With[{initStateSubbed=And @@ (csrhs[[1]]),
+tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
+With[{zLeft=(Drop[theZs,-1])},
+With[{theSys=Function[{qTry,rTry},
+With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
+With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
+And[initStateSubbed,zEqns,tryEqnsSubbed]]]]},
+With[{zVars=Union[Cases[initStateSubbed,xx_[t],Infinity]]},
+With[{fpTarget=Join[{qTry,rTry},theZs]},
+If[Drop[Union[fpTarget],2]=!=Union[theZs],Print["diff zs",Drop[Union[fpTarget],2],Union[theZs],zEqns]];(*Print["tosolve",{csrhs,theSys,fpTarget,initGuess,zFuncs}//InputForm];*)
+getFixedPoint[fpTarget,theSys,initGuess]
+]]]]]]]]/;
+Or[zFuncs==={},
+(*Print["make",{Through[(zFuncs[[-1]])[0,0]],(zFuncs)//InputForm}];*)
+NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
 
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
+getFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
+FixedPoint[fpTarget/.With[{soln=
+Flatten[NSolve[theSys @@ #,fpTarget]]},(*Print["soln=",soln,fpTarget];*)
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys,fpTarget}}],soln]]&,initGuess,SameTest->mySameQ]
 
 
  
