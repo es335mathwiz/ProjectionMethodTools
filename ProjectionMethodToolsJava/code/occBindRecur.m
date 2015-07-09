@@ -124,18 +124,20 @@ Print["fpForInitStateFunc still model specific"]
 Print["fpForInitStateFunc still model specific"]
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
 xtm1_?MatrixQ,
-{qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
+xtm1Val:{qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
 zFuncs_List]:=
 Module[{},
 fpForInitStateFunc[compCon,stateSel,
 xtm1,
 {qVal,ruVal,epsVal},zFuncs]=(*Print["disabled memoizing"];*)
-With[{valSubs={xtm1[[1,1]]->qVal,xtm1[[3,1]]->ruVal,eps->epsVal},
+With[{lhRule=(First/@stateSel[xtm1]),
 initGuess=If[Length[zFuncs]==0,
 Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 {zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
 pathLen=If[zFuncs==={},1,Length[zFuncs]-1]},
-With[{theZs=Flatten[genZVars[pathLen-1,1]]},
+With[{valSubs=Append[Thread[lhRule->(xtm1Val[[Range[Length[lhRule]]]])],
+eps->epsVal],
+theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,
 xtm1,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
@@ -332,7 +334,7 @@ With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,
 Length[compCon],pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{compConVal=Through[compCon[aPath,theZs]],
-rhsEqns=stateSel[aPath]},
+rhsEqns=First/@stateSel[Drop[aPath,Length[xtm1]]]},
 {compConVal,rhsEqns}]]/;
 And[pathLen>0]
 
