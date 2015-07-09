@@ -168,15 +168,10 @@ valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},
 With[{initGuess=If[Length[zFuncs]==0,
 Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 {zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
-aPath=genPath[{{qtm1},{rtm1},{rutm1}},
-bmat,phimat,fmat,psieps,psic,psiz,Length[compCon],pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{andinittry=
-makeInitStateTryEqnsSubbed[compCon,stateSel,valSubs,pathLen]},
+With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
-With[{theSys=
-makeSysFunction[pathLen,
-zFuncs,zLeft,andinittry]},
+With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]/;
