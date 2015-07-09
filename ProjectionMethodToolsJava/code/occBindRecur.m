@@ -1,11 +1,11 @@
-PrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
+aPrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
 Print["reading occBindRecur.m"]
 BeginPackage["occBindRecur`",{"ProtectedSymbols`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`","SymbolicAMA`","mathSmolyak`"}]
 
-genPath::usage="genPath[bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,numNonZeroZs_Integer,padZeroZs_Integer]"
+genPath::usage="genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,numNonZeroZs_Integer,padZeroZs_Integer]"
 
 
 iterateDR::usage="iterateDR[drFunc_Function,initVec:{initQ_?NumberQ,initRu_?NumberQ,initEps_?NumberQ},stdev_?NumberQ,numPers_Integer,reps_Integer:1]"
@@ -82,9 +82,6 @@ qmatSymb::usage="simple model matrix"
 bmatSymb::usage="simple model matrix"
 phimatSymb::usage="simple model matrix"
 fmatSymb::usage="simple model matrix"
-psiz::usage="simple model matrix"
-psic::usage="simple model matrix"
-psieps::usage="simple model matrix"
 zfSymb::usage="simple model matrix"
 hfSymb::usage="simple model matrix"
 amatSymb::usage="simple model matrix"
@@ -120,7 +117,7 @@ With[{beenDone=fpForInitStateFunc[compCon,stateSel,qVal,ruVal,epsVal,zFuncs]},
 beenDone[[pos]]]
 
 
-
+Print["fpForInitStateFunc still model specific"]
 fpForInitStateFunc[compCon_Function,stateSel_Function,
 qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
 zFuncs_List]:=
@@ -131,11 +128,12 @@ With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
 valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},(*Print["valsubs",valSubs];*)
 With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
 {{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
-psic,pathLen]/.valSubs,
+psic,psiz,pathLen]/.valSubs,
 initGuess=If[Length[zFuncs]==0,
 Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 {zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
-aPath=genPath[{{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,pathLen],
+aPath=genPath[{{qtm1},{rtm1},{rutm1}},
+bmat,phimat,fmat,psieps,psic,psiz,pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{initStateSubbed=csrhs[[1]],
 tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
@@ -310,9 +308,9 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 
 
 genCompSlackSysFunc[conGen_Function,stateSel_Function,
-xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
 pathLen_Integer]:=
-With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen],
+With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{compCon=conGen[aPath,theZs],
 rhsEqns=stateSel[aPath]},
@@ -322,22 +320,22 @@ And[pathLen>0]
 
 
 
-genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,
 numNonZeroZs_Integer,padZeroZs_Integer]:=
 With[{startPath=
-genPath[xtm1,bmat,phimat,fmat,psieps,psic,numNonZeroZs]},
+genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,numNonZeroZs]},
 With[{tailPath=NestList[((nonFPart[#,
 {{0}},bmat,phimat,fmat,psieps,psic]))&,startPath[[{-3,-2,-1}]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
 
 
 genPath[xtm1_?MatrixQ,
-bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,
+bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,
 numNonZeroZs_Integer]:=
-With[{rawFParts=Reverse[(doFPart[phimat,fmat,psiz,#,1,0] &/@Range[0,numNonZeroZs-1])]},
+With[{rawFParts=Reverse[(doFPart[phimat,fmat,psiz,#,numCon,0] &/@Range[0,numNonZeroZs-1])]},
 With[{bgn=(nonFPart[xtm1,
 {{ProtectedSymbols`eps}},bmat,phimat,fmat,psieps,psic]+rawFParts[[1]])},
-Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,psieps,fmat]+#2)&,bgn,Drop[rawFParts,1]]]]]
+Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,fmat,psieps,psic]+#2)&,bgn,Drop[rawFParts,1]]]]]
 
 
 
@@ -349,7 +347,7 @@ aPath[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List,pad_Integer
 With[{thePathVals=
 Drop[Function[{xx,yy,zz},fpForInitStateFunc[xx,yy,zz,zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
 With[{pathLen=Length[thePathVals]},
-With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{zLeft=(Drop[theZs,-0])},
 With[{zAssn=Thread[zLeft->thePathVals]},
@@ -362,7 +360,7 @@ aPathFinal[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,finalFuncs_List,pa
 With[{thePathVals=
 Drop[Through[finalFuncs[qtm1Arg,rutm1Arg,epsArg]],2]},
 With[{pathLen=Length[thePathVals]},
-With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{zLeft=(Drop[theZs,-0])},
 With[{zAssn=Thread[zLeft->thePathVals]},
@@ -376,7 +374,7 @@ tp/.zAssn
 nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,
 bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psimat_?MatrixQ,psic_?MatrixQ]:=
 bmat . xtm1 + phimat . psimat . epsilon + 
-Inverse[IdentityMatrix[3]-fmat] . phimat . psic
+Inverse[IdentityMatrix[Length[xtm1]]-fmat] . phimat . psic
 
 
 
