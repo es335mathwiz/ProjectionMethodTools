@@ -179,7 +179,7 @@ tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=
 makeSysFunction[pathLen,
-zFuncs,zLeft,And[initStateSubbed,tryEqnsSubbed],{}]},
+zFuncs,zLeft,And[initStateSubbed,tryEqnsSubbed],True]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]/;
