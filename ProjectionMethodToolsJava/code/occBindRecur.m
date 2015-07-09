@@ -177,19 +177,26 @@ theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{initStateSubbed=And @@ (csrhs[[1]]),
 tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
 With[{zLeft=(Drop[theZs,-1])},
-With[{theSys=Function[{qTry,rTry},
-With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
-With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
-And[initStateSubbed,zEqns,tryEqnsSubbed]]]]},
-With[{},
+With[{theSys=
+makeSysFunction[pathLen,
+zFuncs,zLeft,initStateSubbed,tryEqnsSubbed]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
 getFixedPoint[fpTarget,theSys,initGuess]
-]]]]]]]]/;
+]]]]]]]/;
 Or[zFuncs==={},
 (*Print["make",{Through[(zFuncs[[-1]])[0,0]],(zFuncs)//InputForm}];*)
 NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
 
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
+
+
+makeSysFunction[pathLen_Integer,
+zFuncs_List,zLeft_List,initStateSubbed_,tryEqnsSubbed_]:=
+Function[{qTry,rTry},
+With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
+With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
+And[initStateSubbed,zEqns,tryEqnsSubbed]]]]
+
 
 
 getFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
