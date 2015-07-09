@@ -52,7 +52,7 @@ z01ExactInitPF::usage="exact perfect foresight for one period"
 
 
 genCompSlackSysFunc::usage="genCompSlack[pathLen_Integer,zFuncs:{_Function...}]"
-fpForInitStateFunc::usage="fpForInitVecFunc[compCon,stateSel,qVal,ruVal,epsVal,theCompSlackSysFunc_,zFuncs:{_Function...}]"
+fpForInitStateFunc::usage="fpForInitVecFunc[compCon,stateSel,xtm1,{qVal,ruVal,epsVal},theCompSlackSysFunc_,zFuncs:{_Function...}]"
 
 
 makeInterpFuncPF::usage="makeInterpFunc";
@@ -63,7 +63,6 @@ nonFPart::usage="nonFPart[xtm1_?MatrixQ,epsilon_?MatrixQ,bmat_?MatrixQ,phimat_?M
 redoFPart::usage="redoFPart[phimat_?MatrixQ,fmat_?MatrixQ,psiz_?MatrixQ,horizon_Integer,numCon_Integer]"
 forIOrdNPtsPF::usage="forIOrdNPtsPF[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]"
 forIOrdNPtsRE::usage="forIOrdNPtsRE[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]"
-newForIOrdNPtsRE::usage="newForIOrdNPtsRE[iOrd_Integer,nPts_Integer,start_List,maxLen_Integer]"
 doChkLoad::usage="doChkLoad[]->{numProcs,loadavgs..,freemem}"
 
 
@@ -111,9 +110,10 @@ Off[InterpolatingFunction::dmval];
 
 
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
+xtm1_?MatrixQ,
 {qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
 zFuncs_List,(pos_List)|(pos_Integer)]:=
-With[{beenDone=fpForInitStateFunc[compCon,stateSel,{qVal,ruVal,epsVal},zFuncs]},
+With[{beenDone=fpForInitStateFunc[compCon,stateSel,xtm1,{qVal,ruVal,epsVal},zFuncs]},
 beenDone[[pos]]]
 
 
@@ -123,22 +123,24 @@ Print["fpForInitStateFunc still model specific"]
 
 Print["fpForInitStateFunc still model specific"]
 fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
+xtm1_?MatrixQ,
 {qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ},
 zFuncs_List]:=
 Module[{},
 fpForInitStateFunc[compCon,stateSel,
+xtm1,
 {qVal,ruVal,epsVal},zFuncs]=(*Print["disabled memoizing"];*)
-With[{valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal},
+With[{valSubs={xtm1[[1,1]]->qVal,xtm1[[3,1]]->ruVal,eps->epsVal},
 initGuess=If[Length[zFuncs]==0,
 Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 {zFuncs[[1]][qVal,ruVal],zFuncs[[2]][qVal,ruVal]}],
 pathLen=If[zFuncs==={},1,Length[zFuncs]-1]},
 With[{theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,
-{{qtm1},{rtm1},{rutm1}},valSubs,pathLen]},
+xtm1,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry]},
-With[{fpTarget=Join[{qTry,rTry},theZs]},
+With[{fpTarget=Join[{qTry,rTry},theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];*)
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]/;
 Or[zFuncs==={},
@@ -173,13 +175,13 @@ If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{t
 
 
  
-forIOrdNPtsPF[compCon:{_Function...},stateSel_Function,
+forIOrdNPtsPF[compCon:{_Function...},stateSel_Function,xtm1_?MatrixQ,
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
-NestList[Identity[iterPF[compCon,stateSel,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
+NestList[Identity[iterPF[compCon,stateSel,xtm1,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
-forIOrdNPtsRE[compCon:{_Function...},stateSel_Function,
+forIOrdNPtsRE[compCon:{_Function...},stateSel_Function,xtm1_?MatrixQ,
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
-NestList[Identity[iterRE[compCon,stateSel,iOrd,gSpec,#,stdev]]&,start,maxLen];
+NestList[Identity[iterRE[compCon,stateSel,xtm1,iOrd,gSpec,#,stdev]]&,start,maxLen];
 
 doChkLoad[]:=
 If[$OperatingSystem=="Windows",{0,0,0,0,0},
@@ -193,7 +195,8 @@ Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["f
 
 
 
-makeInterpFuncFinal[theFunc_Function,pos_List,iOrder_Integer,
+makeInterpFuncFinal[theFunc_Function,xtm1_?MatrixQ,
+pos_List,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ},
 {_Integer,epsLow_?NumberQ,epsHigh_?NumberQ}}
@@ -359,13 +362,13 @@ Join[xtm1,Join @@ FoldList[(nonFPart[#1,{{0}},bmat,phimat,fmat,psieps,psic]+#2)&
 getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
 aPath[qtm1Arg,rutm1Arg,epsArg,zFuncs][[Range[3]+3]]
 
-aPath[compCon:{_Function...},stateSel_Function,
+aPath[compCon:{_Function...},stateSel_Function,xtm1_?MatrixQ,
 {qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ},zFuncs_List,pad_Integer:0]:=  
 With[{thePathVals=
 Drop[Function[{xx,yy,zz},
-fpForInitStateFunc[compCon,stateSel,{xx,yy,zz},zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
+fpForInitStateFunc[compCon,stateSel,xtm1,{xx,yy,zz},zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
 With[{pathLen=Length[thePathVals]},
-With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{xtm1[[1,1]]->qtm1Arg,xtm1[[3,1]]->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{zLeft=(Drop[theZs,-0])},
 With[{zAssn=Thread[zLeft->thePathVals]},
@@ -378,7 +381,7 @@ aPathFinal[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,finalFuncs_List,pa
 With[{thePathVals=
 Drop[Through[finalFuncs[qtm1Arg,rutm1Arg,epsArg]],2]},
 With[{pathLen=Length[thePathVals]},
-With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{qtm1->qtm1Arg,rutm1->rutm1Arg,eps->epsArg},
+With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{xtm1[[1,1]]->qtm1Arg,xtm1[[3,1]]->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{zLeft=(Drop[theZs,-0])},
 With[{zAssn=Thread[zLeft->thePathVals]},
