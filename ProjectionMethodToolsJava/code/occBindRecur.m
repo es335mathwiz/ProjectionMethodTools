@@ -181,9 +181,8 @@ With[{theSys=Function[{qTry,rTry},
 With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][qTry,rTry]]]},
 With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
 And[initStateSubbed,zEqns,tryEqnsSubbed]]]]},
-With[{zVars=Union[Cases[initStateSubbed,xx_[t],Infinity]]},
+With[{},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
-If[Drop[Union[fpTarget],2]=!=Union[theZs],Print["diff zs",Drop[Union[fpTarget],2],Union[theZs],zEqns]];(*Print["tosolve",{csrhs,theSys,fpTarget,initGuess,zFuncs}//InputForm];*)
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]]/;
 Or[zFuncs==={},
