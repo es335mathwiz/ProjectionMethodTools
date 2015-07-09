@@ -164,7 +164,7 @@ Module[{},
 fpForInitStateFunc[compCon,stateSel,
 qVal,ruVal,epsVal,zFuncs]=(*Print["disabled memoizing"];*)
 With[{pathLen=If[zFuncs==={},1,Length[zFuncs]-1],
-valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},(*Print["valsubs",valSubs];*)
+valSubs={qtm1->qVal,rutm1->ruVal,eps->epsVal}},
 With[{csrhs=genCompSlackSysFunc[compCon,stateSel,
 {{qtm1},{rtm1},{rutm1}},bmat,phimat,fmat,psieps,
 psic,psiz,pathLen]/.valSubs,
@@ -179,7 +179,7 @@ tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=
 makeSysFunction[pathLen,
-zFuncs,zLeft,initStateSubbed,tryEqnsSubbed]},
+zFuncs,zLeft,And[initStateSubbed,tryEqnsSubbed],{}]},
 With[{fpTarget=Join[{qTry,rTry},theZs]},
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]/;
@@ -189,6 +189,10 @@ NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
 
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
+(*
+makeInitStateTryEqnsSubbed[]:=
+And @@ (csrhs[[1]])
+*)
 
 makeSysFunction[pathLen_Integer,
 zFuncs_List,zLeft_List,initStateSubbed_,tryEqnsSubbed_]:=
