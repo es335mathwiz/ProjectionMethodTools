@@ -1,4 +1,4 @@
-aPrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
+PrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
@@ -110,7 +110,7 @@ Print["occBindRecur: Turning off extrapolation warning messages"]
 Off[InterpolatingFunction::dmval];
 
 
-fpForInitStateFunc[compCon_Function,stateSel_Function,
+fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
 qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
 zFuncs_List,(pos_List)|(pos_Integer)]:=
 With[{beenDone=fpForInitStateFunc[compCon,stateSel,qVal,ruVal,epsVal,zFuncs]},
@@ -118,7 +118,7 @@ beenDone[[pos]]]
 
 
 Print["fpForInitStateFunc still model specific"]
-fpForInitStateFunc[compCon_Function,stateSel_Function,
+fpForInitStateFunc[compCon:{_Function...},stateSel_Function,
 qVal_?NumberQ,ruVal_?NumberQ,epsVal_?NumberQ,
 zFuncs_List]:=
 Module[{},
@@ -135,7 +135,7 @@ Through[noCnstrnGuess[qVal,ruVal]][[{1,2}]],
 aPath=genPath[{{qtm1},{rtm1},{rutm1}},
 bmat,phimat,fmat,psieps,psic,psiz,pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{initStateSubbed=csrhs[[1]],
+With[{initStateSubbed=And @@ (csrhs[[1]]),
 tryEqnsSubbed=And @@Thread[{qTry,rTry}==(csrhs[[2]])]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=Function[{qTry,rTry},
@@ -158,11 +158,11 @@ mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
  
-forIOrdNPtsPF[compCon_Function,stateSel_Function,
+forIOrdNPtsPF[compCon:{_Function...},stateSel_Function,
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
 NestList[Identity[iterPF[compCon,stateSel,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
-forIOrdNPtsRE[compCon_Function,stateSel_Function,
+forIOrdNPtsRE[compCon:{_Function...},stateSel_Function,
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
 NestList[Identity[iterRE[compCon,stateSel,iOrd,gSpec,#,stdev]]&,start,maxLen];
 
@@ -190,7 +190,7 @@ doScalarInterp[whl,#,iOrder]&/@pos]]/;
 With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
-makeInterpFuncPF[conGen_Function,stateSel_Function,
+makeInterpFuncPF[compCon:{_Function...},stateSel_Function,
 theFunc_Function,pos_List,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}
@@ -202,12 +202,12 @@ doScalarInterp[whl,#,iOrder]&/@pos]]/;
 With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
-makeInterpFuncPF[conGen_Function,stateSel_Function,
+makeInterpFuncPF[compCon:{_Function...},stateSel_Function,
 theFunc_Function,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}]:=
 With[{pos=Range[Length[theFunc[0,0,0]]]},
-makeInterpFuncPF[conGen,stateSel,theFunc,pos,iOrder,gSpec]]
+makeInterpFuncPF[compCon,stateSel,theFunc,pos,iOrder,gSpec]]
 
 
 
@@ -307,14 +307,15 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 
 
 
-genCompSlackSysFunc[conGen_Function,stateSel_Function,
+genCompSlackSysFunc[compCon:{_Function...},stateSel_Function,
 xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
 pathLen_Integer]:=
-With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen],
+With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,
+Length[compCon],pathLen],
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{compCon=conGen[aPath,theZs],
+With[{compConVal=Through[compCon[aPath,theZs]],
 rhsEqns=stateSel[aPath]},
-{compCon,rhsEqns}]]/;
+{compConVal,rhsEqns}]]/;
 And[pathLen>0]
 
 
