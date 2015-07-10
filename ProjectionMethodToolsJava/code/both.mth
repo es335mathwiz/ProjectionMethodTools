@@ -1,0 +1,12 @@
+Needs["simpleRBCModel`"]
+Needs["lucaSimpleModel`"]
+
+(*impose one period*)
+
+chkPts={3,3,3};chkOrd=2;
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[chkOrd,chkPts,{},1];
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[chkOrd,chkPts,{},1];
+
+(*
+
+*)

@@ -1,0 +1,7 @@
+Needs["simpleRBCModel`"]
+
+
+aPath=genPath[xtm1={{cctm1},{kktm1}},bmat,phimat,fmat,psieps,psic,psiz,2,5]
+
+
+genCompSlackSysFunc[compCon,stateSel,xtm1,bmat,phimat,fmat,psieps,psic,psiz,2]
