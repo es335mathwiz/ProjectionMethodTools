@@ -271,29 +271,29 @@ Flatten[aPathFinal[qq,ru,eps,finFuncs][[3+Range[3]]]]]
 
 
 
-genFinalPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+genFinalPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 iOrd_Integer,{qPts_Integer,rPts_Integer,ePts_Integer},
 initFuncs_List,iters_Integer:1]:=
-genFinalWorker[{compCon,stateSel,xtm1},
+genFinalWorker[modSpecific(*modSpecific*),
 forIOrdNPtsPF,iOrd,{qPts,rPts,ePts},
 initFuncs,ignore,iters]
 
-genFinalRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+genFinalRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 iOrd_Integer,{qPts_Integer,rPts_Integer,ePts_Integer},
 initFuncs_List,stdev_?NumberQ,iters_Integer:1]:=
-genFinalWorker[{compCon,stateSel,xtm1},
+genFinalWorker[modSpecific(*modSpecific*),
 forIOrdNPtsRE,iOrd,{qPts,rPts,ePts},
 initFuncs,stdev,iters]
 (*put std dev = 0 in ratex*)
 
-genFinalWorker[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+genFinalWorker[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 forIOrdNPtsFunc_,
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},initFuncs_List,
 stdev:(_?NumberQ|ignore),iters_Integer:1]:=
-With[{zFuncs=forIOrdNPtsFunc[{compCon,stateSel,xtm1},
+With[{zFuncs=forIOrdNPtsFunc[modSpecific,
 iOrd,gSpec,initFuncs,stdev,iters]},
 With[{preInterpFunc=
-Function[{qq,ru,eps},fpForInitStateFunc[{compCon,stateSel,xtm1},
+Function[{qq,ru,eps},fpForInitStateFunc[modSpecific,
 {qq,ru,eps},zFuncs[[-1]]]]},
 With[{numVals=Length[preInterpFunc[0,0,0]]},
 With[{interpFuncFinal=
@@ -349,14 +349,14 @@ Get["occBindRecur`"]]
 
 
 makeInterpFuncRE[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},theFunc_Function,pos_Integer,iOrder_Integer,
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},theFunc_Function,pos_Integer,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}},stdev_?NumberQ]:=
 Module[{thePts=gridPts[gSpec],
 reFunc=Function @@ {{qq,ru},
 With[{qrSubbed=theFunc[qq,ru,#,thePos]},
 (*Print["about to use myExpect in func:",{compCon,stateSel,xtm1,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev,qrSubbed}];*)
-myExpect[compCon,stateSel,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
+myExpect[modSpecific,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])/.lucaSubs},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
 (*Print["reFunc=",reFunc//InputForm];*)
 With[{whl={#,reFunc @@ #}& /@
 thePts},(*Print["done making whl"];*)
@@ -368,7 +368,9 @@ NumberQ[theRes]]
 
 Print["try reusing modSpecific in definition"]
 myExpect[
-modSpecific:compCon:{_Function...},stateSel_List,aFuncNow:fpForInitStateFunc[{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+aFuncNow:fpForInitStateFunc[
+{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 {qVal_?NumberQ,ruVal_?NumberQ,epsVal_},
 zFuncs_List,pos_Integer],aVar_,stdev_?NumberQ]:=
 Module[{},(*Print["myExpect:",{aFunc,aVar,aFuncNow,stdev}//InputForm];*)
@@ -380,18 +382,16 @@ NIntegrate @@ theIntBody]]]
 
 
 
-iterPF[{
-modSpecific:compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 iOrder_Integer,gSpec:{qPts_Integer,rPts_Integer},zFuncsNow_List]:=With[
-{fpSolnFunc=Function[{xx,yy,zz},fpForInitStateFunc[{compCon,stateSel,xtm1},
+{fpSolnFunc=Function[{xx,yy,zz},fpForInitStateFunc[modSpecific,
 {xx,yy,zz},zFuncsNow]]},
-makeInterpFuncPF[{compCon,stateSel,xtm1},fpSolnFunc,iOrder,
+makeInterpFuncPF[modSpecific,fpSolnFunc,iOrder,
 {{qPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
 {rPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N}}]]/;
 And[iOrder>=0,Min[gSpec]>=iOrder]
 
-iterRE[{
-modSpecific:compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+iterRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 iOrder_Integer,pSpec:{qPts_Integer,rPts_Integer,ePts_Integer},
 zFuncsNow_List,stdev_?NumberQ]:=
 With[{gSpec=
@@ -400,12 +400,12 @@ With[{gSpec=
 {ePts,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}*)},
 agedZs=ageZFuncs[zFuncsNow],
 fpSolnFunc=Function[{xx,yy,zz,pos},
-fpForInitStateFunc[{compCon,stateSel,xtm1},
+fpForInitStateFunc[modSpecific,
 {xx,yy,zz},zFuncsNow,pos]]},
 With[
-{forQ=makeInterpFuncRE[{compCon,stateSel,xtm1},fpSolnFunc,1,iOrder,gSpec,stdev],
-forRu=makeInterpFuncRE[{compCon,stateSel,xtm1},fpSolnFunc,2,iOrder,gSpec,stdev],
-forNewZ=makeInterpFuncRE[{compCon,stateSel,xtm1},fpSolnFunc,-1,iOrder,gSpec,stdev]},
+{forQ=makeInterpFuncRE[modSpecific,fpSolnFunc,1,iOrder,gSpec,stdev],
+forRu=makeInterpFuncRE[modSpecific,fpSolnFunc,2,iOrder,gSpec,stdev],
+forNewZ=makeInterpFuncRE[modSpecific,fpSolnFunc,-1,iOrder,gSpec,stdev]},
 With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}]},newRes]]]/;
 And[iOrder>=0,Min[pSpec]>=iOrder]
 

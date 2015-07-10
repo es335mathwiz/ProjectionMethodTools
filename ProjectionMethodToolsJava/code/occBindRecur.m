@@ -109,10 +109,10 @@ Print["occBindRecur: Turning off extrapolation warning messages"]
 Off[InterpolatingFunction::dmval];
 
 Print["need to split eps from other state vars"]
-fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 xtm1Vals:{_?NumberQ..},
 zFuncs_List,(pos_List)|(pos_Integer)]:=
-With[{beenDone=fpForInitStateFunc[{compCon,stateSel,xtm1},xtm1Vals,zFuncs]},
+With[{beenDone=fpForInitStateFunc[modSpecific,xtm1Vals,zFuncs]},
 beenDone[[pos]]]
 
 
@@ -121,23 +121,23 @@ Print["fpForInitStateFunc still model specific"]
 
 
 Print["fpForInitStateFunc still model specific"]
-fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 xtm1Val:{_?NumberQ..,epsVal_?NumberQ},
 zFuncs_List]:=
 Module[{},
-fpForInitStateFunc[{compCon,stateSel,xtm1},
+fpForInitStateFunc[modSpecific,
 xtm1Val,zFuncs]=(*Print["disabled memoizing"];*)
 With[{zValArgs=xtm1Val[[stateSel]],
 zArgs=Table[Unique["xNow"],{Length[stateSel]}]},
 With[{lhRule=(First/@(xtm1[[stateSel]])),
 initGuess=If[Length[zFuncs]==0,
-Through[noCnstrnGuess@@#&[zValArgs]][[{1,2}]],
+Through[noZFuncsGuess@@#&[zValArgs]],
 Through[(zFuncs[[Range[Length[stateSel]]]]@@#&)[zValArgs]]],
 pathLen=If[zFuncs==={},1,Length[zFuncs]-1]},
 With[{valSubs=Append[Thread[lhRule->(xtm1Val[[Range[Length[lhRule]]]])],
 eps->epsVal],
 theZs=Flatten[genZVars[pathLen-1,1]]},
-With[{andinittry=makeInitStateTryEqnsSubbed[{compCon,stateSel,xtm1},zArgs,valSubs,pathLen]},
+With[{andinittry=makeInitStateTryEqnsSubbed[modSpecific,zArgs,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry,zArgs]},
 With[{fpTarget=Join[zArgs,theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];*)
@@ -150,9 +150,9 @@ mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
 makeInitStateTryEqnsSubbed[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},zArgs_List,
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},zArgs_List,
 valSubs_List,pathLen_Integer]:=
-With[{csrhs=genCompSlackSysFunc[{compCon,stateSel,xtm1},bmat,phimat,fmat,psieps,
+With[{csrhs=genCompSlackSysFunc[modSpecific,bmat,phimat,fmat,psieps,
 psic,psiz,pathLen]/.valSubs},
 With[{initStateSubbed=And @@ (csrhs[[1]]),
 tryEqnsSubbed=And @@Thread[zArgs==(csrhs[[2]])]},
@@ -174,20 +174,20 @@ theFunc]]]]]
 
 getFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
 FixedPoint[fpTarget/.With[{soln=
-Flatten[NSolve[theSys @@ #,fpTarget]]},(*Print["soln=",soln,fpTarget];*)
-If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys,fpTarget}}],soln]]&,initGuess,SameTest->mySameQ]
+Flatten[NSolve[(theSys @@ #),fpTarget]]},(*Print["soln=",soln,fpTarget];*)
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys//InputForm,fpTarget,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]
 
 
  
 forIOrdNPtsPF[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
-NestList[Identity[iterPF[{compCon,stateSel,xtm1},iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
+NestList[Identity[iterPF[modSpecific,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
 forIOrdNPtsRE[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
-NestList[Identity[iterRE[{compCon,stateSel,xtm1},iOrd,gSpec,#,stdev]]&,start,maxLen];
+NestList[Identity[iterRE[modSpecific,iOrd,gSpec,#,stdev]]&,start,maxLen];
 
 doChkLoad[]:=
 If[$OperatingSystem=="Windows",{0,0,0,0,0},
@@ -215,7 +215,7 @@ With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
 makeInterpFuncPF[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 theFunc_Function,pos_List,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}
@@ -228,12 +228,12 @@ With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes];
 NumberQ[Plus @@ theRes[[pos]]]]
 
 makeInterpFuncPF[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 theFunc_Function,iOrder_Integer,
 gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
 {_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}]:=
 With[{pos=Range[Length[theFunc[0,0,0]]]},Print["make pos=",{theFunc[0,0,0],pos}];
-makeInterpFuncPF[{compCon,stateSel,xtm1},theFunc,pos,iOrder,gSpec]]
+makeInterpFuncPF[modSpecific,theFunc,pos,iOrder,gSpec]]
 
 
 
@@ -334,7 +334,7 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 
 
 genCompSlackSysFunc[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
 pathLen_Integer]:=
 With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,
 Length[compCon],pathLen],
@@ -371,11 +371,11 @@ getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
 aPath[qtm1Arg,rutm1Arg,epsArg,zFuncs][[Range[3]+3]]
 
 aPath[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 {qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ},zFuncs_List,pad_Integer:0]:=  
 With[{thePathVals=
 Drop[Function[{xx,yy,zz},
-fpForInitStateFunc[{compCon,stateSel,xtm1},{xx,yy,zz},zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
+fpForInitStateFunc[modSpecific,{xx,yy,zz},zFuncs]][qtm1Arg,rutm1Arg,epsArg],2]},
 With[{pathLen=Length[thePathVals]},
 With[{tp=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,pathLen,1+pad]/.{xtm1[[1,1]]->qtm1Arg,xtm1[[3,1]]->rutm1Arg,eps->epsArg},
 theZs=Flatten[genZVars[pathLen-1,1]]},
