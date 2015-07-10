@@ -142,8 +142,8 @@ theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{andinittry=makeInitStateTryEqnsSubbed[compCon,stateSel,
 xtm1,zArgs,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
-With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry]},
-With[{fpTarget=Join[zArgs,theZs]},Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];
+With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry,zArgs]},
+With[{fpTarget=Join[zArgs,theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];*)
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]]/;
 Or[zFuncs==={},
@@ -163,11 +163,13 @@ tryEqnsSubbed=And @@Thread[zArgs==(csrhs[[2]])]},
 And[initStateSubbed,tryEqnsSubbed]]]
 
 makeSysFunction[pathLen_Integer,
-zFuncs_List,zLeft_List,initStateSubbedtryEqnsSubbed_]:=
+zFuncs_List,zLeft_List,initStateSubbedtryEqnsSubbed_,zArgs_List]:=
+With[{huh=Through[(Drop[zFuncs,Length[zArgs]])[xqTry,rTry]]},(*Print["huh=",huh];*)
 Function[{xqTry,rTry},
-With[{zFuncsApps=If[pathLen===1,{},Through[Drop[zFuncs,2][xqTry,rTry]]]},
+With[{zFuncsApps=If[pathLen===1,{},
+Through[Drop[zFuncs,Length[zArgs]][xqTry,rTry]]]},
 With[{zEqns=And @@ (Thread[zLeft==zFuncsApps])},
-And[initStateSubbedtryEqnsSubbed,zEqns]]]]
+And[initStateSubbedtryEqnsSubbed,zEqns]]]]]
 
 
 
