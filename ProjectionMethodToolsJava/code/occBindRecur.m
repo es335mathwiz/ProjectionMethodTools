@@ -5,6 +5,11 @@ PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
 Print["reading occBindRecur.m"]
 BeginPackage["occBindRecur`",{"ProtectedSymbols`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`","SymbolicAMA`","mathSmolyak`"}]
 
+genFinalPF::usage="genFinalPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
+genFinalRE::usage="genFinalRE[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
+
+
+
 genPath::usage="genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,numNonZeroZs_Integer,padZeroZs_Integer]"
 
 
@@ -20,8 +25,6 @@ resetSystem::usage="resetSyster[]"
 
 
 
-genFinalPF::usage="genFinalPF[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
-genFinalRE::usage="genFinalRE[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
 newGenFinalRE::usage="newGenFinalRE[iOrd_Integer,nPts_Integer,initFuncs_List,iters_Integer:1]"
 
 assessFunc::usage="assessPF[interpFuncFinal_List]"
@@ -116,7 +119,6 @@ With[{beenDone=fpForInitStateFunc[modSpecific,xtm1Vals,zFuncs]},
 beenDone[[pos]]]
 
 
-Print["fpForInitStateFunc still model specific"]
 
 
 
@@ -181,12 +183,12 @@ If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{t
  
 forIOrdNPtsPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
-iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,ignore,maxLen_Integer]:=
+iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},start_List,ignore,maxLen_Integer]:=
 NestList[Identity[iterPF[modSpecific,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
 forIOrdNPtsRE[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
-iOrd_Integer,gSpec:{qPts_Integer,rPts_Integer,ePts_Integer},start_List,stdev_?NumberQ,maxLen_Integer]:=
+iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},start_List,stdev_?NumberQ,maxLen_Integer]:=
 NestList[Identity[iterRE[modSpecific,iOrd,gSpec,#,stdev]]&,start,maxLen];
 
 doChkLoad[]:=
@@ -203,35 +205,31 @@ Run["vmstat | tail -n 1 | tr -s ' ' ' ' | cut -d' ' -f5>freeMem"];freeMem=Get["f
 
 makeInterpFuncFinal[theFunc_Function,xtm1_?MatrixQ,
 pos_List,iOrder_Integer,
-gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
-{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ},
-{_Integer,epsLow_?NumberQ,epsHigh_?NumberQ}}
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}
 ]:=Module[{thePts=
 gridPts[gSpec]},
 With[{whl={#,theFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]/;
-With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes];
+With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes//InputForm];
 NumberQ[Plus @@ theRes[[pos]]]]
 
 makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 theFunc_Function,pos_List,iOrder_Integer,
-gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
-{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}
 ]:=Module[{thePts=gridPts[gSpec],
 pfFunc=Function[{qq,ru},theFunc[qq,ru,0]]},
 With[{whl={#,pfFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]/;
-With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes];
+With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes//InputForm];
 NumberQ[Plus @@ theRes[[pos]]]]
 
 makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 theFunc_Function,iOrder_Integer,
-gSpec:{{_Integer,qLow_?NumberQ,qHigh_?NumberQ},
-{_Integer,ruLow_?NumberQ,ruHigh_?NumberQ}}]:=
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
 With[{pos=Range[Length[theFunc[0,0,0]]]},Print["make pos=",{theFunc[0,0,0],pos}];
 makeInterpFuncPF[modSpecific,theFunc,pos,iOrder,gSpec]]
 
@@ -447,6 +445,218 @@ Module[{noCnstr=eqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx},zf,hr,
 bmat,phimat,fmat},(*Print[noCnstr];*)
 With[{hmat=equationsToMatrix[noCnstr]},Print["symbolicLinearize:",hmat];
 ]]
+
+
+infNormFinal[finalFuncs_List]:=
+With[{finChk=
+Function[{qq,ru,eps}, Max[Abs[hmatAppFinal[qq,ru,eps,finalFuncs]]]]},
+infNorm[finChk]]
+
+infNormDeltaFinal[finalFuncsA_List,finalFuncsB_List]:=
+With[{finDel=
+Function[{qq,ru,eps},With[{
+aEval=aPathFinal[qq,ru,eps,finalFuncsA],
+bEval=aPathFinal[qq,ru,eps,finalFuncsB]},
+Flatten[
+(aEval[[3+Range[3]]])-
+(bEval[[3+Range[3]]])]]]},
+finDel]
+
+
+
+assessFunc[interpFuncFinal_List]:=
+{smallestRVal[interpFuncFinal],infNormFinal[interpFuncFinal]}
+
+
+
+
+
+
+
+
+genFinalDR[finFuncs_List]:=Function[{qq,ru,eps},
+Flatten[aPathFinal[qq,ru,eps,finFuncs][[3+Range[3]]]]]
+
+
+
+genFinalPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
+initFuncs_List,iters_Integer:1]:=
+genFinalWorker[modSpecific(*modSpecific*),
+forIOrdNPtsPF,iOrd,gSpec,
+initFuncs,ignore,iters]
+
+genFinalRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
+initFuncs_List,stdev_?NumberQ,iters_Integer:1]:=
+genFinalWorker[modSpecific(*modSpecific*),
+forIOrdNPtsRE,iOrd,gSpec,
+initFuncs,stdev,iters]
+(*put std dev = 0 in ratex*)
+
+genFinalWorker[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+forIOrdNPtsFunc_,
+iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},initFuncs_List,
+stdev:(_?NumberQ|ignore),iters_Integer:1]:=
+With[{zFuncs=forIOrdNPtsFunc[modSpecific,
+iOrd,gSpec,initFuncs,stdev,iters]},
+With[{preInterpFunc=
+Function[{qq,ru,eps},fpForInitStateFunc[modSpecific,
+{qq,ru,eps},zFuncs[[-1]]]]},
+With[{numVals=Length[preInterpFunc[0,0,0]]},
+With[{interpFuncFinal=
+makeInterpFuncFinal[preInterpFunc,xtm1,Range[numVals],
+iOrd,gSpec]},
+{{iOrd,gSpec},{},zFuncs,interpFuncFinal}]]]]
+
+
+
+
+
+iterateDR[drFunc_Function,
+initVec:{initQ_?NumberQ,initRu_?NumberQ,initEps_?NumberQ},
+stdev_?NumberQ,numPers_Integer,reps_Integer:1]:=
+With[{firVal=drFunc @@ initVec},
+With[{allReps=
+Table[
+NestList[drFunc @@ {#[[1]],#[[3]],
+If[stdev==0,0,RandomVariate[NormalDistribution[0,stdev]]]}&,firVal,numPers-1],{reps}]},
+With[{theMean=prepMeansForHApp[Mean[allReps],initVec]},
+If[reps==1,theMean,
+{theMean,prepStdDevsForHApp[StandardDeviation[allReps]]}]]]]/;
+And[reps>0,numPers>0]
+
+chkIterateDR[drFunc_Function,
+initVec:{initQ_?NumberQ,initRu_?NumberQ,initEps_?NumberQ},
+stdev_?NumberQ,numPers_Integer,reps_Integer:1]:=
+With[{firVal=drFunc @@ initVec},
+With[{allReps=
+Table[
+NestList[drFunc @@ {#[[1]],#[[3]],0}&,firVal,numPers-1],{reps}]},
+allReps]]/;
+And[reps>0,numPers>0]
+
+
+prepMeansForHApp[theMeans_List,initVec_List]:=
+Join[Transpose[{initVec}],Transpose[{Flatten[theMeans,1]}]]
+
+prepStdDevsForHApp[theStdDevs_List]:=
+Join[Transpose[{{0,0,0}}],Transpose[{Flatten[theStdDevs,1]}]]
+
+resetSystem:=Module[{},
+Clear[fpForInitStateFunc];
+Get["occBindRecur`"]]
+
+
+
+
+
+
+
+makeInterpFuncRE[
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},theFunc_Function,pos_Integer,iOrder_Integer,
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},stdev_?NumberQ]:=
+Module[{thePts=gridPts[noShocksGSpec[gSpec]],
+reFunc=Function @@ {{qq,ru},
+With[{qrSubbed=theFunc[qq,ru,#,thePos]},
+(*Print["about to use myExpect in func:",{compCon,stateSel,xtm1,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])(*/.lucaSubs*)},hoop]]],tryEps,stdev,qrSubbed}];*)
+myExpect[modSpecific,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])(*/.lucaSubs*)},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
+(*Print["reFunc=",reFunc//InputForm];*)
+With[{whl={#,reFunc @@ #}& /@
+thePts},(*Print["done making whl"];*)
+doScalarIntegration[whl,#,iOrder]&@pos]]/;
+With[{theRes=theFunc[0,0,0,1]},Print["iPtsRE:theRes=",theRes];
+NumberQ[theRes]]
+
+noShocksGSpec[gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
+Drop[gSpec,-1]
+
+Print["try reusing modSpecific in definition"]
+myExpect[
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+aFuncNow:fpForInitStateFunc[
+{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+{qVal_?NumberQ,ruVal_?NumberQ,epsVal_},
+zFuncs_List,pos_Integer],aVar_,stdev_?NumberQ]:=
+Module[{},(*Print["myExpect:",{aFunc,aVar,aFuncNow,stdev}//InputForm];*)
+If[stdev==0,(*Print["aFunc subbed:",{aFunc/.aVar->0,aFuncNow/.aVar->0}];*)aFuncNow/.aVar->0,
+With[{theIntBody=({aFuncNow*PDF[NormalDistribution[0,stdev],tryEps],{aVar,-4*stdev,4*stdev}(*,
+AccuracyGoal -> 2, Compiled -> Automatic,
+  PrecisionGoal -> 2, WorkingPrecision -> 2*)}(*/.lucaSubs*))},(*Print["myExpect:intBody=",theIntBody//InputForm];*)
+NIntegrate @@ theIntBody]]]
+
+
+
+iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},zFuncsNow_List]:=With[
+{fpSolnFunc=Function[{xx,yy,zz},fpForInitStateFunc[modSpecific,
+{xx,yy,zz},zFuncsNow]]},
+makeInterpFuncPF[modSpecific,fpSolnFunc,iOrder,gSpec]]/;
+And[iOrder>=0,Min[First/@gSpec]>=iOrder]
+
+iterRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
+iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
+zFuncsNow_List,stdev_?NumberQ]:=
+With[{
+agedZs=ageZFuncs[zFuncsNow],
+fpSolnFunc=Function[{xx,yy,zz,pos},
+fpForInitStateFunc[modSpecific,
+{xx,yy,zz},zFuncsNow,pos]]},
+With[
+{forQ=makeInterpFuncRE[modSpecific,fpSolnFunc,1,iOrder,gSpec,stdev],
+forRu=makeInterpFuncRE[modSpecific,fpSolnFunc,2,iOrder,gSpec,stdev],
+forNewZ=makeInterpFuncRE[modSpecific,fpSolnFunc,-1,iOrder,gSpec,stdev]},
+With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}]},newRes]]]/;
+And[iOrder>=0,Min[First/@gSpec]>=iOrder]
+
+
+aPathNoCnstrn[
+qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,pad_Integer:1]:=  
+With[{epsImpact=Flatten[phimat . psieps *epsArg+
+Inverse[IdentityMatrix[3]-fmat] . phimat . psic ]//.lucaSubs,
+pathIterFunc=Function @@{{qq,rr,ru},Flatten[
+((bmat . {{qq},{rr},{ru}})+  Inverse[IdentityMatrix[3]-fmat] . phimat . psic )]//.lucaSubs}},
+With[{pathVals=NestList[pathIterFunc @@ #&,
+(pathIterFunc @@ {qtm1Arg,rr,rutm1Arg})+epsImpact,pad-1]},
+Join[{{qtm1Arg},{ignored},{rutm1Arg}},Transpose[{Flatten[pathVals]}]]]]/;pad>0
+
+
+hmatApp[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,zFuncs_List]:=
+With[{tp=aPath[qtm1,rutm1,eps,zFuncs]},
+With[{tpPers=Length[tp]/3},
+With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
+},
+With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic//.lucaSubs))&/@Range[0,(tpPers)-3]},
+Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]]
+
+
+hmatAppFinal[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,finalFuncs_List]:=
+With[{tp=aPathFinal[qtm1,rutm1,eps,finalFuncs]},
+With[{tpPers=Length[tp]/3},
+With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
+},
+With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic//.lucaSubs))&/@Range[0,(tpPers)-3]},
+Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]]
+
+hmatAppGeneric[tp_?MatrixQ,eps_:0]:=
+With[{tpPers=Length[tp]/3},
+With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
+},
+With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic//.lucaSubs))&/@Range[0,(tpPers)-3]},
+Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]
+
+
+
+
+
+
+
 
 End[]
 EndPackage[]

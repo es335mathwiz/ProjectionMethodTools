@@ -5,9 +5,12 @@ Needs["lucaSimpleModel`"]
 
 Print["variable names (symbols?) should come from model bmat comp. don't use tm1"];
 Print["provide shock names should come from model bmat comp"];
-chkPts={3,3,3};chkOrd=2;
+chkPts={
+{3,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
+{3,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
+{3,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}};chkOrd=2;
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess},chkOrd,chkPts,{},2];
-{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{qtm1},{rtm1},{rutm1}},noCnstrnGuess},chkOrd,chkPts,{},2];
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{qtm1},{rtm1},{rutm1}},noCnstrnGuess},chkOrd,chkPts,{},sigma$u//.lucaSubs,1];
 
 (*
 

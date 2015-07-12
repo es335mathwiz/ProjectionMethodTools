@@ -1,7 +1,21 @@
 Needs["simpleRBCModel`"]
 
+modVars={{ccVar},{kkVar}}
+aPath=genPath[xtm1=modVars,bmat,phimat,fmat,psieps,psic,psiz,2,5]
 
-aPath=genPath[xtm1={{cctm1},{kktm1}},bmat,phimat,fmat,psieps,psic,psiz,2,5]
+
+cs01=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess},bmat,phimat,fmat,psieps,psic,psiz,1]//Chop//FullSimplify
 
 
-genCompSlackSysFunc[compCon,stateSel,xtm1,bmat,phimat,fmat,psieps,psic,psiz,2]
+chkPts={3,3};chkOrd=2;
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,modVars,
+noCnstrnGuess},chkOrd,chkPts,{},1];
+
+(*for the constant lr*)
+Inverse[IdentityMatrix[2]-fmat] . phimat . psic
+
+
+cs02=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess},bmat,phimat,fmat,psieps,psic,psiz,2]//Chop//FullSimplify
+
+
+

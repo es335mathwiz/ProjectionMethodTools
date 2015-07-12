@@ -28,34 +28,81 @@ delta->95/100
 
 
 
-rbcSimp=(rbcEqns)/.paramSubs//myN;
+rbcSimp=(rbcEqns)
 
-rbcSSEqns=Thread[(rbcSimp/.{eps[_][_]->0,xx_[t+_.]->xx})==0]//myN
+rbcSSEqns=Thread[(rbcSimp/.{eps[_][_]->0,xx_[t+_.]->xx})==0]
+kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<1)&&(0<delta<1)][[2]]]
+cSSSub=Flatten[Solve[Simplify[rbcSSEqns/.kSSSub][[2]],cc]]
+
+ssSolnSubs=Join[cSSSub,kSSSub]
 
 
-ssSoln=FindRoot[rbcSSEqns,{{cc,1},{kk,1}}]
+hmatSymbRaw=(((equationsToMatrix[
+rbcSimp/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})/.ssSolnSubs)//FullSimplify;
+forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
+simpSubs=Thread[forSubs->nu];
+forParamSubs=Thread[nu->forSubs]//.paramSubs
+tog=Join[paramSubs,forParamSubs]
 
-psieps=Transpose[{((D[#,eps[Private`theta][t]]&/@ Private`rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})/.ssSoln}]
+psiepsSymb=Transpose[{((D[#,eps[Private`theta][t]]&/@ Private`rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})/.ssSolnSubs}]
+psieps=psiepsSymb//.tog;
 
-psic={{cc},{kk}}/.ssSoln
+theVal=Inverse[IdentityMatrix[2]-fmat] . phimat . psic 
+
 psiz=IdentityMatrix[2]
 
-hmatSymbPre=equationsToMatrix[
-rbcSimp/.{eps[_][_]->0}]//FullSimplify;
-hmat=(hmatSymbPre/.xx_[t+_.]->xx)/.ssSoln;
-{ig, ig, ig, ig, qmat, ig, ig, ig} = NumericAMA`numericAMA[hmat, 1, 1]; 
-{bmat, phimat, fmat} = NumericAMA`numericComputeBPhiF[hmat,qmat] 
+
+hmatSymb=hmatSymbRaw/.simpSubs
+hSum=hmatSymb[[All,Range[2]]]+hmatSymb[[All,2+Range[2]]]+hmatSymb[[All,4+Range[2]]];
+ssSolnVec={{cc},{kk}}/.ssSolnSubs;
+psicSymb=hSum . ssSolnVec;
+psic=psicSymb//.tog
+
+
+
+{zfSymb,hfSymb}=symbolicAR[hmatSymb];
+amatSymb=symbolicTransitionMatrix[hfSymb];
+{evlsSymb,evcsSymb}=Eigensystem[Transpose[amatSymb]];
+qmatSymb=Join[zfSymb,evcsSymb[[{4}]]];
+Print["computing and simplifying the symbolic b phi f etc"]
+{bmatSymb,phimatSymb,fmatSymb}=symbolicComputeBPhiF[hmatSymb,qmatSymb]//Simplify;
+bmat=bmatSymb//.tog;
+phimat=phimatSymb//.tog;
+fmat=fmatSymb//.tog;
+
 
 Print["defining constraint and selector funcs"]
+
+
 compCon={
 Function[{aPath,theZs},0==rbcSimp[[1]]/.{
-kk[t-1]->aPath[[2,1]],kk[t]->aPath[[4,1]],
-cc[t]->aPath[[3,1]],cc[t+1]->aPath[[5,1]],eps[theta][t]->eps}],
+kk[t-1]->kktm1,kk[t]->aPath[[2,1]],
+cc[t]->aPath[[1,1]],cc[t+1]->aPath[[3,1]],eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimp[[2]]/.{
-kk[t-1]->aPath[[2,1]],kk[t]->aPath[[4,1]],
-cc[t]->aPath[[3,1]],cc[t+1]->aPath[[5,1]],eps[theta][t]->eps}]}
+kk[t-1]->kktm1,kk[t]->aPath[[2,1]],
+cc[t]->aPath[[1,1]],cc[t+1]->aPath[[3,1]],eps[theta][t]->eps}]}
 
 stateSel={2}
+(*always used with epsVal=0*)
+noCnstrnGuess= With[{linPFSys=
+Flatten[bmat . {{0},{kVal}}+phimat . (psieps *0+psic)]//.paramSubs},
+{Function @@ {{kVal},linPFSys[[2]]}}]
+
+(*/.paramSubs//myN;*)
+
+
+futDiffDet[ii_Integer]:=
+With[{fkktm1=Nest[((alpha*delta)*kktm1^alpha//.(tog//N)) *#&,1,ii]},
+With[{fkkt=(alpha*delta)*fkktm1^alpha},
+With[{fcct=fkktm1^alpha-fkkt,fkktp1=(alpha*delta)*fkkt^alpha},
+With[{fcctp1=fkkt^alpha-fkktp1},
+With[{theVec=Transpose[{{fcctm1,fkktm1,fcct,fkkt,fcctp1,fkktp1}}]//.tog//N,
+theSymbs=Transpose[{{cc[t-1],kk[t-1],cc[t],kk[t],cc[t+1],kk[t+1]}}]},
+With[{theSubs=Thread[Flatten[theSymbs]->Flatten[theVec]]},
+{theVec,(rbcEqns/.eps[theta][t]->0)//.theSubs,
+hmatSymb . theVec//.tog}
+//Simplify]]]]]]
+
 
 
 End[]
