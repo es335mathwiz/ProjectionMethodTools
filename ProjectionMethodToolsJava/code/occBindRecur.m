@@ -559,8 +559,8 @@ gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},stdev_?NumberQ]:=
 Module[{thePts=gridPts[noShocksGSpec[gSpec]],
 reFunc=Function @@ {{qq,ru},
 With[{qrSubbed=theFunc[qq,ru,#,thePos]},
-(*Print["about to use myExpect in func:",{compCon,stateSel,xtm1,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])(*/.lucaSubs*)},hoop]]],tryEps,stdev,qrSubbed}];*)
-myExpect[modSpecific,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])(*/.lucaSubs*)},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
+(*Print["about to use myExpect in func:",{compCon,stateSel,xtm1,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])},hoop]]],tryEps,stdev,qrSubbed}];*)
+myExpect[modSpecific,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])},hoop]]],tryEps,stdev]]}},(*Print["done use myExpect"];*)
 (*Print["reFunc=",reFunc//InputForm];*)
 With[{whl={#,reFunc @@ #}& /@
 thePts},(*Print["done making whl"];*)
@@ -582,7 +582,7 @@ Module[{},(*Print["myExpect:",{aFunc,aVar,aFuncNow,stdev}//InputForm];*)
 If[stdev==0,(*Print["aFunc subbed:",{aFunc/.aVar->0,aFuncNow/.aVar->0}];*)aFuncNow/.aVar->0,
 With[{theIntBody=({aFuncNow*PDF[NormalDistribution[0,stdev],tryEps],{aVar,-4*stdev,4*stdev}(*,
 AccuracyGoal -> 2, Compiled -> Automatic,
-  PrecisionGoal -> 2, WorkingPrecision -> 2*)}(*/.lucaSubs*))},(*Print["myExpect:intBody=",theIntBody//InputForm];*)
+  PrecisionGoal -> 2, WorkingPrecision -> 2*)})},(*Print["myExpect:intBody=",theIntBody//InputForm];*)
 NIntegrate @@ theIntBody]]]
 
 
@@ -613,9 +613,9 @@ And[iOrder>=0,Min[First/@gSpec]>=iOrder]
 aPathNoCnstrn[
 qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,pad_Integer:1]:=  
 With[{epsImpact=Flatten[phimat . psieps *epsArg+
-Inverse[IdentityMatrix[3]-fmat] . phimat . psic ]//.lucaSubs,
+Inverse[IdentityMatrix[3]-fmat] . phimat . psic ],
 pathIterFunc=Function @@{{qq,rr,ru},Flatten[
-((bmat . {{qq},{rr},{ru}})+  Inverse[IdentityMatrix[3]-fmat] . phimat . psic )]//.lucaSubs}},
+((bmat . {{qq},{rr},{ru}})+  Inverse[IdentityMatrix[3]-fmat] . phimat . psic )]}},
 With[{pathVals=NestList[pathIterFunc @@ #&,
 (pathIterFunc @@ {qtm1Arg,rr,rutm1Arg})+epsImpact,pad-1]},
 Join[{{qtm1Arg},{ignored},{rutm1Arg}},Transpose[{Flatten[pathVals]}]]]]/;pad>0
@@ -625,10 +625,10 @@ hmatApp[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,zFuncs_List]:=
 With[{tp=aPath[qtm1,rutm1,eps,zFuncs]},
 With[{tpPers=Length[tp]/3},
 With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
-rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar),-3],3] * 
 Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
 },
-With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic//.lucaSubs))&/@Range[0,(tpPers)-3]},
+With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic))&/@Range[0,(tpPers)-3]},
 Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]]
 
 
@@ -636,19 +636,19 @@ hmatAppFinal[qtm1_?NumberQ,rutm1_?NumberQ,eps_?NumberQ,finalFuncs_List]:=
 With[{tp=aPathFinal[qtm1,rutm1,eps,finalFuncs]},
 With[{tpPers=Length[tp]/3},
 With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
-rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar),-3],3] * 
 Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
 },
-With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic//.lucaSubs))&/@Range[0,(tpPers)-3]},
+With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic))&/@Range[0,(tpPers)-3]},
 Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]]
 
 hmatAppGeneric[tp_?MatrixQ,eps_:0]:=
 With[{tpPers=Length[tp]/3},
 With[{epsVecs=Partition[Transpose[{ReplacePart[Table[0,{3*((tpPers)-2)}],2->eps]}],3],
-rDiffVec=Partition[Drop[Drop[(tp-rUnderBar/.lucaSubs),-3],3] * 
+rDiffVec=Partition[Drop[Drop[(tp-rUnderBar),-3],3] * 
 Flatten[Table[{{0},{1},{0}},{tpPers-2}],1],3]
 },
-With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic//.lucaSubs))&/@Range[0,(tpPers)-3]},
+With[{hApps=((hmat.tp[[Range[9]+3*#]])-(psic))&/@Range[0,(tpPers)-3]},
 Flatten[rDiffVec *(epsVecs-(Join@ hApps//Chop))]]]]
 
 
