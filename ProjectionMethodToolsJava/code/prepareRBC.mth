@@ -1,21 +1,22 @@
 Needs["simpleRBCModel`"]
 
 modVars={{ccVar},{kkVar}}
-aPath=genPath[xtm1=modVars,bmat,phimat,fmat,psieps,psic,psiz,2,5]
+notAPath=genPath[xtm1=modVars,bmat,phimat,fmat,psieps,psic,psiz,2,5]
 
+Print["cs01"]
+cs01=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1}},
+bmat,phimat,fmat,psieps,psic,psiz,1]//Chop//N
 
-cs01=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess},bmat,phimat,fmat,psieps,psic,psiz,1]//Chop//FullSimplify
-
-
+Print["genFinalPF"]
 chkPts={{3,-.1,.1},{3,-.1,.1}};chkOrd=2;
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,modVars,
-noCnstrnGuess},chkOrd,chkPts,{},0];
+noCnstrnGuess,{1,2,1,1}},chkOrd,chkPts,{},0];
 
 (*for the constant lr*)
 Inverse[IdentityMatrix[2]-fmat] . phimat . psic
 
-
-cs02=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess},bmat,phimat,fmat,psieps,psic,psiz,2]//Chop//FullSimplify
+Print["cs02"]
+cs02=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1}},bmat,phimat,fmat,psieps,psic,psiz,2]//Chop//N
 
 
 

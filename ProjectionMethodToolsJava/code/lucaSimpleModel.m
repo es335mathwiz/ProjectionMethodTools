@@ -36,6 +36,8 @@ Protect[qq,rr,ru,rhop,betap,sigmap,rho$ru,adj,uu,phip,rUnderBar,sigma$u,rstar,ig
 
 
 numIt::usage="numIt[xx_]  does lucaSubs and leaves t values untouched by N[]"
+getLucaFixedPoint::usage="getLucaFixedPoint[fpTarget_List,theSys_Function,initGuess_List]"
+
 
 Begin["Private`"]
 
@@ -196,6 +198,13 @@ compCon={Function[{aPath,theZs},
 
 stateSel=Function[aVec,{aVec[[1]],aVec[[3]]}]
 stateSel={1,3};
+
+getLucaFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
+FixedPoint[fpTarget/.With[{soln=
+Flatten[NSolve[(theSys @@ #),fpTarget]]},Print["soln=",soln,fpTarget];
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys//InputForm,fpTarget,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]
+
+
 
 (*only set delayed*)
 

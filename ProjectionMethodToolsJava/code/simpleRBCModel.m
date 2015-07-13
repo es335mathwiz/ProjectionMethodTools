@@ -83,6 +83,16 @@ Function[{aPath,theZs},0==rbcSimp[[2]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[4,1]],
 cc[t]->aPath[[3,1]],cc[t+1]->aPath[[5,1]],eps[theta][t]->eps}]}
 
+
+getRBCFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
+With[{theSysRidT=theSys/.xx_[t]->xx},
+FixedPoint[fpTarget/.With[{soln=
+Flatten[FindRoot[(theSysRidT @@ #),{#,.1}&/@fpTarget]]},Print["soln=",soln,fpTarget];
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys//InputForm,fpTarget,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]
+
+
+
+
 stateSel={2}
 (*always used with epsVal=0*)
 noCnstrnGuess= With[{linPFSys=
