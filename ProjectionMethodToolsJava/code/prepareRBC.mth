@@ -4,19 +4,19 @@ modVars={{ccVar},{kkVar}}
 notAPath=genPath[xtm1=modVars,bmat,phimat,fmat,psieps,psic,psiz,2,5]
 
 Print["cs01"]
-cs01=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1}},
+cs01=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},
 bmat,phimat,fmat,psieps,psic,psiz,1]//Chop//N
 
 Print["genFinalPF"]
 chkPts={{3,-.1,.1},{3,-.1,.1}};chkOrd=2;
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,modVars,
-noCnstrnGuess,{1,2,1,1}},chkOrd,chkPts,{},0];
-
+noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},chkOrd,chkPts,{},1];
+(*
 (*for the constant lr*)
 Inverse[IdentityMatrix[2]-fmat] . phimat . psic
 
 Print["cs02"]
-cs02=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1}},bmat,phimat,fmat,psieps,psic,psiz,2]//Chop//N
-
+cs02=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},bmat,phimat,fmat,psieps,psic,psiz,2]//Chop
+*)
 
 

@@ -8,6 +8,7 @@ delta::usage="rbc model parameter"
 compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
 stateSel::usage="stateSel[aPath_?MatrixQ]:=Function[{aPath}"
 rbcEqns::usage="rbc model equations"
+getRBCFixedPoint::usage="getRBCFixedPoint"
 Begin["Private`"]
 
 (*pg 165 of  maliar maliar solving neoclassical growth model  
@@ -85,11 +86,11 @@ cc[t]->aPath[[3,1]],cc[t+1]->aPath[[5,1]],eps[theta][t]->eps}]}
 
 
 getRBCFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
-With[{theSysRidT=theSys/.xx_[t]->xx},
-FixedPoint[fpTarget/.With[{soln=
-Flatten[FindRoot[(theSysRidT @@ #),{#,.1}&/@fpTarget]]},Print["soln=",soln,fpTarget];
-If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys//InputForm,fpTarget,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]
-
+With[{theSysRidT=theSys/.xx_[t]->xx,
+targetRidT=fpTarget/.xx_[t]->xx},Print["theRysRidT=",theSysRidT];
+FixedPoint[targetRidT/.With[{soln=
+Flatten[FindRoot[(theSysRidT @@ #),{#,.1}&/@targetRidT]]},Print["soln=",soln,targetRidT];
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSysRidT//InputForm,targetRidT,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]]
 
 
 
