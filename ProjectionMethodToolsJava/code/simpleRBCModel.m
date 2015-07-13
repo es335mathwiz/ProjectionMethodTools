@@ -28,9 +28,9 @@ delta->95/100
 
 
 
-rbcSimp=(rbcEqns)
 
-rbcSSEqns=Thread[(rbcSimp/.{eps[_][_]->0,xx_[t+_.]->xx})==0]
+
+rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0]
 kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<1)&&(0<delta<1)][[2]]]
 cSSSub=Flatten[Solve[Simplify[rbcSSEqns/.kSSSub][[2]],cc]]
 
@@ -38,13 +38,14 @@ ssSolnSubs=Join[cSSSub,kSSSub]
 
 
 hmatSymbRaw=(((equationsToMatrix[
-rbcSimp/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})/.ssSolnSubs)//FullSimplify;
+rbcEqns/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})/.ssSolnSubs)//FullSimplify;
 forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
 simpSubs=Thread[forSubs->nu];
 forParamSubs=Thread[nu->forSubs]//.paramSubs
 tog=Join[paramSubs,forParamSubs]
+rbcSimp=(rbcEqns)/.tog
 
-psiepsSymb=Transpose[{((D[#,eps[Private`theta][t]]&/@ Private`rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})/.ssSolnSubs}]
+psiepsSymb=Transpose[{((D[#,eps[Private`theta][t]]&/@ rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})/.ssSolnSubs}]
 psieps=psiepsSymb//.tog;
 
 theVal=Inverse[IdentityMatrix[2]-fmat] . phimat . psic 
@@ -76,11 +77,11 @@ Print["defining constraint and selector funcs"]
 
 compCon={
 Function[{aPath,theZs},0==rbcSimp[[1]]/.{
-kk[t-1]->kktm1,kk[t]->aPath[[2,1]],
-cc[t]->aPath[[1,1]],cc[t+1]->aPath[[3,1]],eps[theta][t]->eps}],
+kk[t-1]->aPath[[2,1]],kk[t]->aPath[[4,1]],
+cc[t]->aPath[[3,1]],cc[t+1]->aPath[[5,1]],eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimp[[2]]/.{
-kk[t-1]->kktm1,kk[t]->aPath[[2,1]],
-cc[t]->aPath[[1,1]],cc[t+1]->aPath[[3,1]],eps[theta][t]->eps}]}
+kk[t-1]->aPath[[2,1]],kk[t]->aPath[[4,1]],
+cc[t]->aPath[[3,1]],cc[t+1]->aPath[[5,1]],eps[theta][t]->eps}]}
 
 stateSel={2}
 (*always used with epsVal=0*)

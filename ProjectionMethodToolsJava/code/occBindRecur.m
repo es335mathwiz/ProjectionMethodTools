@@ -142,11 +142,11 @@ theZs=Flatten[genZVars[pathLen-1,1]]},
 With[{andinittry=makeInitStateTryEqnsSubbed[modSpecific,zArgs,valSubs,pathLen]},
 With[{zLeft=(Drop[theZs,-1])},
 With[{theSys=makeSysFunction[pathLen,zFuncs,zLeft,andinittry,zArgs]},
-With[{fpTarget=Join[zArgs,theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}];*)
+With[{fpTarget=Join[zArgs,theZs]},(*Print["fpForInitStateFunc:",{fpTarget,theSys,initGuess}//InputForm];*)
 getFixedPoint[fpTarget,theSys,initGuess]
 ]]]]]]]]/;
 Or[zFuncs==={},
-NumberQ[Plus @@ (Through[(zFuncs[[-1]])[0,0]])]]
+NumberQ[Plus @@ (Through[(zFuncs[[-1]])[.1,.1]])]]
 
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
@@ -169,7 +169,7 @@ With[{theZEqns=And @@ (Thread[zLeft==theZFuncsApps])},
 With[{theGuts=And[initStateSubbedtryEqnsSubbed,theZEqns]},
 With[{theFunc=Function @@{xTryVars,theGuts}},(*
 Print["huh=",
-{zLeft,initStateSubbedtryEqnsSubbed,theZFuncsApps,theZEqns,theGuts,theFunc[0,0]}];*)
+{zLeft,initStateSubbedtryEqnsSubbed,theZFuncsApps,theZEqns,theGuts,theFunc[.1,.1]}];*)
 theFunc]]]]]
 
 
@@ -211,7 +211,7 @@ gridPts[gSpec]},
 With[{whl={#,theFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]/;
-With[{theRes=theFunc[0,0,0]},Print["iPtsFinal:theRes=",theRes//InputForm];
+With[{theRes=theFunc[.1,.1,.1]},Print["iPtsFinal:theRes=",theRes//InputForm];
 NumberQ[Plus @@ theRes[[pos]]]]
 
 makeInterpFuncPF[
@@ -223,14 +223,14 @@ pfFunc=Function[{qq,ru},theFunc[qq,ru,0]]},
 With[{whl={#,pfFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]/;
-With[{theRes=theFunc[0,0,0]},Print["iPtsPF:theRes=",theRes//InputForm];
+With[{theRes=theFunc[.1,.1,.1]},Print["iPtsPF:theRes=",theRes//InputForm];
 NumberQ[Plus @@ theRes[[pos]]]]
 
 makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_},
 theFunc_Function,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
-With[{pos=Range[Length[theFunc[0,0,0]]]},Print["make pos=",{theFunc[0,0,0],pos}];
+With[{pos=Range[Length[theFunc[.1,.1,.1]]]},Print["make pos=",{theFunc[.1,.1,.1],pos}];
 makeInterpFuncPF[modSpecific,theFunc,pos,iOrder,gSpec]]
 
 
@@ -503,7 +503,7 @@ iOrd,gSpec,initFuncs,stdev,iters]},
 With[{preInterpFunc=
 Function[{qq,ru,eps},fpForInitStateFunc[modSpecific,
 {qq,ru,eps},zFuncs[[-1]]]]},
-With[{numVals=Length[preInterpFunc[0,0,0]]},
+With[{numVals=Length[preInterpFunc[.1,.1,.1]]},
 With[{interpFuncFinal=
 makeInterpFuncFinal[preInterpFunc,xtm1,Range[numVals],
 iOrd,gSpec]},
@@ -565,7 +565,7 @@ myExpect[modSpecific,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])},hoop]]],t
 With[{whl={#,reFunc @@ #}& /@
 thePts},(*Print["done making whl"];*)
 doScalarIntegration[whl,#,iOrder]&@pos]]/;
-With[{theRes=theFunc[0,0,0,1]},Print["iPtsRE:theRes=",theRes];
+With[{theRes=theFunc[.1,.1,.1,1]},Print["iPtsRE:theRes=",theRes];
 NumberQ[theRes]]
 
 noShocksGSpec[gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
