@@ -218,8 +218,9 @@ gridPts[gSpec]},
 With[{whl={#,theFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]/;
-With[{theRes=theFunc[.1,.1,.1]},Print["iPtsFinal:theRes=",theRes//InputForm];
-NumberQ[Plus @@ theRes[[pos]]]]
+With[{anArg=Table[Random[],{Length[gSpec]}]},
+With[{theRes=theFunc@@ anArg},Print["iPtsFinal:theRes=",theRes//InputForm];
+NumberQ[Plus @@ theRes[[pos]]]]]
 
 makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
@@ -231,8 +232,9 @@ With[{pfFunc=Function @@ {xVars,theFunc @@ Append[xVars,0]}},
 With[{whl={#,pfFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]]/;
-With[{theRes=theFunc[.1,.1,.1]},Print["iPtsPF:theRes=",theRes//InputForm];
-NumberQ[Plus @@ theRes[[pos]]]]
+With[{anArg=Table[Random[],{Length[gSpec]}]},
+With[{theRes=theFunc@@anArg},Print["iPtsPF:theRes=",theRes//InputForm];
+NumberQ[Plus @@ theRes[[pos]]]]]
 
 makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
