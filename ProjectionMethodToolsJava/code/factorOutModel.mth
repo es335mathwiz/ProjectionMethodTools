@@ -9,6 +9,9 @@ chkPts={
 {3,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
 {3,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
 {3,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}};chkOrd=2;
+
+
+fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1},getLucaFixedPoint},{-.4,0,0},{}]
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1},getLucaFixedPoint},chkOrd,chkPts,{},2];
 
 
