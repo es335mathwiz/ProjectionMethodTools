@@ -129,7 +129,7 @@ With[{theSys=makeSysFunction[modSpecific,xtm1Val,epsVal,zFuncs,zArgs]},
 With[{fpTarget=makeFPTarget[modSpecific,zFuncs,zArgs]},
 fpSolver[fpTarget,theSys,initGuess]
 ]]]]/;
-With[{anArg=Table[Random[],{Length[iterStateDim]}]},
+With[{anArg=Table[Random[],{Length[stateSel]}]},Print["fpForInitStateFunc:",{anArg,(Through[((zFuncs[[-1]]) @@#)&[anArg]]),iterStateDim}];
 Or[zFuncs==={},
 NumberQ[Plus @@ (Through[((zFuncs[[-1]]) @@#)&[anArg]])]]]
 
@@ -248,13 +248,13 @@ makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
 theFunc_Function,pos_List,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}
-]:=Module[{thePts=gridPts[gSpec],
+]:=Module[{thePts=gridPts[gSpec[[Range[Length[stateSel]]]]],
 xVars=Table[Unique["xForPF"],{Length[stateSel]}]},
-With[{pfFunc=Function @@ {xVars,theFunc @@ Append[xVars,0]}},
+With[{pfFunc=Function @@ {xVars,theFunc @@ xVars}},
 With[{whl={#,pfFunc @@ #}& /@
 thePts},
 doScalarInterp[whl,#,iOrder]&/@pos]]]/;
-With[{anArg=Table[Random[],{Length[gSpec]}]},
+With[{anArg=Table[Random[],{Length[stateSel]}]},
 With[{theRes=theFunc@@anArg},Print["iPtsPF:theRes=",{anArg,theFunc//InputForm,theRes//InputForm}];
 NumberQ[Plus @@ theRes[[pos]]]]]
 
@@ -262,9 +262,9 @@ makeInterpFuncPF[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
 theFunc_Function,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
-With[{anArg=Table[Random[],{Length[gSpec]}]},
+With[{anArg=Table[Random[],{Length[stateSel]}]},
 With[{pos=Range[Length[theFunc @@ anArg]]},Print["make pos=",
-{theFunc@@ anArg,pos,anArg,theFunc//InputForm}];
+{pos,anArg,theFunc//InputForm,theFunc@@ anArg}];
 makeInterpFuncPF[modSpecific,theFunc,pos,iOrder,gSpec]]]
 
 
@@ -527,7 +527,7 @@ iOrd,gSpec,initFuncs,stdev,iters],
 xWorker=Table[Unique["finalWorker"],{Length[gSpec]}]},
 With[{preInterpFunc=
 Function @@ {xWorker,fpForInitStateFunc[modSpecific,
-xWorker,zFuncs[[-1]]]}},Print["genFinalWorker:",preInterpFunc//InputForm];
+xWorker[[{1,2}]],xWorker[[{3}]],zFuncs[[-1]]]}},Print["genFinalWorker:",preInterpFunc//InputForm];
 With[{numVals=Length[preInterpFunc[.1,.1,.1]]},
 With[{interpFuncFinal=
 makeInterpFuncFinal[preInterpFunc,xtm1,Range[numVals],
@@ -618,10 +618,10 @@ NIntegrate @@ theIntBody]]]
 
 iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
 iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},zFuncsNow_List]:=
-With[{xWorker=Table[Unique["finalWorker"],{Length[gSpec]}]},
+With[{xWorker=Table[Unique["finalWorker"],{Length[stateSel]}]},
 With[
 {fpSolnFunc=Function @@ {xWorker,fpForInitStateFunc[modSpecific,
-xWorker,zFuncsNow]}},
+xWorker,{0},zFuncsNow]}},
 makeInterpFuncPF[modSpecific,fpSolnFunc,iOrder,gSpec]]]/;
 And[iOrder>=0,Min[First/@gSpec]>=iOrder]
 
