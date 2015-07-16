@@ -10,8 +10,24 @@ chkPts={
 {3,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
 {3,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}};chkOrd=2;
 
+mig00=Private`makeInitGuess[modSpec={compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1},getLucaFixedPoint},xtm1Val={-.4,-.1},{-.3},{}]
 
-fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1},getLucaFixedPoint},{-.4,0,0},{}]
+
+makeInitStateTryEqnsSubbed[modSpec,xtm1Val,{},za={qqArg,ruArg}]
+Private`makeSysFunction[modSpec,xtm1Val,{},za]
+
+fp00=fpForInitStateFunc[modSpec,{-.4,0},{}]
+
+interp00=interp00=makeInterpFuncPF[modSpec,Function[{xx,yy},fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1},getLucaFixedPoint},{xx,yy},{}]],chkOrd,chkPts]
+
+
+
+iterfp00=iterPF[modSpec,chkOrd,chkPts,{}]
+
+forpf00=forIOrdNPtsPF[modSpec,chkOrd,chkPts,{},ignore,3]
+
+
+
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1},getLucaFixedPoint},chkOrd,chkPts,{},2];
 
 
@@ -20,3 +36,4 @@ fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2
 (*
 
 *)
+f

@@ -8,10 +8,20 @@ cs01=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1},getRBCFi
 bmat,phimat,fmat,psieps,psic,psiz,1]//Chop//N
 
 Print["genFinalPF"]
-chkPts={{3,-.1,.1},{3,-.1,.1}};chkOrd=2;
+chkPts={{3,-.1,.1},{3,-.2,.2}};chkOrd=2;
+{ig,ig,zFuncsZeroPF,finFuncZeroPF}=genFinalPF[{compCon,stateSel,modVars,
+noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},chkOrd,chkPts,{},0];
+
+
+makeInterpFuncPF[{compCon,stateSel,modVars,
+noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},
+finFuncZeroPF,{1pos_List,iOrder_Integer,
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}
+]
+(*
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,modVars,
 noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},chkOrd,chkPts,{},1];
-(*
+
 (*for the constant lr*)
 Inverse[IdentityMatrix[2]-fmat] . phimat . psic
 
