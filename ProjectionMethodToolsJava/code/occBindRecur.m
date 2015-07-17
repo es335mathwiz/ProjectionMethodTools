@@ -39,7 +39,7 @@ aPathNoCnstrn::usage="aPathNoCnstrn[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?N
 
 simPathFinal::usage="simPathFinal[nn_Integer,qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,finalFuncs_List]"
 getNextPt::usage="getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]"
-iterPF::usage="iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},zFuncsNow_List] computes the next state and an additional set of zfuncs as a function of state and shocks"
+iterPF::usage="iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},zFuncsNow_List] computes the next state and an additional set of zfuncs as a function of state and shocks"
 iterRE::usage="iterRE[iorder,numpts,zFuncsNow_List,stdev]"
 newIterRE::usage="newIterRE[iorder,numpts,zFuncsNow_List,stdev]"
 aPathFinal::usage="aPathFinal[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,finalFuncs_List,pad_Integer:0]"
@@ -51,11 +51,11 @@ infNorm::usage="infNorm[func_]"
 z01ExactInitRE::usage="exact ratex for one period"
 z01ExactInitPF::usage="exact perfect foresight for one period"
 
-
-
+pos=.
+makeProtectedSymbol["pos"]
 
 genCompSlackSysFunc::usage="genCompSlack[pathLen_Integer,zFuncs:{_Function...}]"
-fpForInitStateFunc::usage="fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},zFuncs_List,(pos_List)|(pos_Integer)]   computes fixed point for state vector given current z functions"
+fpForInitStateFunc::usage="fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},zFuncs_List,(pos_List)|(pos_Integer)]   computes fixed point for state vector given current z functions"
 
 
 makeInterpFuncPF::usage="makeInterpFunc";
@@ -112,14 +112,14 @@ Print["occBindRecur: Turning off extrapolation warning messages"]
 Off[InterpolatingFunction::dmval];
 
 Print["need to split eps from other state vars"]
-fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
+fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
 zFuncs_List,(pos_List)|(pos_Integer)]:=
 With[{beenDone=fpForInitStateFunc[modSpecific,xtm1Val,epsVal,zFuncs]},
 beenDone[[pos]]]
 
 Print["code assumes exactly one shock"]
 Print["fpForInitStateFunc still model specific"]
-fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
+fpForInitStateFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
 zFuncs_List]:=
 Module[{},
 fpForInitStateFunc[modSpecific,xtm1Val,epsVal,zFuncs]=
@@ -129,25 +129,25 @@ With[{theSys=makeSysFunction[modSpecific,xtm1Val,epsVal,zFuncs,zArgs]},
 With[{fpTarget=makeFPTarget[modSpecific,zFuncs,zArgs]},
 fpSolver[fpTarget,theSys,initGuess]
 ]]]]/;
-With[{anArg=Table[Random[],{Length[stateSel]}]},Print["fpForInitStateFunc:",{anArg,(Through[((zFuncs[[-1]]) @@#)&[anArg]]),iterStateDim}];
+With[{anArg=Table[Random[],{Length[stateSel]}]},Print["fpForInitStateFunc:",{anArg,If[zFuncs==={},{},(Through[((zFuncs[[-1]]) @@#)&[anArg]])],iterStateDim}];
 Or[zFuncs==={},
 NumberQ[Plus @@ (Through[((zFuncs[[-1]]) @@#)&[anArg]])]]]
 
-makeFPTarget[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},zFuncs_List,zArgs_List]:=
+makeFPTarget[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},zFuncs_List,zArgs_List]:=
 With[{theZs=makeTheZs[modSpecific,zFuncs]},
 Join[zArgs,theZs]]
 
-makeTheZs[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},zFuncs_List]:=
+makeTheZs[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},zFuncs_List]:=
 Flatten[genZVars[
 compPathLen[modSpecific,zFuncs]-1,compNumCon[modSpecific]]]
 
-makeValSubs[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..}]:=
+makeValSubs[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..}]:=
 With[{lhRule=(First/@(xtm1[[stateSel]]))},
 Append[Thread[lhRule->(xtm1Val[[Range[Length[lhRule]]]])],
 eps->epsVal]]
 
 
-makeInitGuess[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
+makeInitGuess[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
 zFuncs_List]:=
 initGuess=Flatten[If[Length[zFuncs]==0,
 Through[noZFuncsGuess@@#&[xtm1Val]],
@@ -158,7 +158,7 @@ Through[(zFuncs[[Range[Length[stateSel]]]]@@#&)[xtm1Val]]]]]
 mySameQ[xx_,yy_]:=And[Length[xx]===Length[yy],Norm[xx-yy]<=10^(-10)]
 
 
-makeInitStateTryEqnsSubbed[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
+makeInitStateTryEqnsSubbed[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
 zFuncs_List,zArgs_List]:=
 With[{valSubs=makeValSubs[modSpecific,xtm1Val,epsVal],
 pathLen=compPathLen[modSpecific,zFuncs]},
@@ -168,7 +168,7 @@ With[{initStateSubbed=And @@ (csrhs[[1]]),
 tryEqnsSubbed=And @@Thread[zArgs==(csrhs[[2]])]},
 And[initStateSubbed,tryEqnsSubbed]]]]
 
-makeSysFunction[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
+makeSysFunction[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
 zFuncs_List,zArgs_List]:=
 With[{pathLen=compPathLen[modSpecific,zFuncs],
 zLeft=compZLeft[modSpecific,zFuncs],
@@ -180,14 +180,14 @@ With[{theGuts=makeSysFunctionGuts[modSpecific,xtm1Val,epsVal,zFuncs,zArgs,xTryVa
 With[{theFunc=Function @@{xTryVars,theGuts}},
 theFunc]]]]]]
 
-makeTheZFuncsApps[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+makeTheZFuncsApps[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 zFuncs_List,zArgs_List,xTryVars_List]:=
 If[compPathLen[modSpecific,zFuncs]===1,{},
 Through[(Drop[zFuncs,Length[zArgs]])@@ #&[xTryVars]]]
 
 
 makeSysFunctionGuts[modSpecific:{compCon:{_Function...},
-stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
+stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
 zFuncs_List,zArgs_List,xTryVars_List]:=
 With[{initStateSubbedtryEqnsSubbed=
 makeInitStateTryEqnsSubbed[modSpecific,xtm1Val,epsVal,zFuncs,zArgs]},
@@ -195,28 +195,28 @@ With[{theZEqns=And @@ (Thread[(zLeft=compZLeft[modSpecific,zFuncs])==(makeTheZFu
 And[initStateSubbedtryEqnsSubbed,theZEqns]]]
 
 compPathLen[modSpecific:{compCon:{_Function...},
-stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},zFuncs_List]:=
+stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},zFuncs_List]:=
 With[{numCon=compNumCon[modSpecific]},
 If[zFuncs==={},1,((Length[zFuncs]-iterStateDim)/numCon)+1]]
 
 compNumCon[modSpecific:{compCon:{_Function...},
-stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_}]:=Length[compCon] 
+stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_}]:=Length[compCon] 
 
 
 compZLeft[modSpecific:{compCon:{_Function...},
-stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},zFuncs_List]:=
+stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},zFuncs_List]:=
 If[compPathLen[modSpecific,zFuncs]==1,{},
 With[{theZs=makeTheZs[modSpecific,zFuncs]},
 (Drop[theZs,-compNumCon[modSpecific]])]]
 
 Print["forIOrdNPts still has mod specific"]
 forIOrdNPtsPF[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},start_List,ignore_,maxLen_Integer]:=
 NestList[Identity[iterPF[modSpecific,iOrd,gSpec[[{1,2}]],#]]&,start,maxLen];
 
 forIOrdNPtsRE[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},start_List,stdev_?NumberQ,maxLen_Integer]:=
 NestList[Identity[iterRE[modSpecific,iOrd,gSpec,#,stdev]]&,start,maxLen];
 
@@ -245,7 +245,7 @@ With[{theRes=theFunc@@ anArg},Print["iPtsFinal:theRes=",theRes//InputForm];
 NumberQ[Plus @@ theRes[[pos]]]]]
 
 makeInterpFuncPF[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 theFunc_Function,pos_List,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}
 ]:=Module[{thePts=gridPts[gSpec[[Range[Length[stateSel]]]]],
@@ -259,7 +259,7 @@ With[{theRes=theFunc@@anArg},Print["iPtsPF:theRes=",{anArg,theFunc//InputForm,th
 NumberQ[Plus @@ theRes[[pos]]]]]
 
 makeInterpFuncPF[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 theFunc_Function,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
 With[{anArg=Table[Random[],{Length[stateSel]}]},
@@ -366,7 +366,7 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 
 
 genCompSlackSysFunc[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
 pathLen_Integer]:=
 With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,
 Length[compCon],pathLen,nlead],
@@ -404,7 +404,7 @@ getNextPt[qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,zFuncs_List]:=
 aPath[qtm1Arg,rutm1Arg,epsArg,zFuncs][[Range[3]+3]]
 (*
 aPath[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 {qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ},zFuncs_List,pad_Integer:0]:=  
 With[{numCon=Length[compCon],thePathVals=
 Drop[Function[{xx,yy,zz},
@@ -502,14 +502,14 @@ Flatten[aPathFinal[qq,ru,eps,finFuncs][[3+Range[3]]]]]
 *)
 
 
-genFinalPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+genFinalPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
 initFuncs_List,iters_Integer:1]:=
 genFinalWorker[modSpecific(*modSpecific*),
 forIOrdNPtsPF,iOrd,gSpec,
 initFuncs,ignore,iters]
 
-genFinalRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+genFinalRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
 initFuncs_List,stdev_?NumberQ,iters_Integer:1]:=
 genFinalWorker[modSpecific(*modSpecific*),
@@ -518,7 +518,7 @@ initFuncs,stdev,iters]
 (*put std dev = 0 in ratex*)
 
 Print["genfinalworker has model specific stuff"]
-genFinalWorker[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+genFinalWorker[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 forIOrdNPtsFunc_,
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},initFuncs_List,
 stdev:(_?NumberQ|ignore),iters_Integer:1]:=
@@ -576,36 +576,93 @@ Get["occBindRecur`"]]
 
 
 
+(*
+
+makeInterpFuncRE[
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,
+{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},theFunc_Function,pos_Integer,iOrder_Integer,
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},stdev_?NumberQ]:=
+Module[{thePts=gridPts[noShocksGSpec[gSpec]],
+xxVars=Table[Unique["xInterpRE"],{Length[stateSel]}]},
+With[{reFunc=Function @@ {xxVars,
+With[{qrSubbed=theFunc @@ Join[xxVars,{#,thePos}]},
+With[{ultFunc=Identity[Identity[With[{hoop=(qrSubbed&[tryEps])},hoop]]]},
+myExpect[modSpecific,
+ultFunc,
+tryEps,stdev]]]
+}},(*reFunc Defn*)
+With[{whl={#,reFunc @@ #}& /@
+thePts},(*Print["done making whl"];*)
+doScalarIntegration[whl,#,iOrder]&@pos]]]/;
+With[{anArg=Table[Random[],{Length[stateSel]}]},
+With[{theRes=theFunc@@ anArg},Print["iPtsRE:theRes=",theRes,anArg];
+NumberQ[Plus @@  theRes]]]
 
 
 makeInterpFuncRE[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,
-{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},theFunc_Function,pos_Integer,iOrder_Integer,
+{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},theFunc_Function,pos_Integer,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},stdev_?NumberQ]:=
-Module[{thePts=gridPts[noShocksGSpec[gSpec]],
-xxVars=Table[Unique["xInterpRE"],{Length[stateSel]}]},Print["done use myExpect"];
-With[{reFunc=Function @@ {xxVars,
-With[{qrSubbed=theFunc @@ Join[xxVars,{#,thePos}]},
+
+
+
+*)
+
+
+makeInterpFuncRE[
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,
+{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},iOrder_Integer,
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},stdev_?NumberQ]:=
+With[{reFunc=makeREFunc[modSpecific],
+theNeededInterps=Append[Range[Length[stateSel]],-1]},
+doScalarIntegInterp[
+modSpecific,#,reFunc,iOrder,gSpec,stdev]&/@theNeededInterps
+]
+
+
+doScalarIntegInterp[
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,
+{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
+aPos_Integer,anREFunc_Function,iOrd_Integer,
+gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},stdev_?NumberQ]:=
+With[{xxVars=Table[Unique["xInterpRE"],{Length[stateSel]}],
+thePts=gridPts[noShocksGSpec[gSpec]],
+thisFunc=anREFunc[aPos]},
+With[{forInterpFunc=Function @@ 
+{xxVars,myExpect[modSpecific,thisFunc@@xxVars,Private`tryEps,stdev]}},
+evalAtInterpPts[forInterpFunc,thePts,iOrd]]]
+
+evalAtInterpPts[aFunc_Function,thePts_List,iOrd_Integer]:=
+Interpolation[{#,aFunc @@ #} & /@ thePts,InterpolationOrder->iOrd]
+
+
+
+makeREFunc[modSpecific:{compCon:{_Function...},stateSel_List,
+xtm1_?MatrixQ,noZFuncsGuess_,
+{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_}]:=
+With[{xxVars=Table[Unique["xInterpRE"],{Length[stateSel]}]},
+Function @@ {pos,
+Function @@ {xxVars,
+fpForInitStateFunc[modSpecific,xxVars,{Private`tryEps},{},pos]}}]
+(*
+
+Print["done use myExpect"];
 Print["about to use myExpect in func:",{compCon,stateSel,xtm1,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])},hoop]]],tryEps,stdev,qrSubbed}];
-myExpect[modSpecific,Identity[Identity[With[{hoop=(qrSubbed&[tryEps])},hoop]]],tryEps,stdev]]}},
 Print["reFunc=",reFunc//InputForm];
-With[{whl={#,reFunc @@ #}& /@
-thePts},(*Print["done making whl"];*)
-doScalarIntegration[whl,#,iOrder]&@pos]]]/;
-With[{anArg=Append[Table[Random[],{Length[gSpec]}],1]},
-With[{theRes=theFunc[.1,.1,.1,1]anArg(*theFunc@@ anArg*)},Print["iPtsRE:theRes=",theRes];
-NumberQ[theRes]]]
+
+
+*)
 
 noShocksGSpec[gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
 Drop[gSpec,-1]
 
 Print["try reusing modSpecific in definition"]
 myExpect[
-modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 aFuncNow:fpForInitStateFunc[
 modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,
-{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
-{qVal_?NumberQ,ruVal_?NumberQ,epsVal_},
+{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
+{qVal_?NumberQ,ruVal_?NumberQ},{epsVal_},
 zFuncs_List,pos_Integer],aVar_,stdev_?NumberQ]:=
 Module[{},(*Print["myExpect:",{aFunc,aVar,aFuncNow,stdev}//InputForm];*)
 If[stdev==0,(*Print["aFunc subbed:",{aFunc/.aVar->0,aFuncNow/.aVar->0}];*)aFuncNow/.aVar->0,
@@ -616,7 +673,7 @@ NIntegrate @@ theIntBody]]]
 
 
 
-iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+iterPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},zFuncsNow_List]:=
 With[{xWorker=Table[Unique["finalWorker"],{Length[stateSel]}]},
 With[
@@ -624,23 +681,25 @@ With[
 xWorker,{0},zFuncsNow]}},
 makeInterpFuncPF[modSpecific,fpSolnFunc,iOrder,gSpec]]]/;
 And[iOrder>=0,Min[First/@gSpec]>=iOrder]
-
-iterRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer},fpSolver_},
+(*
+Print["iterRE model specific"]
+iterRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrder_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
 zFuncsNow_List,stdev_?NumberQ]:=
-With[{xWorker=Table[Unique["finalWorker"],{Length[gSpec]}]},
-With[{
-agedZs=ageZFuncs[zFuncsNow],
-fpSolnFunc=Function @@{ Append[xWorker,pos],
-fpForInitStateFunc[modSpecific,
-xWorker,zFuncsNow,pos]}},
+With[{agedZs=ageZFuncs[zFuncsNow],
+fpSolnFunc=makeREFunc[modSpecific]},
 With[
 {forQ=makeInterpFuncRE[modSpecific,fpSolnFunc,1,iOrder,gSpec,stdev],
 forRu=makeInterpFuncRE[modSpecific,fpSolnFunc,2,iOrder,gSpec,stdev],
 forNewZ=makeInterpFuncRE[modSpecific,fpSolnFunc,-1,iOrder,gSpec,stdev]},
-With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}]},newRes]]]]/;
+With[{newRes=Join[{forQ,forRu},agedZs,{forNewZ}]},newRes]]]/;
 And[iOrder>=0,Min[First/@gSpec]>=iOrder]
 
+makeREFunc[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_}]:=
+With[{xWorker=Table[Unique["finalWorker"],{Length[gSpec]}]},Print["using new func"];
+Function @@{ Append[xWorker,pos],
+fpForInitStateFunc[modSpecific,xWorker,zFuncsNow,pos]}]
+*)
 (*
 aPathNoCnstrn[
 qtm1Arg_?NumberQ,rutm1Arg_?NumberQ,epsArg_?NumberQ,pad_Integer:1]:=  
