@@ -58,38 +58,36 @@ fp0012=fpForInitStateFunc[modSpec,{-.4,0},{-.1},{},{1,2}]
 
 tryFuncVal=(tryFunc=Function[{xx,yy},fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},{xx,yy},{0},{}]])[.1,.1]
 
-tryFuncEps=
-Function[{xx,yy,pos},fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},{xx,yy},{Private`tryEps},{},pos]]
 
-
-tryFuncEps=Private`makeREFunc[modSpec];
+tryFuncEps=Private`makeREFunc[modSpec,{}];
 doInt=Private`myExpect[modSpec,tryFuncEps[1][-.4,0],Private`tryEps,.01]
 
 doInt=Private`myExpect[modSpec,tryFuncEps[#][-.4,0],Private`tryEps,.01]&/@{1,2,-1}
 
+
+
+
 hap=Private`doScalarIntegInterp[modSpec,1,tryFuncEps,2,chkPts,.01]
 
 
-interp00=makeInterpFuncRE[modSpec,Function[{xx,yy},fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},{xx,yy},{0},{}]],1,chkOrd,chkPts,.01]
-
-interp00m1=makeInterpFuncRE[modSpec,Function[{xx,yy},fpForInitStateFunc[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},{xx,yy},{0},{}]],-1,chkOrd,chkPts,.01]
-
-
+interp00=makeInterpFuncRE[modSpec,chkOrd,chkPts,{},.01]
 
 iterre00=iterRE[modSpec,chkOrd,chkPts,{},0.01]
-iterre01=iterRE[modSpec,chkOrd,chkPts,iterpf00,0.01]
+iterre01=iterRE[modSpec,chkOrd,chkPts,iterre00,0.01]
+
+iterre02=iterRE[modSpec,chkOrd,chkPts,iterre01,0.01]
 
 
 
-forpf00=forIOrdNPtsRE[modSpec,chkOrd,chkPts,{},ignore,3]
+
+
+forpf00=forIOrdNPtsRE[modSpec,chkOrd,chkPts,{},0.01,3]
+
+
+
+
+
+
 
 
 {ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},chkOrd,chkPts,{},2];
-
-
-
-
-(*
-
-*)
-f
