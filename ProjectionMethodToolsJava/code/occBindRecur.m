@@ -503,14 +503,14 @@ Flatten[aPathFinal[qq,ru,eps,finFuncs][[3+Range[3]]]]]
 
 genFinalPF[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
-initFuncs_List,iters_Integer:1]:=
+initFuncs_List,iters_Integer]:=
 genFinalWorker[modSpecific(*modSpecific*),
 forIOrdNPtsPF,iOrd,gSpec,
 initFuncs,ignore,iters]
 
 genFinalRE[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},
 iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},
-initFuncs_List,stdev_?NumberQ,iters_Integer:1]:=
+initFuncs_List,stdev_?NumberQ,iters_Integer]:=
 genFinalWorker[modSpecific(*modSpecific*),
 forIOrdNPtsRE,iOrd,gSpec,
 initFuncs,stdev,iters]

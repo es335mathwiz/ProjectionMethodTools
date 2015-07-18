@@ -88,6 +88,8 @@ forpf00=forIOrdNPtsRE[modSpec,chkOrd,chkPts,{},0.01,3]
 
 
 
+{ig,ig,zFuncsOneRE0,finFuncOneRE0}=genFinalRE[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},chkOrd,chkPts,{},0,2];
 
 
-{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},chkOrd,chkPts,{},2];
+
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},chkOrd,chkPts,{},.01,2];
