@@ -142,7 +142,7 @@ compPathLen[modSpecific,zFuncs]-1,compNumCon[modSpecific]]]
 makeValSubs[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..}]:=
 With[{lhRule=(First/@(xtm1[[stateSel]]))},
 Append[Thread[lhRule->(xtm1Val[[Range[Length[lhRule]]]])],
-eps->epsVal]]
+eps->epsVal[[1]]]]
 
 
 makeInitGuess[modSpecific:{compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},xtm1Val:{_?NumberQ..},epsVal:{_?NumberQ..},
@@ -523,16 +523,18 @@ iOrd_Integer,gSpec:{{_Integer,_?NumberQ,_?NumberQ}..},initFuncs_List,
 stdev:(_?NumberQ|ignore),iters_Integer:1]:=
 With[{zFuncs=forIOrdNPtsFunc[modSpecific,
 iOrd,gSpec,initFuncs,stdev,iters],
-xWorker=Table[Unique["finalWorker"],{Length[gSpec]}]},
+xWorker=Table[Unique["finalWorker"],{Length[gSpec]}]},Print["just before"];
 With[{preInterpFunc=
 Function @@ {xWorker,fpForInitStateFunc[modSpecific,
-xWorker[[{1,2}]],xWorker[[{3}]],zFuncs[[-1]]]}},(*Print["genFinalWorker:",preInterpFunc//InputForm];*)
-With[{numVals=Length[preInterpFunc[.1,.1,.1]]},
+xWorker[[Range[iterStateDim]]],xWorker[[{iterStateDim+1}]],zFuncs[[-1]]]}},(*Print["genFinalWorker:",preInterpFunc//InputForm];*)Print["just after"];
+With[{numVals=Length[preInterpFunc @@ midGrid[gSpec]]},
 With[{interpFuncFinal=
 makeInterpFuncFinal[preInterpFunc,xtm1,Range[numVals],
 iOrd,gSpec]},
 {{iOrd,gSpec},{},zFuncs,interpFuncFinal}]]]]
 
+midGrid[gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}]:=
+Mean[Drop[#,1]]&/@ gSpec
 
 
 

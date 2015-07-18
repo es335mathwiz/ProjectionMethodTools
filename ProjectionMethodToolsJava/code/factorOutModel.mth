@@ -13,6 +13,7 @@ chkPts={
 mig00=Private`makeInitGuess[modSpec={compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},xtm1Val={-.4,-.1},epsVal={-.3},{}]
 
 
+Private`makeValSubs[modSpec,xtm1Val,epsVal]
 Private`makeInitStateTryEqnsSubbed[modSpec,xtm1Val,epsVal,{},za={qqArg,ruArg}]
 
 Private`makeSysFunction[modSpec,xtm1Val,epsVal,{},za]

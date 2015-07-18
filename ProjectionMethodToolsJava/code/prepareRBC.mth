@@ -1,5 +1,57 @@
 Needs["simpleRBCModel`"]
 
+
+
+Print["variable names (symbols?) should come from model bmat comp. don't use tm1"];
+Print["provide shock names should come from model bmat comp"];
+chkOrd=2;
+chkPts={
+{3,1,5},
+{3,-.02,.02}
+}
+
+mig00=Private`makeInitGuess[modSpec={compCon,stateSel,{{ctm1},{ktm1}},
+noCnstrnGuess,{1,2,1,1,1},getRBCFixedPoint},xtm1Val={.5},epsVal={-.1},{}]
+
+
+Private`makeInitStateTryEqnsSubbed[modSpec,xtm1Val,epsVal,{},za={kkArg}]
+
+Private`makeSysFunction[modSpec,xtm1Val,epsVal,{},za]
+
+fp00=fpForInitStateFunc[modSpec,{.4},{-.1},{}]
+
+(*
+
+
+
+interp00=makeInterpFuncPF[modSpec,
+Function[{xx},fpForInitStateFunc[modSpec,{xx},{0},{}]],chkOrd,chkPts]
+
+
+interp01=makeInterpFuncPF[modSpec,
+Function[{xx},fpForInitStateFunc[modSpec,{xx},{0},interp00]],chkOrd,chkPts]
+
+
+interp02=makeInterpFuncPF[modSpec,
+Function[{xx},fpForInitStateFunc[modSpec,{xx},{0},interp01]],chkOrd,chkPts]
+
+
+iterpf00=iterPF[modSpec,chkOrd,chkPts,{}]
+iterpf01=iterPF[modSpec,chkOrd,chkPts,iterpf00]
+
+
+
+forpf00=forIOrdNPtsPF[modSpec,chkOrd,chkPts,{},ignore,3]
+
+
+
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[modSpec,chkOrd,chkPts,{},3];
+
+*)
+
+
+
+(*
 modVars={{ccVar},{kkVar}}
 notAPath=genPath[xtm1=modVars,bmat,phimat,fmat,psieps,psic,psiz,2,5]
 
@@ -17,7 +69,7 @@ makeInterpFuncPF[{compCon,stateSel,modVars,
 noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},
 finFuncZeroPF,{1pos_List,iOrder_Integer,
 gSpec:{{_Integer,_?NumberQ,_?NumberQ}..}
-]
+}]
 (*
 {ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,modVars,
 noCnstrnGuess,{1,2,1,1},getRBCFixedPoint},chkOrd,chkPts,{},1];
@@ -30,3 +82,4 @@ cs02=genCompSlackSysFunc[{compCon,stateSel,xtm1,noCnstrnGuess,{1,2,1,1},getRBCFi
 *)
 
 
+*)
