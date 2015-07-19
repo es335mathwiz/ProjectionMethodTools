@@ -90,7 +90,7 @@ With[{theSysRidT=theSys/.xx_[t]->xx,
 targetRidT=fpTarget/.xx_[t]->xx},(*Print["theRysRidT=",theSysRidT];*)
 FixedPoint[targetRidT/.With[{soln=
 Flatten[FindRoot[(theSysRidT @@ #),{#,.1}&/@targetRidT]]},(*Print["soln=",soln,targetRidT];*)
-If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSysRidT//InputForm,targetRidT,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]//Chop]
+If[Not[MatchQ[soln,{(_->_)..}]],Identity[{"NSolve Failed in >fpForInitState for",{theSysRidT//InputForm,targetRidT,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]//Chop]
 
 
 
