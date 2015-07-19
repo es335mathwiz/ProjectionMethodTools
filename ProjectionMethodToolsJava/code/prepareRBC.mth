@@ -6,13 +6,13 @@ Print["variable names (symbols?) should come from model bmat comp. don't use tm1
 Print["provide shock names should come from model bmat comp"];
 chkOrd=2;
 chkPts={
-{3,1,5},
-{3,-.02,.02}
+{25,.1,.3},
+{10,-.02,.02}
 }
 
 mig00=Private`makeInitGuess[modSpec={compCon,stateSel,{{ctm1},{ktm1}},
 noCnstrnGuess,{1,2,1,1,1},getRBCFixedPoint},xtm1Val={.5},epsVal={-.1},{}]
-
+(*
 
 Private`makeInitStateTryEqnsSubbed[modSpec,xtm1Val,epsVal,{},za={kkArg}]
 
@@ -20,7 +20,7 @@ Private`makeSysFunction[modSpec,xtm1Val,epsVal,{},za]
 
 fp00=fpForInitStateFunc[modSpec,{.4},{-.1},{}]
 
-(*
+
 
 
 

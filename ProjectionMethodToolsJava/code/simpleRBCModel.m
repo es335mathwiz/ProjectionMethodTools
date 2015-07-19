@@ -30,12 +30,12 @@ delta->95/100
 
 
 
-
-rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0]
-kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<1)&&(0<delta<1)][[2]]]
-cSSSub=Flatten[Solve[Simplify[rbcSSEqns/.kSSSub][[2]],cc]]
-
-ssSolnSubs=Join[cSSSub,kSSSub]
+If[Length[cSSSub]===0,
+Print["computing steady state subs"];
+rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0];
+kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<1)&&(0<delta<1)][[2]]];
+cSSSub=Flatten[Solve[Simplify[rbcSSEqns/.kSSSub][[2]],cc]];
+ssSolnSubs=Join[cSSSub,kSSSub]]
 
 
 hmatSymbRaw=(((equationsToMatrix[
@@ -102,7 +102,7 @@ Flatten[bmat . {{0},{kVal}}+phimat . (psieps *0+psic)]//.paramSubs},
 
 (*/.paramSubs//myN;*)
 
-
+(*
 futDiffDet[ii_Integer]:=
 With[{fkktm1=Nest[((alpha*delta)*kktm1^alpha//.(tog//N)) *#&,1,ii]},
 With[{fkkt=(alpha*delta)*fkktm1^alpha},
@@ -114,9 +114,29 @@ With[{theSubs=Thread[Flatten[theSymbs]->Flatten[theVec]]},
 {theVec,(rbcEqns/.eps[theta][t]->0)//.theSubs,
 hmatSymb . theVec//.tog}
 //Simplify]]]]]]
+*)
+
+futDiffDet[kktm1_?NumberQ,ii_Integer]:=
+With[{kkVals=Drop[NestList[((alpha*delta)*#^alpha//.(tog//N)) &,kktm1,ii]//.tog//N,0]},
+With[{yyVals=#^alpha&/@kkVals//.tog//N},
+With[{ccVals=Drop[yyVals,-1]-Drop[kkVals,1]},Transpose[{ccVals,Drop[kkVals,1]}]]]]
+
+compZs[kktm1_?NumberQ,ii_Integer]:=
+With[{hmatNum=hmatSymb//.tog//N,thePath=Flatten[futDiffDet[kktm1,ii]]},
+Table[hmatNum. Transpose[{thePath[[jj*2+Range[6]]]}],{jj,0,ii-3}]]
+
+
+
+
+
+rbcEqnsApply[{ctm1_,ktm1_,ct_,kt_,ctp1_,ktp1_}]:=
+rbcEqns/.eps[theta][t]->0/.{cc[t]->ct,cc[t+1]->ctp1,kk[t-1]->ktm1,kk[t]->kt}//.tog//N
+
+
 
 
 
 End[]
 EndPackage[]
 Print["done reading simpleRBCModel.m"]
+
