@@ -18,7 +18,7 @@ Private`makeInitStateTryEqnsSubbed[modSpec,xtm1Val,epsVal,{},za={kkArg}]
 
 Private`makeSysFunction[modSpec,xtm1Val,epsVal,{},za]
 
-fp00=fpForInitStateFunc[modSpec,{.4},{-.1},{}]
+fp00=fpForInitStateFunc[modSpec,{.4},{-.02},{}]
 
 
 
