@@ -201,8 +201,9 @@ stateSel={1,3};
 
 getLucaFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
 FixedPoint[fpTarget/.With[{soln=
-Flatten[NSolve[(theSys @@ #),fpTarget]]},(*Print["soln=",{soln,fpTarget,#,theSys @@ #,theSys[[2]],theSys}];*)
-If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{theSys//InputForm,fpTarget,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]
+Flatten[NSolve[(theSys @@ #),fpTarget]]},(*Print["soln=",{#,soln,fpTarget,#,theSys @@ #,theSys//InputForm}];*)
+If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",
+{#//InputForm,theSys//InputForm,fpTarget,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]
 
 
 
