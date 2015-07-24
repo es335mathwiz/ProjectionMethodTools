@@ -9,6 +9,9 @@ compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
 stateSel::usage="stateSel[aPath_?MatrixQ]:=Function[{aPath}"
 rbcEqns::usage="rbc model equations"
 getRBCFixedPoint::usage="getRBCFixedPoint"
+condExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
+compZs::usage="compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,ii_Integer]"
+
 Begin["Private`"]
 
 (*pg 165 of  maliar maliar solving neoclassical growth model  
@@ -116,14 +119,14 @@ hmatSymb . theVec//.tog}
 //Simplify]]]]]]
 *)
 
-futDiffDet[kktm1_?NumberQ,ii_Integer]:=
-With[{kkVals=Drop[NestList[((alpha*delta)*#^alpha//.(tog//N)) &,kktm1,ii]//.tog//N,0]},
-With[{yyVals=#^alpha&/@kkVals//.tog//N},
-With[{ccVals=Drop[yyVals,-1]-Drop[kkVals,1]},Transpose[{ccVals,Drop[kkVals,1]}]]]]
+condExp[kktm1_?NumberQ,epsVal_?NumberQ,ii_Integer]:=
+With[{kkVals=Drop[NestList[((epsVal*alpha*delta)*#^alpha//.(tog//N)) &,kktm1,ii]//.tog//N,0]},
+With[{yyVals=epsVal*#^alpha&/@kkVals//.tog//N},
+With[{ccVals=Drop[yyVals,-1]-Drop[kkVals,1]},Join[{{cc/.ssSolnSubs/.paramSubs//N},{kktm1}},Transpose[{ccVals,Drop[kkVals,1]}]]]]]
 
-compZs[kktm1_?NumberQ,ii_Integer]:=
-With[{hmatNum=hmatSymb//.tog//N,thePath=Flatten[futDiffDet[kktm1,ii]]},
-Table[hmatNum. Transpose[{thePath[[jj*2+Range[6]]]}],{jj,0,ii-3}]]
+compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,epsVal_?NumberQ,ii_Integer]:=
+With[{thePath=Flatten[condExp[kktm1,epsVal,ii+2]]},
+Table[hmatNum. Transpose[{thePath[[jj*2+Range[6]]]}],{jj,0,ii-1}]]
 
 
 

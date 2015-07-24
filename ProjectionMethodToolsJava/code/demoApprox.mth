@@ -1,0 +1,35 @@
+Needs["simpleRBCModel`"]
+
+
+nothmat={
+{1.,.5,1.,.4,1.,1.},
+{.4,.3,.2,.1,-.2,-.1}};
+{azfHf,atm,aliltmLilJs,aevlsLilevcs,aqmat,abmat,ansmat,ans0inv}=numericAMA[nothmat,1,0]//Chop;
+
+
+
+{ig,aphimat,anfmat}=numericComputeBPhiF[nothmat,aqmat]//Chop;
+apsieps={{0},{0}};
+apsiz=IdentityMatrix[2];
+
+apsic=With[{ssVal={{cc},{kk}}/.Private`ssSolnSubs/.Private`paramSubs},
+nothmat .Join[ssVal,ssVal,ssVal]]
+
+
+
+doSeries[{{ktm1_},{epsVal_}},len_Integer]:=
+With[{theZVals=Flatten[compZs[nothmat,ktm1,epsVal,len]],
+theCon=Flatten[Table[apsic,{len}]],
+theZVars=Flatten[Reverse[genZVars[len-1,2]]],
+aPath=
+genPath[{{cc/.Private`ssSolnSubs/.Private`paramSubs},{ktm1}},abmat,aphimat,anfmat,apsieps,apsic,apsiz,2,len,0][[{3,4}]]},
+With[{zSubs=Thread[theZVars->(theZVals-(theCon))]},
+(*{theZVars,theZVals,aPath,zSubs,aPath/.zSubs}*)Flatten[aPath/.zSubs]]]
+
+
+
+(*
+
+fpis 
+abmat . {{0.359845}, {0.187032}} + Inverse[IdentityMatrix[2] - anfmat] . aphimat . apsic                                                   
+*)
