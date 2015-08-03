@@ -221,7 +221,7 @@ Print["interp defs"]
 
 smallestRFunc[finalFuncs_List]:=
 With[{anEval=aPathFinal[0,0,0,finalFuncs]},
-With[{theRpos=Range[5,Length[anEval]-3,3]},
+With[{theRpos=Range[5,Length[anEval]-3,3]}, 
 With[{theRFunc=
 Function[{xx,yy,zz},Min[Flatten[
 aPathFinal[xx,yy,zz,finalFuncs][[theRpos]]]]]},

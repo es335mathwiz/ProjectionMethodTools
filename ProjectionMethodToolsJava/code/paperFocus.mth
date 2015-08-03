@@ -67,7 +67,7 @@ xx_[yy:t+_.]->Subscript[xx,yy],zt0->Subscript[z,0],
 uu$Shock->Subscript[\[Epsilon],t],
 Subscript[discrep,t]->\[Delta],eqvdIf->\[CurlyTheta],
 Subscript[ru,y:t+_.]->Subscript[Subscript[r,u],y]}];
-Export["prettyHmatSymb.pdf", MatrixForm[hmatSymb //. latexSubs]];
+Export["prettyHmatSymb.pdf", MatrixForm[hmatSymb //. latexSubs]]; 
 Export["prettyBmatSymb.pdf", MatrixForm[bmatSymb //. latexSubs]];
 Export["prettyPhimatSymb.pdf", MatrixForm[phimatSymb //. latexSubs]];
 Export["prettyFmatSymb.pdf", MatrixForm[fmatSymb //. latexSubs]];

@@ -1,7 +1,3 @@
-PrependTo[$Path,"../../../paperProduction/mathAMA/AMAModel/"];
-PrependTo[$Path,"../../../mathAMA/NumericAMA"];
-PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
-PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
 Print["reading occBindRecur.m"]
 BeginPackage["occBindRecur`",{"ProtectedSymbols`","ProjectionInterface`","JLink`","AMAModel`","NumericAMA`","SymbolicAMA`","mathSmolyak`"}]
 
@@ -389,6 +385,8 @@ And[pathLen>0]
 
 genPath[xtm1_?MatrixQ,bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,
 numNonZeroZs_Integer,padZeroZs_Integer]:=
+genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,numCon,
+numNonZeroZs,padZeroZs]=
 With[{startPath=
 genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,numCon,numNonZeroZs]},
 With[{tailPath=NestList[((nonFPart[#,
@@ -396,10 +394,13 @@ With[{tailPath=NestList[((nonFPart[#,
 startPath[[-Reverse[Range[Length[bmat]]]]],padZeroZs]},
 Join[startPath,Join@@Drop[tailPath,1]]]]
 
-
+Print["genPath assumes only one shock"]
 genPath[xtm1_?MatrixQ,
 bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,numCon_Integer,
 numNonZeroZs_Integer]:=
+genPath[xtm1,
+bmat,phimat,fmat,psieps,psic,psiz,numCon,
+numNonZeroZs]=
 With[{rawFParts=Reverse[(doFPart[phimat,fmat,psiz,#,numCon,0] &/@Range[0,numNonZeroZs-1])]},
 With[{bgn=(nonFPart[xtm1,
 {{ProtectedSymbols`eps}},bmat,phimat,fmat,psieps,psic]+rawFParts[[1]])},
@@ -612,7 +613,7 @@ Clear[fpForInitStateFunc];
 Get["occBindRecur`"]]
 
 
-
+ 
 
 
 
