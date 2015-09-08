@@ -158,8 +158,7 @@ makeInitStateTryEqnsSubbed[modSpecific:{{bmat_?MatrixQ,phimat_?MatrixQ,fmat_?Mat
 zFuncs_List,zArgs_List]:=
 With[{valSubs=makeValSubs[modSpecific,xtm1Val,epsVal],
 pathLen=compPathLen[modSpecific,zFuncs]},
-With[{csrhs=genCompSlackSysFunc[modSpecific,bmat,phimat,fmat,psieps,
-psic,psiz,pathLen]/.valSubs},
+With[{csrhs=genCompSlackSysFunc[modSpecific,pathLen]/.valSubs},
 With[{initStateSubbed=And @@ (csrhs[[1]]),
 tryEqnsSubbed=And @@Thread[zArgs==(csrhs[[2]])]},
 And[initStateSubbed,tryEqnsSubbed]]]]
@@ -370,8 +369,7 @@ aPathNoCnstrn[qtm1Arg,rutm1Arg,epsArg,nn]/;nn>0
 *)
 
 genCompSlackSysFunc[
-modSpecific:{{bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ},compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ,
-pathLen_Integer]:=
+modSpecific:{{bmat_?MatrixQ,phimat_?MatrixQ,fmat_?MatrixQ,psieps_?MatrixQ,psic_?MatrixQ,psiz_?MatrixQ},compCon:{_Function...},stateSel_List,xtm1_?MatrixQ,noZFuncsGuess_,{iterStateDim_Integer,neq_Integer,nlag_Integer,nlead_Integer,nShocks_Integer},fpSolver_},pathLen_Integer]:=
 With[{aPath=genPath[xtm1,bmat,phimat,fmat,psieps,psic,psiz,
 Length[compCon],pathLen,nlead],
 theZs=Flatten[genZVars[pathLen-1,Length[compCon]]]},

@@ -1,5 +1,11 @@
+PrependTo[$Path,"../../../mathAMA/AMAModel/"];
+PrependTo[$Path,"../../../mathAMA/NumericAMA"];
+PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
+PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
+PrependTo[$Path,"../../../ProtectedSymbols"];
+PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading lucaSimpleModel.m"]
-BeginPackage["lucaSimpleModel`",{"occBindRecur`","ProtectedSymbols`","AMAModel`","SymbolicAMA`","ProjectionInterface`"}]
+BeginPackage["lucaSimpleModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
 
 
@@ -96,7 +102,9 @@ betap -> Subscript[\[Beta], p],
    phip -> Subscript[\[Phi], p], rhop -> Subscript[\[Rho], p], 
    rho$ru -> Subscript[\[Rho], ru], sigmap -> Subscript[\[Sigma], p],
 xx_[yy:t+_.]->Subscript[xx,yy],zt0->Subscript[z,0],
-uu$Shock->Subscript[\[Epsilon],t],
+uu$Shock->Subscript[\[
+
+Epsilon],t],
 Subscript[discrep,t]->\[Delta],eqvdIf->\[CurlyTheta],
 Subscript[ru,y:t+_.]->Subscript[Subscript[r,u],y]}];
 Export["prettyHmatSymb.pdf", MatrixForm[hmatSymb //. latexSubs]];
@@ -187,8 +195,8 @@ Function[{xx,yy},z01ExactExpFunc[xx,yy][[3]]]}
 
 (*always used with epsVal=0*)
 noCnstrnGuess= With[{linPFSys=
-Flatten[bmat . {{qVal},{0},{ruVal}}+phimat . (psieps *0+psic)]//.lucaSubs},
-{Function @@ {{qVal,ruVal},linPFSys[[1]]},Function @@ {{qVal,ruVal},linPFSys[[3]]}}]
+Flatten[bmat . {{qVal},{0},{ruVal}}+phimat . (psieps *epsVal+psic)]//.lucaSubs},
+{Function @@ {{qVal,ruVal,epsVal},linPFSys[[1]]},Function @@ {{qVal,ruVal,epsVal},linPFSys[[3]]}}]
 
 Print["defining constraint and selector funcs"]
 compCon={Function[{aPath,theZs},

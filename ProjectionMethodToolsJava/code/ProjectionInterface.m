@@ -25,7 +25,7 @@ GetCnstrnsReplaceVariables::usage="GetCnstrnsReplaceVariables[theMod_,thePolys_L
 tryNow::usage=""
 occBindCreatePolynomials::usage="occBindCreatePolynomials"
 CreateRHSPolynomials::usage="CreateRHSPolynomials[aMod_,results_?JavaObjectQ]"
-eqvdIf::usage="eqvdif placeholder for EquationValDrv in substitutions";
+
 EquationValDrv::usage="java class for projection";
 doRecurIneqOcc::usage="doRecurIneqOcc[{}]";
 doRecurIneqOccEqns::usage="doRecurIneqOcc[{}]";
@@ -2784,8 +2784,6 @@ makeNextNonStateSubs[thePolys_List,state_List,nonState_List]:=
 ridTSubs=xx_[ProtectedSymbols`t]->xx;
 genPathNoT[len_Integer]:=genPath[len]/.ridTSubs
 
-
-myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
 
 End[]
 
