@@ -1,9 +1,7 @@
 Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
 
-(*nothmat=Rationalize[{
-{1.,.5,1.,.4,1.,1.},
-{.4,.3,.2,.1,-.2,-.1}},1/10000000];*)
+
 nothmat={
 {1.,.5,-.5,1.,.4,.9,1.,1.,.9},
 {4.,.2,-.5,7.,.4,.8,3.,2.,.6},
@@ -34,11 +32,16 @@ len_Integer]:=
 With[{theZVals=Flatten[compZs[nothmat,aphimat,apsieps,apsic,ctm1,ktm1,thtm1,epsVal,len]],
 theZVars=Flatten[Reverse[genZVars[len-1,3,0]]]},
 With[{zSubs=Thread[theZVars->(theZVals)],
-epsSubs={ProtectedSymbols`eps$1->epsVal}},
+epsSubs={ProtectedSymbols`epsVar$1->{epsVal}}},
 With[{aPath=
 genPath[{{ctm1},{ktm1},{thtm1}},
 abmat,aphimat,anfmat,apsieps,apsic,apsiz,len,zSubs,epsSubs][[{4,5,6}]]},
 Flatten[aPath]]]]
+
+cmpDiffZ[cctm1_?NumberQ,kktm1_?NumberQ,thtm1_?NumberQ,epsVal_?NumberQ,terms_Integer]:=
+doSeriesZ[cctm1,kktm1,thtm1,epsVal,terms]-Flatten[condExp[cctm1,kktm1,thtm1,epsVal,1]][[{-3,-2,-1}]]
+
+
 
 doSeriesG[ctm1_?NumberQ,ktm1_?NumberQ,thtm1_?NumberQ,epsVal_?NumberQ,
 len_Integer]:=
@@ -48,7 +51,7 @@ ctm1,ktm1,thtm1,epsVal,len]],
 theCon=Flatten[Table[Private`psic//N,{len}]],
 theZVars=Flatten[Reverse[genZVars[len-1,3,0]]]},
 With[{zSubs=Thread[theZVars->((theZVals-(0*theCon)))],
-epsSubs={ProtectedSymbols`eps$1->epsVal}},
+epsSubs={ProtectedSymbols`epsVar$1->{epsVal}}},
 With[{aPath=
 genPath[{{ctm1},{ktm1},{thtm1}},
 Private`bmat//N,Private`phimat//N,Private`fmat//N,
@@ -64,36 +67,18 @@ ctm1,ktm1,thtm1,epsVal,len]],
 theCon=Flatten[Table[0*Private`psic//N,{len}]],
 theZVars=Flatten[Reverse[genZVars[len-1,3,0]]]},
 With[{zSubs=Thread[theZVars->((theZVals-(0*theCon)))],
-epsSubs={ProtectedSymbols`eps$1->epsVal}},
+epsSubs={ProtectedSymbols`epsVar$1->{epsVal}}},
 With[{aPath=
 genPath[{{ctm1},{ktm1},{thtm1}},
 Private`bmat//N,Private`phimat//N,Private`fmat//N,
 Private`psieps//N,0*Private`psic//N,Private`psiz//N,len,
 zSubs,epsSubs][[{4,5,6}]]},Flatten[aPath]]]]
 
-(*
-
-cz=Flatten[compZs[Private`hmat//N,Private`phimat//N,Private`psieps//N,Private`psic//N,.4,.2,.1,.3,1]]
-gp=genPath[{{.4},{.2},{.1}},
-Private`bmat//N,Private`phimat//N,Private`fmat//N,
-Private`psieps//N,Private`psic//N,Private`psiz//N,2,
-{},{ProtectedSymbols`eps$1->.3}]
-forSub=Flatten[cz]-Flatten[Private`psic]
-
-{zvnow,zvnext}=genZVars[1,3,0]
-
-zap=Thread[Flatten[Join[zvnow,zvnext]]->0]
-Private`hmat . gp -( Private`psic + Private`psieps*.3)//FullSimplify//Chop
-
-*)
 
 
 
 
-(*
-cmpDiff[kktm1_?NumberQ,epsVal_?NumberQ,terms_Integer]:=
-doSeries[kktm1,epsVal,terms]-Flatten[condExp[kktm1,epsVal,1]][[{-2,-1}]]
-*)
+
 cmpDiffG[cctm1_?NumberQ,kktm1_?NumberQ,thtm1_?NumberQ,epsVal_?NumberQ,
 terms_Integer]:=
 doSeriesG[cctm1,kktm1,thtm1,epsVal,terms]-Flatten[condExp[cctm1,kktm1,thtm1,epsVal,1]][[{-3,-2,-1}]]
@@ -131,25 +116,15 @@ psimat *ee,Infinity],
 {ccm1, kkm1, ttm1, cc0, kk0, tt0, ccp1, kkp1, ttp1,ee}})},first]
 
 
-(*
+Print["start iZNorms"]
+{tz,ig}=Timing[iZNorms=Module[{},Print[#];Function[{iter},infNorm[cmpDiffZ[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
+(lenVals=Join[Range[5], Range[10,100,10],Range[150,300,50]])]]
+Print["done iZNorms"]
 
-
-infNorm[cmpDiff[#1,#2,3]&, {{.1,.9},{-.1,.1}}]
-fpis 
-abmat . {{0.359845}, {0.187032}} + Inverse[IdentityMatrix[2] - anfmat] . aphimat . apsic                                                   
-*)
-
-
-(*
-(*
-iNorms=Function[{iter},infNorm[cmpDiff[#1,#2,iter]&, {{.1,.9},{-.1,.1}}]]/@
-lenVals
-*)
-
-iZNorms=Function[{iter},infNorm[cmpDiffZ[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
-(lenVals=Join[Range[5], Range[10,100,10],Range[150,300,50]])
-iGNorms=Function[{iter},infNorm[cmpDiffG[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
-lenVals
+Print["start iGNorms"]
+{tg,ig}=Timing[iGNorms=Module[{},Print[#];Function[{iter},infNorm[cmpDiffG[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
+lenVals]]
+Print["done iGNorms"]
 wValZ=First[worstZ[nothmat,apsieps,{{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]];
 tErrs=(Norm[wValZ*truncationErrorMatrix[anfmat,aphimat,#],Infinity])&/@
 lenVals
@@ -162,4 +137,39 @@ Export["truncErr.csv", TableForm[theVals]];
 
 
 
+(*
+
+
+infNorm[cmpDiff[#1,#2,3]&, {{.1,.9},{-.1,.1}}]
+fpis 
+abmat . {{0.359845}, {0.187032}} + Inverse[IdentityMatrix[2] - anfmat] . aphimat . apsic                                                   
 *)
+
+
+
+(*
+iNorms=Function[{iter},infNorm[cmpDiff[#1,#2,iter]&, {{.1,.9},{-.1,.1}}]]/@
+lenVals
+*)
+(*
+cmpDiff[kktm1_?NumberQ,epsVal_?NumberQ,terms_Integer]:=
+doSeries[kktm1,epsVal,terms]-Flatten[condExp[kktm1,epsVal,1]][[{-2,-1}]]
+*)
+(*
+
+cz=Flatten[compZs[Private`hmat//N,Private`phimat//N,Private`psieps//N,Private`psic//N,.4,.2,.1,.3,1]]
+gp=genPath[{{.4},{.2},{.1}},
+Private`bmat//N,Private`phimat//N,Private`fmat//N,
+Private`psieps//N,Private`psic//N,Private`psiz//N,2,
+{},{ProtectedSymbols`epsVar$1->{.3}}]
+forSub=Flatten[cz]-Flatten[Private`psic]
+
+{zvnow,zvnext}=genZVars[1,3,0]
+
+zap=Thread[Flatten[Join[zvnow,zvnext]]->0]
+Private`hmat . gp -( Private`psic + Private`psieps*.3)//FullSimplify//Chop
+
+*)
+(*nothmat=Rationalize[{
+{1.,.5,1.,.4,1.,1.},
+{.4,.3,.2,.1,-.2,-.1}},1/10000000];*)
