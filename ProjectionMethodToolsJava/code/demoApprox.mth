@@ -117,12 +117,12 @@ psimat *ee,Infinity],
 
 
 Print["start iZNorms"]
-{tz,ig}=Timing[iZNorms=Module[{},Print[#];Function[{iter},infNorm[cmpDiffZ[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
+{tz,ig}=Timing[iZNorms=Module[{},Function[{iter},Print[iter];infNorm[cmpDiffZ[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
 (lenVals=Join[Range[5], Range[10,100,10],Range[150,300,50]])]]
 Print["done iZNorms"]
 
 Print["start iGNorms"]
-{tg,ig}=Timing[iGNorms=Module[{},Print[#];Function[{iter},infNorm[cmpDiffG[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
+{tg,ig}=Timing[iGNorms=Module[{},Function[{iter},Print[iter];infNorm[cmpDiffG[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
 lenVals]]
 Print["done iGNorms"]
 wValZ=First[worstZ[nothmat,apsieps,{{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]];
