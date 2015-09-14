@@ -2,11 +2,12 @@ PrependTo[$Path,"../../../mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA/"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
-PrependTo[$Path,"../../../ProtectedSymbols"];
+PrependTo[$Path,"../../../protectedSymbolsDir/ProtectedSymbols"];
 PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
+recipC::usage="rbc model variable"
 cc::usage="rbc model variable"
 kk::usage="rbc model variable"
 rho::usage="rbc model parameter"
@@ -32,6 +33,17 @@ rbcEqns={
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
 Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]
 }
+
+
+rbcEqnsExt={
+  1/cc[t]-(delta*((theta[t])*(recipC[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
+cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
+ Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t],
+ recipC[t]-1/cc[t]
+}
+
+
+
 (*parameters page 21 using state 1*)
 paramSubs={
 alpha->36/100,
@@ -53,23 +65,32 @@ Print["computing steady state subs"];
 rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0];
 kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<1)&&(0<delta<1)][[2]]];
 cSSSub=Flatten[Solve[Simplify[rbcSSEqns//.kSSSub][[2]],cc]];
-ssSolnSubs=Join[cSSSub,kSSSub,{theta->1}]]
+ssSolnSubs=Join[cSSSub,kSSSub,{theta->1,recipC->1/cc}]]
+
 
 
 hmatSymbRaw=(((equationsToMatrix[
 rbcEqns/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)//FullSimplify;
+hmatSymbRawExt=(((equationsToMatrix[
+rbcEqnsExt/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)//FullSimplify;
 forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
 simpSubs=Thread[forSubs->nu];
 forParamSubs=Thread[nu->forSubs]//.paramSubs
 tog=Join[paramSubs,forParamSubs]
 rbcSimp=(rbcEqns)//.tog
+rbcSimpExt=(rbcEqnsExt)//.tog
 
 psiepsSymb=Transpose[{((D[#,eps[theta][t]]&/@ rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
 psieps=psiepsSymb//.tog;
 
 
+psiepsSymbExt=Transpose[{((D[#,eps[theta][t]]&/@ rbcSimpExt)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
+psiepsExt=psiepsSymbExt//.tog;
+
+
 
 psiz=IdentityMatrix[3]
+psizExt=IdentityMatrix[4]
 
 
 
@@ -80,11 +101,25 @@ psicSymb=hSum . ssSolnVec;
 psic=psicSymb//.tog
 
 
+hmatSymbExt=hmatSymbRawExt//.simpSubs
+hSumExt=hmatSymbExt[[All,Range[4]]]+hmatSymbExt[[All,4+Range[4]]]+hmatSymbExt[[All,8+Range[4]]];
+ssSolnVecExt={{cc},{kk},{recipC},{theta}}//.ssSolnSubs;
+psicSymbExt=hSumExt . ssSolnVecExt;
+psicExt=psicSymbExt//.tog
+
 
 {zfSymb,hfSymb}=symbolicAR[hmatSymb];
 amatSymb=symbolicTransitionMatrix[hfSymb];
 {evlsSymb,evcsSymb}=Eigensystem[Transpose[amatSymb]];
 qmatSymb=Join[zfSymb,evcsSymb[[{5}]]];
+
+
+
+		      
+{zfSymbExt,hfSymbExt}=symbolicAR[hmatSymbExt];
+amatSymbExt=symbolicTransitionMatrix[hfSymbExt];
+{evlsSymbExt,evcsSymbExt}=Eigensystem[Transpose[amatSymbExt]];
+qmatSymbExt=Join[zfSymbExt,evcsSymbExt[[{7}]]];
 
 Print["computing and simplifying the symbolic b phi f etc"]
 (*
@@ -100,6 +135,12 @@ hmat=hmatSymb//.tog;
 qmat=qmatSymb//.tog;
 Print["computing and simplifying the symbolic b phi f etc"]
 {bmat,phimat,fmat}=symbolicComputeBPhiF[hmat,qmat]//Simplify;
+
+
+hmatExt=hmatSymbExt//.tog;
+qmatExt=qmatSymbExt//.tog;
+Print["computing and simplifying the symbolic b phi f etc"]
+{bmatExt,phimatExt,fmatExt}=symbolicComputeBPhiF[hmatExt,qmatExt]//Simplify;
 
 
 
@@ -120,6 +161,33 @@ Function[{aPath,theZs},0==rbcSimp[[3]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[5,1]],
 theta[t-1]->aPath[[3,1]],theta[t]->aPath[[6,1]],
 cc[t]->aPath[[4,1]],cc[t+1]->aPath[[7,1]],eps[theta][t]->eps}]
+}
+
+compConExt={
+Function[{aPath,theZs},0==rbcSimpExt[[1]]/.{
+kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
+theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
+cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
+recipC[t+1]->aPath[[11,1]],
+eps[theta][t]->eps}],
+Function[{aPath,theZs},0==rbcSimpExt[[2]]/.{
+kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
+theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
+cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
+recipC[t+1]->aPath[[11,1]],
+eps[theta][t]->eps}],
+Function[{aPath,theZs},0==rbcSimpExt[[3]]/.{
+kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
+theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
+cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
+recipC[t+1]->aPath[[11,1]],
+eps[theta][t]->eps}],
+Function[{aPath,theZs},0==rbcSimpExt[[4]]/.{
+kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
+theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
+cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
+recipC[t+1]->aPath[[11,1]],
+eps[theta][t]->eps}]
 }
 
 
@@ -184,6 +252,14 @@ rbcEqns/.eps[theta][t]->0/.{cc[t]->ct,cc[t+1]->ctp1,kk[t-1]->ktm1,kk[t]->kt}//.t
 
 hFunc=Function[{xtm1,xt,xtp1,epst},
 rbcSimp/.
+{cc[t-1]->xtm1[[1,1]],kk[t-1]->xtm1[[2,1]],theta[t-1]->xtm1[[3,1]],
+cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],theta[t]->xt[[3,1]],
+cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],theta[t+1]->xtp1[[3,1]],
+eps[theta][t]->epst[[1,1]]}]
+
+
+hFuncExt=Function[{xtm1,xt,xtp1,epst},
+rbcSimpExt/.
 {cc[t-1]->xtm1[[1,1]],kk[t-1]->xtm1[[2,1]],theta[t-1]->xtm1[[3,1]],
 cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],theta[t]->xt[[3,1]],
 cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],theta[t+1]->xtp1[[3,1]],

@@ -1,22 +1,45 @@
 Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
 latexSubs={ProtectedSymbols`epsVar$1->Subscript[epsilon,t],
-xxxtm1Var$3->Subscript[theta,t-1],
-xxxtm1Var$2->Subscript[k,t-1],
-xxxtm1Var$1->Subscript[c,t-1],
-zzzVar$1->Subscript[z,1t],
-zzzVar$2->Subscript[z,2t],
-zzzVar$3->Subscript[z,3t](*,
+ProtectedSymbols`xxxtm1Var$3->Subscript[theta,t-1],
+ProtectedSymbols`xxxtm1Var$2->Subscript[k,t-1],
+ProtectedSymbols`xxxtm1Var$1->Subscript[c,t-1],
+ProtectedSymbols`zzzVar$1->Subscript[z,1t],
+ProtectedSymbols`zzzVar$2->Subscript[z,2t],
+ProtectedSymbols`zzzVar$3->Subscript[z,3t](*,
 InterpolatingFunction[___]->Subscript[Z,3t]*)
-}
+};
 
 
 (*00*)
 solnSubs00=
-Private`makeConstraintFindRootFunc[Private`hFunc,{Private`bmat//N,Private`phimat//N,Private`fmat//N,Private`psieps//N,Private`psic//N,Private`psiz//N},{}]
+Private`makeConstraintFindRootFunc[Private`hFunc,{Private`bmat//N,Private`phimat//N,Private`fmat//N,Private`psieps//N,Private`psic//N,Private`psiz//N},{}];
 
-solnFuncs00=Private`subsFuncToVecFunc[solnSubs00]
+solnFuncs00=Private`subsFuncToVecFunc[solnSubs00];
 
+xt00=Private`computeNextXt[{Private`bmat,Private`phimat,Private`fmat,Private`psieps,Private`psic,Private`psiz}]//N//Expand//Simplify
+TeXForm[MatrixForm[xt00/.latexSubs]];
+
+xtp100=Private`computeNextXtp1[{Private`bmat,Private`phimat,Private`fmat,Private`psieps,Private`psic,Private`psiz}]//N//Expand//Simplify
+TeXForm[MatrixForm[xtp100/.latexSubs]];
+
+
+(*00*)
+solnSubsExt00=
+Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,Private`psicExt//N,Private`psizExt//N},{}]
+
+solnFuncsExt00=Private`subsFuncToVecFunc[solnSubsExt00];
+
+xtExt00=Private`computeNextXt[{Private`bmatExt,Private`phimatExt,Private`fmatExt,Private`psiepsExt,Private`psicExt,Private`psizExt}]//N//Expand//Simplify
+TeXForm[MatrixForm[xt00/.latexSubs]];
+
+xtp1Ext00=Private`computeNextXtp1[{Private`bmatExt,Private`phimatExt,Private`fmatExt,Private`psiepsExt,Private`psicExt,Private`psizExt}]//N//Expand//Simplify
+TeXForm[MatrixForm[xtp100/.latexSubs]];
+
+
+
+
+(*
 solnFunc00Interp=Private`makeInterpFunc[solnFuncs00,{1},aGSpec={1,{4,.1,1.0},{3,.95,1.06},{3,-.03,.03}}]
 
 solnFunc00PF=Private`makeInterpFuncPF[solnFuncs00,{1},aGSpec,1]
@@ -71,7 +94,7 @@ nextZsPF02=Private`prepNextZZks[solnFunc02Interp[[{2,3}]],solnFunc02Interp[[3+Ra
 
 
 
-(*
+
 
 latexSubs={ProtectedSymbols`epsVar$1->Subscript[epsilon,t],
 ProtectedSymbols`zzzVar$1->Subscript[z,1t],ProtectedSymbols`zzzVar$2->Subscript[z,2t],ProtectedSymbols`zzzVar$3->Subscript[z,3t],
@@ -94,9 +117,9 @@ Private`makeConstraintFindRootFunc[Private`hFunc,{Private`bmat//N,Private`phimat
 
 solnFuncs00=Private`subsFuncToVecFunc[solnSubs00]
 
-
+(*
 Export["cFunc00.pdf",cf00=Plot3D[solnFuncs00[{0,kk,tt,0}][[1]],{kk,.0,2.0},{tt,.9,1.1},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
-
+i
 
 Export["cFunc00Lin.pdf",oneVsLin=Plot3D[{solnFuncs00[{0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$3,0}][[1]],xt00[[1,1]]/.{ProtectedSymbols`zzzVar$3->0,ProtectedSymbols`zzzVar$2->0,ProtectedSymbols`zzzVar$1->0,ProtectedSymbols`epsVar$1->0}},{ProtectedSymbols`xxxtm1Var$2,.0,2.0},{ProtectedSymbols`xxxtm1Var$3,.9,1.1},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
 
@@ -132,5 +155,6 @@ solnFunc00RE=Private`makeInterpFuncRE[solnFuncs00,{1},{1,{4,.01,2.0},{3,.9,1.1},
 
 
 Plot3D[{solnFunc00PF[[1]] @@{0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$3},solnFunc00RE[[1]] @@{0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$3}},{ProtectedSymbols`xxxtm1Var$2,.0,2.0},{ProtectedSymbols`xxxtm1Var$3,.9,1.1},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0],PlotRange->{0,1.5}]
+*)
 *)
 *)
