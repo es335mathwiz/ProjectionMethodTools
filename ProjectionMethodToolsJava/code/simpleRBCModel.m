@@ -16,9 +16,7 @@ alpha::usage="rbc model parameter"
 delta::usage="rbc model parameter"
 sigma::usage="rbc model parameter"
 compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
-stateSel::usage="stateSel[aPath_?MatrixQ]:=Function[{aPath}"
 rbcEqns::usage="rbc model equations"
-getRBCFixedPoint::usage="getRBCFixedPoint"
 condExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
 compZs::usage="compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,ii_Integer]"
 
@@ -122,14 +120,7 @@ amatSymbExt=symbolicTransitionMatrix[hfSymbExt];
 qmatSymbExt=Join[zfSymbExt,evcsSymbExt[[{7}]]];
 
 Print["computing and simplifying the symbolic b phi f etc"]
-(*
-{bmatSymb,phimatSymb,fmatSymb}=symbolicComputeBPhiF[hmatSymb,qmatSymb]//Simplify;
-hmat=hmatSymb//.tog;
-bmat=bmatSymb//.tog;
-phimat=phimatSymb//.tog;
-fmat=fmatSymb//.tog;
 
-*)
 
 hmat=hmatSymb//.tog;
 qmat=qmatSymb//.tog;
@@ -168,41 +159,30 @@ Function[{aPath,theZs},0==rbcSimpExt[[1]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t+1]->aPath[[11,1]],
+recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimpExt[[2]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t+1]->aPath[[11,1]],
+recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimpExt[[3]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t+1]->aPath[[11,1]],
+recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimpExt[[4]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t+1]->aPath[[11,1]],
+recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}]
 }
 
 
-getRBCFixedPoint[fpTarget_List,theSys_Function,initGuess_List]:=
-With[{theSysRidT=theSys/.xx_[t]->xx,
-targetRidT=fpTarget/.xx_[t]->xx,
-frInitVals=PadRight[initGuess,Length[fpTarget]]},(*Print["theSysRidT=",{theSysRidT,initGuess}//InputForm];*)
-With[{fpArgs=Transpose[{targetRidT,frInitVals}]},
-FixedPoint[targetRidT/.With[{soln=
-Flatten[FindRoot[(theSysRidT @@ #),fpArgs]]},(*Print["soln=",{#,soln,targetRidT,theSysRidT}//InputForm];*)
-If[Not[MatchQ[soln,{(_->_)..}]],Throw[{"NSolve Failed in >fpForInitState for",{#//InputForm,theSysRidT//InputForm,targetRidT,Stack[]}}],soln]]&,initGuess,SameTest->mySameQ]//Chop]]
 
-
-
-stateSel={2,3}
 (*always used with epsVal=0*)
 noCnstrnGuess= With[{linPFSys=
 Flatten[bmat . {{0},{kVal},{tVal}}+phimat . (psieps*epsVal+psic)]//.paramSubs},
@@ -260,9 +240,9 @@ eps[theta][t]->epst[[1,1]]}]
 
 hFuncExt=Function[{xtm1,xt,xtp1,epst},
 rbcSimpExt/.
-{cc[t-1]->xtm1[[1,1]],kk[t-1]->xtm1[[2,1]],theta[t-1]->xtm1[[3,1]],
-cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],theta[t]->xt[[3,1]],
-cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],theta[t+1]->xtp1[[3,1]],
+{cc[t-1]->xtm1[[1,1]],kk[t-1]->xtm1[[2,1]],recipC[t-1]->xtm1[[3,1]],theta[t-1]->xtm1[[4,1]],
+cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],recipC[t]->xt[[3,1]],theta[t]->xt[[4,1]],
+cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],recipC[t+1]->xtp1[[3,1]],theta[t+1]->xtp1[[4,1]],
 eps[theta][t]->epst[[1,1]]}]
 
 

@@ -6,8 +6,8 @@ ProtectedSymbols`xxxtm1Var$2->Subscript[k,t-1],
 ProtectedSymbols`xxxtm1Var$1->Subscript[c,t-1],
 ProtectedSymbols`zzzVar$1->Subscript[z,1t],
 ProtectedSymbols`zzzVar$2->Subscript[z,2t],
-ProtectedSymbols`zzzVar$3->Subscript[z,3t](*,
-InterpolatingFunction[___]->Subscript[Z,3t]*)
+ProtectedSymbols`zzzVar$3->Subscript[z,3t],
+ProtectedSymbols`zzzVar$4->Subscript[z,4t]
 };
 
 
@@ -97,7 +97,7 @@ nextZsPF02=Private`prepNextZZks[solnFunc02Interp[[{2,3}]],solnFunc02Interp[[3+Ra
 
 
 latexSubs={ProtectedSymbols`epsVar$1->Subscript[epsilon,t],
-ProtectedSymbols`zzzVar$1->Subscript[z,1t],ProtectedSymbols`zzzVar$2->Subscript[z,2t],ProtectedSymbols`zzzVar$3->Subscript[z,3t],
+ProtectedSymbols`zzzVar$1->Subscript[z,1t],ProtectedSymbols`zzzVar$2->Subscript[z,2t],ProtectedSymbols`zzzVar$3->Subscript[z,3t],ProtectedSymbols`zzzVar$4->Subscript[z,4t],
 ProtectedSymbols`xxxtm1Var$3->Subscript[theta,t-1],ProtectedSymbols`xxxtm1Var$2->Subscript[k,t-1],ProtectedSymbols`xxxtm1Var$3->Subscript[c,t-1]}
 
 xt00=Private`computeNextXt[{Private`bmat,Private`phimat,Private`fmat,Private`psieps,Private`psic,Private`psiz}]//N//Expand//Simplify
