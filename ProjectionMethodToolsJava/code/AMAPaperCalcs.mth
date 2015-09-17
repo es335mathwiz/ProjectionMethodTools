@@ -1,13 +1,13 @@
 Needs["simpleRBCModel`"]
 Print["make sure simpleRBCModel.m computes the symbolic bmat etc"]
-Export["RBCHmatSymb.pdf", MatrixForm[Private`hmat//.Private`tog//N]];
-Export["RBCBmatSymb.pdf", MatrixForm[Private`bmat//.Private`tog//N]];
-Export["RBCPhimatSymb.pdf", MatrixForm[Private`phimat//.Private`tog//N]];
-Export["RBCFmatSymb.pdf", MatrixForm[Private`fmat//.Private`tog//N]];
-Export["RBCPsissSymb.pdf", MatrixForm[Private`psic//.Private`tog//N]];
+Export["RBCHmatSymb.pdf", MatrixForm[Private`hmatExt//.Private`tog//N]];
+Export["RBCBmatSymb.pdf", MatrixForm[Private`bmatExt//.Private`tog//N]];
+Export["RBCPhimatSymb.pdf", MatrixForm[Private`phimatExt//.Private`tog//N]];
+Export["RBCFmatSymb.pdf", MatrixForm[Private`fmatExt//.Private`tog//N]];
+Export["RBCPsissSymb.pdf", MatrixForm[Private`psicExt//.Private`tog//N]];
 Export["RBCHSum.pdf",MatrixForm[
-(Private`hmatSymb[[All,Range[3]]]+ Private`hmatSymb[[All,3+Range[3]]]+Private`hmatSymb[[All,6+Range[3]]])//.Private`tog//N]]
-Export["RBCSS.pdf", MatrixForm[Private`ssSolnVec//.Private`tog//N]];
+(Private`hmatExt[[All,Range[4]]]+ Private`hmatExt[[All,4+Range[4]]]+Private`hmatExt[[All,8+Range[4]]])//.Private`tog//N]]
+Export["RBCSS.pdf", MatrixForm[Private`ssSolnVecExt//.Private`tog//N]];
 
 
 Print["provide shock names should come from model bmat comp"];
