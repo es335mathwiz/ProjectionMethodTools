@@ -29,7 +29,7 @@ solnFuncsExt00=Private`subsFuncToVecFunc[solnSubsExt00];
 
 
 kVal=kk/.Private`kSSSub//.Private`tog//N;
-kLow=.1*kVal;
+kLow=.01*kVal;
 kHigh=4*kVal;
 sigVal=sigma//.Private`tog//N;
 sigLow=-3*sigVal;
