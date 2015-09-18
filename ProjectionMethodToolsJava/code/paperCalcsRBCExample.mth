@@ -32,12 +32,46 @@ Export["cFuncExt00Lin.pdf",oneVsLin=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`x
 
 Export["cFuncExt00Exact.pdf",oneVsExac=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`xxxtm1Var$2,0,ProtectedSymbols`xxxtm1Var$4,0}][[1]],condExp[0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4,0,1][[4]]},{ProtectedSymbols`xxxtm1Var$2,.0,2.0},{ProtectedSymbols`xxxtm1Var$4,.9,1.1},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0],PlotRange->{0,1.5}]]
 
+kVal=kk/.Private`kSSSub//.Private`tog//N;
+kLow=.25*kVal;
+kHigh=4*kVal;
+sigVal=sigma//.Private`tog//N;
+sigLow=-3*sigVal;
+sigHigh=3*sigVal;
+thLow=.9;
+thHigh=1.1;
+aGSpec={1,{4,kLow,kHigh},{3,thLow,thHigh},{3,sigLow,3*sigHigh}};
+solnFuncExt00Interp=Private`makeInterpFunc[solnFuncsExt00,{1,3},aGSpec]
+
+solnFuncExt00PF=Private`makeInterpFuncPF[solnFuncsExt00,{1,3},aGSpec,1]
+
+solnFuncExt00RE=Private`makeInterpFuncRE[solnFuncsExt00,{1,3},aGSpec,{NormalDistribution[0,sigma/.Private`paramSubs]}]
 
 
 
+Export["cFuncExt00PF.pdf",ext00pf=Plot3D[{solnFuncExt00PF[[1]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]-solnFuncExt00RE[[1]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]},
+{ProtectedSymbols`xxxtm1Var$2,
+kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
+
+Export["cFuncExt00PFREDiff.pdf",ext00pf=Plot3D[{solnFuncExt00PF[[1]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]-solnFuncExt00RE[[1]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]},
+{ProtectedSymbols`xxxtm1Var$2,
+kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
+
+Export["cFuncExt00Recip.pdf",ext00pf=Plot3D[{solnFuncExt00PF[[3]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]-solnFuncExt00RE[[3]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]},{ProtectedSymbols`xxxtm1Var$2,
+kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
 
 
 
+Export["cFuncExt00Recip.pdf",ext00pf=Plot3D[{1/(solnFuncExt00PF[[1]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4])-solnFuncExt00PF[[3]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]},{ProtectedSymbols`xxxtm1Var$2,
+kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
+
+
+Export["cFuncExt00Recip.pdf",ext00pf=Plot3D[{1/(solnFuncExt00RE[[1]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4])-solnFuncExt00RE[[3]][ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4]},{ProtectedSymbols`xxxtm1Var$2,
+kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
+
+(*
+
+*)
 
 
 
@@ -48,7 +82,6 @@ aGSpec={1,{4,.1,1.0},{3,.95,1.06},{3,-.03,.03}};
 solnFuncExt00Interp=Private`makeInterpFunc[solnFuncsExt00,{1,3},aGSpec]
 
 solnFuncExt00PF=Private`makeInterpFuncPF[solnFuncsExt00,{1,3},aGSpec,1]
-
 
 solnFuncExt00RE=Private`makeInterpFuncRE[solnFuncsExt00,{1,3},aGSpec,{NormalDistribution[0,sigma/.Private`paramSubs]}]
 
