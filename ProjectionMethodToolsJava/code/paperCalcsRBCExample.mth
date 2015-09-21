@@ -90,7 +90,14 @@ kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,
 solnSubsExt01=
 Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,Private`psicExt//N,Private`psizExt//N},solnFuncExt00PF[[8+Range[4]]],{},{{.2},{.3},{.2},{.9}},{1,3}];
 
-huh=Private`makeConstraintFixedPointFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,Private`psicExt//N,Private`psizExt//N},solnFuncExt00PF[[8+Range[4]]],{},{{.2},{.3},{.2},{.9}},{1,3}];
+solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
+
+solnFuncExt01PF=Private`makeInterpFuncPF[solnFuncsExt01,{1,3},aGSpec,1]
+
+(*
+solnFuncExt01RE=Private`makeInterpFuncRE[solnFuncsExt01,{1,3},aGSpec,{NormalDistribution[0,sigma/.Private`paramSubs]}]
+*)
+
 
 (*
 solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
