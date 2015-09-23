@@ -1,6 +1,6 @@
 Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
-Get["AMAPaperCalcs.mth"]
+
 
 
 
@@ -12,7 +12,7 @@ sigLow=-3*sigVal;
 sigHigh=3*sigVal;
 thLow=.9;
 thHigh=1.1;
-aGSpec={1,{10,kLow,kHigh},{10,thLow,thHigh},{5,sigLow,3*sigHigh}};
+aGSpec={1,{40,kLow,kHigh},{40,thLow,thHigh},{10,sigLow,3*sigHigh}};
 
 (*00*)
 solnSubsExt00=
@@ -99,4 +99,4 @@ With[{ZZksExtnn=Private`prepNextZZksPForRE[solnFuncsExtnnInterp[[{2,4}]],solnFun
 Print["done one"]
 
 Print["doing nestlist"]
-theRes=NestList[nxtPr[#[[2]]]&,{ig,ZZksExt03},4];
+theRes=NestList[nxtPr[#[[2]]]&,{ig,ZZksExt03},10];
