@@ -1,0 +1,16 @@
+Needs["simpleRBCModel`"]
+
+
+
+
+theResPF=Table[With[{chkPts={
+{numPts,.05,.5},
+{numPts,-.02,.02}}},
+Timing[{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,{{cctm1},{kktm1}},noCnstrnGuess,{1,2,1,1,1},getRBCFixedPoint},chkOrd,chkPts,{},3]]],{chkOrd,0,3},{numPts,5,25,5}]
+
+
+
+theResRE=Table[With[{chkPts={
+{numPts,.05,.5},
+{numPts,-.02,.02}}},
+Timing[{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{cctm1},{kktm1}},noCnstrnGuess,{1,2,1,1,1},getRBCFixedPoint},chkOrd,chkPts,{},.02,3]]],{chkOrd,0,3},{numPts,5,25,5}]

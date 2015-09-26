@@ -1,0 +1,33 @@
+Needs["simpleRBCModel`"]
+Needs["AMASeriesRepresentation`"]
+
+Print["variable names (symbols?) should come from model bmat comp. don't use tm1"];
+Print["provide shock names should come from model bmat comp"];
+chkOrd=1;
+
+chkPts = {{6, .1, 2}, {6, .9, 1.1}, {5, -.1, .1}}
+
+
+mig00=Private`makeInitGuess[modSpec={{Private`bmat,Private`phimat,Private`fmat,Private`psieps,Private`psic,Private`psiz},compCon,stateSel,{{ctm1},{ktm1},{thtm1}},
+Private`noCnstrnGuess,{2,3,1,1,1},getRBCFixedPoint},xtm1Val={.5,.9,.1},epsVal={-.01},{}]
+
+
+Private`compZLeft[modSpec,{}]
+
+
+Private`makeValSubs[modSpec,xtm1Val,epsVal]
+Private`genCompSlackSysFunc[modSpec,1]
+Private`makeInitStateTryEqnsSubbed[modSpec,xtm1Val,epsVal,{},{kk,tt}]
+Private`makeSysFunction[modSpec,xtm1Val,epsVal,{},{kk,tt}]
+Private`fpForInitStateFunc[modSpec,xtm1Val,epsVal,{},1]
+
+
+{ig,ig,zFuncsOneRE0,finFuncOneRE0}=genFinalRE[modSpec,chkOrd,chkPts,{},{{huh,0}},1];
+(*
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[modSpec,chkOrd,chkPts,{},2];
+
+{ig,ig,zFuncsOneRE0,finFuncOneRE0}=genFinalRE[modSpec,chkOrd,chkPts,{},{{huh,0}},2];
+
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[modSpec,chkOrd,chkPts,{},{{huh,TruncatedDistribution[{-.02,.02},LogNormalDistribution[0,0.01]]}},2]; 
+*)
+

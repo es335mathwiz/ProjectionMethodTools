@@ -1,0 +1,25 @@
+Get["simpleRBCModel.m"]
+
+
+futVals[kkV_,thetaV_,eps_]:=
+With[{firIter=condExp[.1,kkV,thetaV,eps,1]},
+With[{cct=firIter[[4,1]],kkt=firIter[[5,1]],thetat=firIter[[6,1]]},
+With[{secIter=condExp[.1,kkt,thetat,epsTp1,1]},
+With[{cctp1=secIter[[4,1]],kktp1=secIter[[5,1]],thetatp1=secIter[[6,1]]},
+{cctp1,kktp1,thetatp1,thetatp1/cctp1}]]]]
+
+doExp[kkV_,thetaV_,epsV_]:=
+With[{epsStuff={eps[theta][t]->epsV},
+pastStuff=Thread[{kk[t-1],theta[t-1]}->{kkV,thetaV}],
+nowStuff=Thread[{cc[t],kk[t],theta[t]}->
+Flatten[condExp[.1,kkV,thetaV,epsV,1]][[{4,5,6}]]],
+nxtStuff=Thread[{cc[t+1],kk[t+1],theta[t+1],(theRatio)}->NExpectation[
+futVals[kkV,thetaV,epsV],epsTp1 \[Distributed] NormalDistribution[0,0.02]]]},
+Join[epsStuff,pastStuff,nowStuff,nxtStuff]]
+
+
+
+
+
+
+theRat=(kk[t]^(-alpha))/(1-delta*alpha)

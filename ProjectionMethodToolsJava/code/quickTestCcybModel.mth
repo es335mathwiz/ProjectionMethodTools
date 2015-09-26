@@ -1,0 +1,36 @@
+Needs["ccybModel`"]
+
+Print["provide shock names should come from model bmat comp"];
+chkOrd=2;
+chkPts={
+{10,0,5},
+{10,0,5},
+{10,-.1,.1}
+}
+
+
+mig00=Private`makeInitGuess[modSpec={{bmat,phimat,fmat,psieps,psic,psiz},compCon,stateSel,{{kktm1},{mu1tm1},{mu2tm1},{mu3tm1},{vvtm1}},noCnstrnGuess,{2,5,1,1,1},getCcybFixedPoint},xtm1Val={.4,.1},epsVal={.0},{}]
+
+
+
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[modSpec,chkOrd,chkPts,{},3];
+
+
+
+
+
+{ig,ig,zFuncsOneRE0,finFuncOneRE0}=
+genFinalRE[modSpec,chkOrd,chkPts,{},{{huh,0},{
+AccuracyGoal -> 2,   PrecisionGoal -> 2, WorkingPrecision -> 2}},2];
+
+
+
+ chkOrd=2;
+chkREPts={
+{4,0,5},
+{4,0,5},
+{4,-.1,.1}
+}
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[modSpec,chkOrd,chkREPts,{},{{huh,NormalDistribution[0,0.0001]},{
+AccuracyGoal -> 2,   PrecisionGoal -> 2, WorkingPrecision -> 2}},2];
+

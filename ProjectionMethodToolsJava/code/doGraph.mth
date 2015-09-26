@@ -1,0 +1,60 @@
+(* original
+SetAttributes[functionQ, HoldAll]
+functionQ[
+  sym_Symbol] := (DownValues[sym] =!= {}) && (OwnValues[sym] === {})
+*)
+
+
+SetAttributes[functionQ, HoldAll]
+functionQ[
+  sym_Symbol] := (DownValues[sym] =!= {}) && (OwnValues[sym] === {})
+
+(*My addition:*)
+SetAttributes[terminalQ, HoldAll]
+terminalQ[sym_Symbol] := MemberQ[Attributes[sym], Protected]
+
+(* original
+SetAttributes[dependencies, HoldAll]
+dependencies[sym_Symbol] := List @@ Select[
+   Union@Level[(Hold @@ DownValues[sym])[[All, 2]], {-1}, Hold, 
+     Heads -> True],
+   functionQ
+   ]
+*)
+
+
+(*added terminalQ to the Select:*)
+SetAttributes[dependencies, HoldAll]
+dependencies[sym_Symbol] := 
+ List @@ Select[
+   Union@Level[(Hold @@ DownValues[sym])[[All, 2]], {-1}, Hold, 
+     Heads -> True], functionQ[#] || terminalQ[#] &]
+
+
+(* original
+SetAttributes[dependencyGraph, HoldAll]
+dependencyGraph[sym_Symbol] :=
+ Module[{vertices, edges},
+  vertices = 
+   FixedPoint[Union@Flatten@Join[#, dependencies /@ #] &, {sym}];
+  edges = 
+   Flatten[Thread[# \[DirectedEdge] dependencies[#]] & /@ vertices];
+  Graph[Tooltip[#, #] & /@ ToString /@ vertices, 
+   Map[ToString, edges, {2}]]
+  ]
+*)
+(*adds hyperlinks to Help:*)
+SetAttributes[dependencyGraphB, HoldAll]
+dependencyGraphB[sym_Symbol] := 
+ Module[{vertices, edges}, 
+  vertices = 
+   FixedPoint[Union@Flatten@Join[#, dependencies /@ #] &, {sym}];
+  edges = Flatten[Thread[Rule[#, dependencies[#]]] & /@ vertices];
+  GraphPlot[edges, 
+   VertexRenderingFunction -> (If[MemberQ[Attributes[#2], Protected], 
+       Text[Hyperlink[
+         StyleForm[Framed[#2, FrameMargins -> 1, Background -> Pink], 
+          FontSize -> 7], "paclet:ref/" <> ToString[#2]], #1], 
+       Text[Framed[Style[DisplayForm[#2], Black, 8], 
+         Background -> LightBlue, FrameStyle -> Gray, 
+         FrameMargins -> 3], #1]] &)]]

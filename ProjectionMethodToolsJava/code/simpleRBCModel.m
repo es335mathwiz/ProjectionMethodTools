@@ -7,7 +7,7 @@ PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
-recipC::usage="rbc model variable"
+ratioThetaToC::usage="rbc model variable"
 cc::usage="rbc model variable"
 kk::usage="rbc model variable"
 rho::usage="rbc model parameter"
@@ -18,26 +18,27 @@ sigma::usage="rbc model parameter"
 compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
 rbcEqns::usage="rbc model equations"
 condExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
+fixCondExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
 compZs::usage="compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,ii_Integer]"
 
 Begin["Private`"]
 
 (*pg 165 of  maliar maliar solving neoclassical growth model  
 closed form solution version  beta=1 geometric discounting
-cobb douglas production*)
+chkcobb douglas production*)
 
 rbcEqns={
- 1/cc[t]-(delta*((theta[t])*(1/cc[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
+ 1/cc[t]-(delta*((theta[t+1])*(1/cc[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
 Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]
 }
 
 
 rbcEqnsExt={
-  1/cc[t]-(delta*((theta[t])*(recipC[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
+  1/cc[t]-(delta*((ratioThetaToC[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
  Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t],
- recipC[t]-1/cc[t]
+ ratioThetaToC[t]-(theta[t]/cc[t])
 }
 
 
@@ -50,6 +51,11 @@ rho->95/100,
 sigma->1/100
 } 
 
+forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
+simpSubs=Thread[forSubs->nu];
+
+forParamSubs=Thread[nu->forSubs]//.paramSubs
+tog=Join[paramSubs,forParamSubs]
 
 
 
@@ -63,26 +69,25 @@ Print["computing steady state subs"];
 rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0];
 kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<1)&&(0<delta<1)][[2]]];
 cSSSub=Flatten[Solve[Simplify[rbcSSEqns//.kSSSub][[2]],cc]];
-ssSolnSubs=Join[cSSSub,kSSSub,{theta->1,recipC->1/cc}]]
-
+ssSolnSubs=Join[cSSSub,kSSSub,{theta->1,ratioThetaToC->1/cc}];
+rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0];
+Private`rbcSSThetaREEqn=Solve[(Log[theta]==Mean[LogNormalDistribution[0,sigma/.Private`paramSubs]])//.Private`tog,theta]
+]
+((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
 
 
 hmatSymbRaw=(((equationsToMatrix[
 rbcEqns/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)//FullSimplify;
 hmatSymbRawExt=(((equationsToMatrix[
 rbcEqnsExt/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)//FullSimplify;
-forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
-simpSubs=Thread[forSubs->nu];
-forParamSubs=Thread[nu->forSubs]//.paramSubs
-tog=Join[paramSubs,forParamSubs]
 rbcSimp=(rbcEqns)//.tog
 rbcSimpExt=(rbcEqnsExt)//.tog
 
-psiepsSymb=Transpose[{((D[#,eps[theta][t]]&/@ rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
+psiepsSymb=-Transpose[{((D[#,eps[theta][t]]&/@ rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
 psieps=psiepsSymb//.tog;
 
 
-psiepsSymbExt=Transpose[{((D[#,eps[theta][t]]&/@ rbcSimpExt)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
+psiepsSymbExt=-Transpose[{((D[#,eps[theta][t]]&/@ rbcSimpExt)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
 psiepsExt=psiepsSymbExt//.tog;
 
 
@@ -101,23 +106,23 @@ psic=psicSymb//.tog
 
 hmatSymbExt=hmatSymbRawExt//.simpSubs
 hSumExt=hmatSymbExt[[All,Range[4]]]+hmatSymbExt[[All,4+Range[4]]]+hmatSymbExt[[All,8+Range[4]]];
-ssSolnVecExt={{cc},{kk},{recipC},{theta}}//.ssSolnSubs;
+ssSolnVecExt={{cc},{kk},{ratioThetaToC},{theta}}//.ssSolnSubs;
 psicSymbExt=hSumExt . ssSolnVecExt;
 psicExt=psicSymbExt//.tog
 
 
-{zfSymb,hfSymb}=symbolicAR[hmatSymb];
+{zfSymb,hfSymb}=symbolicAR[hmatSymb//.tog];
 amatSymb=symbolicTransitionMatrix[hfSymb];
 {evlsSymb,evcsSymb}=Eigensystem[Transpose[amatSymb]];
-qmatSymb=Join[zfSymb,evcsSymb[[{5}]]];
+qmatSymb=Join[zfSymb,evcsSymb[[{1}]]];
 
 
 
 		      
-{zfSymbExt,hfSymbExt}=symbolicAR[hmatSymbExt];
+{zfSymbExt,hfSymbExt}=symbolicAR[hmatSymbExt//.tog];
 amatSymbExt=symbolicTransitionMatrix[hfSymbExt];
 {evlsSymbExt,evcsSymbExt}=Eigensystem[Transpose[amatSymbExt]];
-qmatSymbExt=Join[zfSymbExt,evcsSymbExt[[{7}]]];
+qmatSymbExt=Join[zfSymbExt,evcsSymbExt[[{1}]]];
 
 Print["computing and simplifying the symbolic b phi f etc"]
 
@@ -159,25 +164,25 @@ Function[{aPath,theZs},0==rbcSimpExt[[1]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
+ratioThetaToC[t]->aPath[[7,1]],ratioThetaToC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimpExt[[2]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
+ratioThetaToC[t]->aPath[[7,1]],ratioThetaToC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimpExt[[3]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
+ratioThetaToC[t]->aPath[[7,1]],ratioThetaToC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}],
 Function[{aPath,theZs},0==rbcSimpExt[[4]]/.{
 kk[t-1]->aPath[[2,1]],kk[t]->aPath[[6,1]],
 theta[t-1]->aPath[[4,1]],theta[t]->aPath[[8,1]],
 cc[t]->aPath[[5,1]],cc[t+1]->aPath[[9,1]],
-recipC[t]->aPath[[7,1]],recipC[t+1]->aPath[[11,1]],
+ratioThetaToC[t]->aPath[[7,1]],ratioThetaToC[t+1]->aPath[[11,1]],
 eps[theta][t]->eps}]
 }
 
@@ -195,16 +200,27 @@ rhoVal=rho//.tog//N;
 condExp=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
 {ii,_Integer}},
-With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii-1],0]]},
-With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],1]},
-With[{yyVals=MapThread[yNow,{Drop[kkVals,0],Drop[thVals,0]}]},
-With[{ccVals=Drop[yyVals,0]-Drop[kkVals,0]},
-With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,0]],Flatten[Drop[thVals,0]]}]],1]},
+With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
+With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 
-nxtK[lastK_?NumberQ,thNow_?NumberQ]:=((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
 
-yNow[kNow_?NumberQ,thNow_?NumberQ]:=thNow*kNow^(alpha//.tog//N)
+fixCondExp[cctm1_,kktm1_,thtm1_,epsVal_,ii_]:=
+With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
+With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
+Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]
+
+
+
+nxtK[lastK_,thNow_]:=((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
+
+yNow[kLag_,thNow_]:=thNow*kLag^(alpha//.tog//N)
 
 compZs=Compile[{{tryMat,_Real,2},{phimat,_Real,2},{psieps,_Real,2},{psic,_Real,2},{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
 With[{thePath=Flatten[condExp[cctm1,kktm1,thtm1,epsVal,ii+2]]},
@@ -240,9 +256,9 @@ eps[theta][t]->epst[[1,1]]}]
 
 hFuncExt=Function[{xtm1,xt,xtp1,epst},
 rbcSimpExt/.
-{cc[t-1]->xtm1[[1,1]],kk[t-1]->xtm1[[2,1]],recipC[t-1]->xtm1[[3,1]],theta[t-1]->xtm1[[4,1]],
-cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],recipC[t]->xt[[3,1]],theta[t]->xt[[4,1]],
-cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],recipC[t+1]->xtp1[[3,1]],theta[t+1]->xtp1[[4,1]],
+{cc[t-1]->xtm1[[1,1]],kk[t-1]->xtm1[[2,1]],ratioThetaToC[t-1]->xtm1[[3,1]],theta[t-1]->xtm1[[4,1]],
+cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],ratioThetaToC[t]->xt[[3,1]],theta[t]->xt[[4,1]],
+cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],ratioThetaToC[t+1]->xtp1[[3,1]],theta[t+1]->xtp1[[4,1]],
 eps[theta][t]->epst[[1,1]]}]
 
 

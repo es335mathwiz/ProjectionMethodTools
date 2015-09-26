@@ -1,0 +1,16 @@
+Print["provide shock names should come from model bmat comp"];
+chkOrd=2;
+chkPts={
+{20,0,5},
+{20,0,5},
+{20,-.1,.1}
+}
+
+
+mig00=Private`makeInitGuess[modSpec={compCon,stateSel,{{kktm1},{mu1tm1},{mu2tm1},{mu3tm1},{vvtm1}},noCnstrnGuess,{2,5,1,1,1},getCcybFixedPoint},xtm1Val={.4,.1},epsVal={.0},{}]
+
+
+
+{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[modSpec,chkOrd,chkPts,{},3];
+{ig,ig,zFuncsOneRE0,finFuncOneRE0}=genFinalRE[modSpec,chkOrd,chkPts,{},0,2];
+{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[modSpec,chkOrd,chkPts,{},0.01,2];
