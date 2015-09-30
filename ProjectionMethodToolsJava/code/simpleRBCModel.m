@@ -30,14 +30,16 @@ chkcobb douglas production*)
 rbcEqns={
  1/cc[t]-(delta*((theta[t+1])*(1/cc[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
-Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]
+(*Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]*)
+theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t])
 }
 
 
 rbcEqnsExt={
   1/cc[t]-(delta*((ratioThetaToC[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
- Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t],
+(* Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t],*)
+theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t]),
  ratioThetaToC[t]-(theta[t]/cc[t])
 }
 
@@ -77,9 +79,9 @@ Private`rbcSSThetaREEqn=Solve[(Log[theta]==Mean[LogNormalDistribution[0,sigma/.P
 
 
 hmatSymbRaw=(((equationsToMatrix[
-rbcEqns/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)//FullSimplify;
+rbcEqns]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)/.{eps[_]->0}//FullSimplify;
 hmatSymbRawExt=(((equationsToMatrix[
-rbcEqnsExt/.{eps[_][_]->0}]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)//FullSimplify;
+rbcEqnsExt]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)/.{eps[_]->0}//FullSimplify;
 rbcSimp=(rbcEqns)//.tog
 rbcSimpExt=(rbcEqnsExt)//.tog
 
@@ -200,7 +202,7 @@ rhoVal=rho//.tog//N;
 condExp=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
 {ii,_Integer}},
-With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],1]]},
+With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],-1]]},
 With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
 With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
 With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
@@ -209,7 +211,7 @@ Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 
 
 fixCondExp[cctm1_,kktm1_,thtm1_,epsVal_,ii_]:=
-With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],1]]},
+With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],-1]]},
 With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
 With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
 With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},

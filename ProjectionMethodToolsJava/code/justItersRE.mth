@@ -22,7 +22,6 @@ solnSubsExt00=
 Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,notpsicExt//N,Private`psizExt//N},{}];
 
 
-
 solnFuncsExt00=Private`subsFuncToVecFunc[solnSubsExt00];
 solnFuncsExt00Interp=Private`makeInterpFunc[solnFuncsExt00,{1,3},aGSpec]
 solnFuncsExt00PF=Private`makeInterpFuncPF[solnFuncsExt00,{1,3},aGSpec,1]
@@ -36,17 +35,8 @@ Print["done one"]
 
 
 
-
-
-
-(*
-
-huhsolnSubsExt00=
+solnSubsExt01=
 Private`makeConstraintFixedPointFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,notpsicExt//N,Private`psizExt//N},ZZksExt00,{},{{.2},{.3},{.2},{.9}},{1,3}];
-
-
-*)
-
 
 solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
 solnFuncsExt01Interp=Private`makeInterpFunc[solnFuncsExt01,{1,3},aGSpec]
@@ -61,7 +51,7 @@ Print["done one"]
 (*02*)
 
 solnSubsExt02=
-Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,notpsicExt//N,Private`psizExt//N},ZZksExt01,{},{{.2},{.3},{.2},{.9}},{1,3}];
+Private`makeConstraintFixedPointFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,notpsicExt//N,Private`psizExt//N},ZZksExt01,{},{{.2},{.3},{.2},{.9}},{1,3}];
 
 solnFuncsExt02=Private`subsFuncToVecFunc[solnSubsExt02];
 solnFuncsExt02Interp=Private`makeInterpFunc[solnFuncsExt02,{1,3},aGSpec]
