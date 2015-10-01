@@ -2,7 +2,7 @@ Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
 
 
-nodesNow=7;
+nodesNow=40;
 
 kVal=kk/.Private`kSSSub//.Private`tog//N;
 cVal=cc/.Private`cSSSub/.theta->1//.Private`tog//N;
@@ -114,10 +114,10 @@ With[{ZZksExtnn=Private`prepNextZZksPForRE[solnFuncsExtnnInterp[[{2,4}]],solnFun
 Print["done one"]
 
 Print["doing nestlist"]
-theRes=NestList[nxtPr[#[[2]]]&,{ig,ZZksExt03},10];
+theRes=NestList[(Print["nxt"];nxtPr[#[[2]]])&,{ig,ZZksExt03},10];
 
 
-Save["second.mth",theRes]
+Save["try"<>ToString[nodesNow]<>".mth",theRes]
 (*
 compZs[Private`hmat,Private`phimat,Private`psieps,Private`psic,.9,kVal,1,0,2]
 huh=nxtPr[ZZksExt04]
