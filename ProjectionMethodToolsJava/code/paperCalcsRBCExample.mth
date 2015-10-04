@@ -96,10 +96,14 @@ solnFuncsExt01PF=Private`makeInterpFuncPF[solnFuncsExt01,{1,3},aGSpec,1]
 
 ZZksExt01=Private`prepNextZZksPForRE[solnFuncsExt01Interp[[{2,4}]],solnFuncsExt00PF[[8+Range[4]]],solnFuncsExt00PF[[8+Range[4]]],1]
 
-nextZsPF00=Private`prepNextZZksPF[solnFuncExt00PF[[{2,3}]],solnFunc00Interp[[3+Range[3]]],{},1]
+
 
 
 (*
+nextZsPF00=Private`prepNextZZksPF[solnFuncsExt00PF[[{2,3}]],solnFunc00Interp[[3+Range[3]]],{},1]
+
+
+
 solnFuncsExt01RE=Private`makeInterpFuncRE[solnFuncsExt01,{1,3},aGSpec,{NormalDistribution[0,sigma/.Private`paramSubs]}]
 *)
 
