@@ -9,7 +9,8 @@ Export["RBCHSum.pdf",MatrixForm[
 (Private`hmatExt[[All,Range[4]]]+ Private`hmatExt[[All,4+Range[4]]]+Private`hmatExt[[All,8+Range[4]]])//.Private`tog//N]]
 Export["RBCSS.pdf", MatrixForm[Private`ssSolnVecExt//.Private`tog//N]];
 
-
+(*
+rest commented out
 Print["provide shock names should come from model bmat comp"];
 chkOrd=1;
 chkPts={
@@ -28,3 +29,4 @@ thePFRes=genFinalPF[modSpec,chkOrd,chkPts,{},#]&/@ Range[10];
 
 theRERes=genFinalRE[modSpec,chkOrd,chkPts,{},
 {{avar,TruncatedDistribution[{-.02,.02},LogNormalDistribution[1,0.01]]}},#]&/@ Range[10];
+*)

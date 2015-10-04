@@ -82,15 +82,37 @@ kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,
 
 
 (*01*)
-(xt01=Private`computeNextXt[{Private`bmatExt,Private`phimatExt,Private`fmatExt,Private`psiepsExt,Private`psicExt,Private`psizExt},1])/.latexSubs//N
+(xtExt01=Private`computeNextXt[{Private`bmatExt,Private`phimatExt,Private`fmatExt,Private`psiepsExt,Private`psicExt,Private`psizExt},1])/.latexSubs//N
 
-(xtp101=Private`computeNextXtp1[{Private`bmatExt,Private`phimatExt,Private`fmatExt,Private`psiepsExt,Private`psicExt,Private`psizExt},1]//N//Expand//Simplify)/.latexSubs
+(xtp1Ext01=Private`computeNextXtp1[{Private`bmatExt,Private`phimatExt,Private`fmatExt,Private`psiepsExt,Private`psicExt,Private`psizExt},1]//N//Expand//Simplify)/.latexSubs
 
 
 solnSubsExt01=
 Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,Private`psicExt//N,Private`psizExt//N},solnFuncsExt00PF[[8+Range[4]]],{},{{.2},{.3},{.2},{.9}},{1,3}];
 
 solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(*
+rest commented out
+
+
 solnFuncsExt01Interp=Private`makeInterpFunc[solnFuncsExt01,{1,3},aGSpec]
 solnFuncsExt01PF=Private`makeInterpFuncPF[solnFuncsExt01,{1,3},aGSpec,1]
 
@@ -115,7 +137,10 @@ solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
 
 
 
-(*
+
+
+
+
 
 
 aGSpec={1,{4,.1,1.0},{3,.95,1.06},{3,-.03,.03}};
