@@ -7,6 +7,10 @@ PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
+eqnErrsOnPathPF::usage="eqnErrsOnPathPF[drFunc_Function"
+condExpExt::usage="condExpExt"
+iterateDRPF::usage="iterateDRPF[drFunc_Function,initVec:{ig_,initK_?NumberQ,ig_,initTh_?NumberQ,initEps_?NumberQ},numPers_Integer]"
+
 ratioThetaToC::usage="rbc model variable"
 cc::usage="rbc model variable"
 kk::usage="rbc model variable"
@@ -209,6 +213,10 @@ With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 
+condExpExt=
+Compile[{{cctm1,_Real},{kktm1,_Real},
+{ccinv,_Real},{thtm1,_Real},{epsVal,_Real}},
+condExp[cctm1,kktm1,thtm1,epsVal,1]]
 
 fixCondExp[cctm1_,kktm1_,thtm1_,epsVal_,ii_]:=
 With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],-1]]},
@@ -263,6 +271,49 @@ cc[t]->xt[[1,1]],kk[t]->xt[[2,1]],ratioThetaToC[t]->xt[[3,1]],theta[t]->xt[[4,1]
 cc[t+1]->xtp1[[1,1]],kk[t+1]->xtp1[[2,1]],ratioThetaToC[t+1]->xtp1[[3,1]],theta[t+1]->xtp1[[4,1]],
 eps[theta][t]->epst[[1,1]]}]
 
+
+
+iterateDRPF[drFunc_Function,
+initVec:{ig1_,initK_,ig2_,initTh_,initEps_},
+numPers_Integer]:=
+With[{firVal=drFunc[initVec]},
+With[{theRes=NestList[drFunc[Append[#[[Range[4]]],0]]&,firVal,numPers-1]},
+theRes]]/;
+And[numPers>0]
+
+
+
+
+
+eqnErrsOnPathPF[drFunc_Function,
+initVec:{ig1_,initK_,ig2_,initTh_,initEps_},
+numPers_Integer]:=
+With[{theVarsPath=Take[#,4]&/@iterateDRPF[drFunc,initVec,numPers+1]},
+With[{theSimPath=
+Join[{
+Append[Transpose[{Drop[initVec,-1]}],{0}],
+Append[Transpose[{theVarsPath[[1]]}],{initVec[[-1]]}]},
+Append[Transpose[{#}],{0}]& /@Drop[theVarsPath,1]
+]},
+{theSimPath,Table[hFuncExt[theSimPath[[ii]],theSimPath[[ii+1]],theSimPath[[ii+2]],theSimPath[[ii+1,{-1}]]],{ii,1,numPers}]}]
+]
+
+(*
+
+
+iterateDR[drFunc_Function,
+initVec:{initK_?NumberQ,initTh_?NumberQ,initEps_?NumberQ},
+expctSpec:{{anEpsVar_,aDist_},opts_:{}},numPers_Integer,reps_Integer:1]:=
+With[{firVal=drFunc @@ initVec},
+With[{allReps=
+Table[
+NestList[drFunc @@ {#[[1]],#[[3]],
+If[NumberQ[aDist],aDist,RandomVariate[aDist]]}&,firVal,numPers-1],{reps}]},
+With[{theMean=prepMeansForHApp[Mean[allReps],initVec]},
+If[reps==1,theMean,
+{theMean,prepStdDevsForHApp[StandardDeviation[allReps]]}]]]]/;
+And[reps>0,numPers>0]
+*)
 
 
 End[]
