@@ -48,7 +48,7 @@ Export["cFuncExt00Lin.pdf",oneVsLin=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`x
 kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
 
 
-Export["cFuncExt00Exact.pdf",oneVsExac=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`xxxtm1Var$2,0,ProtectedSymbols`xxxtm1Var$4,0}][[1]],condExp[0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4,0,1][[4]]},
+Export["cFuncExt00Exact.pdf",oneVsExac=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`xxxtm1Var$2,0,ProtectedSymbols`xxxtm1Var$4,0}][[1]]-condExp[0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4,0,1][[4]]},
 {ProtectedSymbols`xxxtm1Var$2,
 kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->(Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]-exact)(*,PlotRange->{0,1.5}*)]]
 
