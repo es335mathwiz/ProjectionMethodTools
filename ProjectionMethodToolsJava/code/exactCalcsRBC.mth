@@ -1,0 +1,146 @@
+Needs["simpleRBCModel`"]
+Needs["AMASeriesRepresentation`"]
+kVal = kk /. Private`kSSSub //. Private`tog;
+cVal = cc /. Private`cSSSub /. theta -> 1 //. Private`tog // N;
+kLow = .01*kVal;
+kHigh = 4*kVal;
+sigVal = sigma //. Private`tog // N;
+sigLow = -3*sigVal;
+sigHigh = 3*sigVal;
+thLow = .9;
+thHigh = 1.1;
+
+
+
+(*one time period*)
+(*00*)
+
+solnSubsExt00 = 
+  Private`makeConstraintFindRootFunc[
+   Private`hFuncExt, {Private`bmatExt // N, Private`phimatExt // N, 
+    Private`fmatExt // N, Private`psiepsExt // N, 
+    Private`psicExt // N, Private`psizExt // N}, {}];
+
+solnFuncsExt00 = Private`subsFuncToVecFunc[solnSubsExt00];
+
+eqnErrs00 = eqnErrsOnPathPF[solnFuncsExt00, {.1, kVal*1.25, 10, .9, .05}, 
+   20];
+
+
+
+(*two periods*)
+
+xtExt01 = (Private`computeNextXt[{Private`bmatExt, Private`phimatExt, 
+         Private`fmatExt, Private`psiepsExt, Private`psicExt, 
+         Private`psizExt}, 1] // N // Expand // 
+     Simplify) /. {zName_[t] -> zName};
+
+xtp1Ext01 = (Private`computeNextXtp1[{Private`bmatExt, 
+         Private`phimatExt, Private`fmatExt, Private`psiepsExt, 
+         Private`psicExt, Private`psizExt}, 1] // N // Expand // 
+     Simplify) /. {zName_[t] -> zName};
+
+xtp2Ext01 = 
+  Private`bmatExt . xtp1Ext01 // N // Expand // 
+   Simplify /. {zName_[t] -> zName};
+
+
+genEqnSubs01[kNow_, aThVal_, anEpsVal_] := 
+ Function[{kkguess, thetaguess}, 
+  Join[{kk[t - 1] -> kNow, theta[t - 1] -> aThVal, 
+    eps[theta][t] -> anEpsVal}, 
+   Thread[{cc[t], kk[t], ratioThetaToC[t], theta[t], cc[t + 1], 
+      kk[t + 1], ratioThetaToC[t + 1], theta[t + 1], cc[t + 2], 
+      kk[t + 2], ratioThetaToC[t + 2], theta[t + 2]} -> 
+     Flatten[{xtExt01, xtp1Ext01, xtp2Ext01} /. {xxxtm1Var$2 -> kNow, 
+        xxxtm1Var$4 -> aThVal, epsVar$1 -> anEpsVal}]], 
+   Thread[{zzz$1$1, zzz$1$2, zzz$1$3, 
+      zzz$1$4} :> {solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[
+       9]], solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[10]], 
+      solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[11]], 
+      solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[12]]}]]]
+
+
+updateGuess[kkguessVal_, thetaguessVal_, theSubs_] := With[{},
+  With[{forFR = 
+     Thread[(Private`rbcEqnsExt //. 
+           Private`tog //. (theSubs[kkguessVal, thetaguessVal]) // 
+         Simplify) == 0]},
+   (*Print[{forFR,zzz$1$1/.(theSubs[kkguessVal,thetaguessVal])}];*)
+   Flatten[{({cc[t], kk[t], theta[t]} //. 
+          theSubs[kkguessVal, thetaguessVal]) /. #, Last /@ #} &@
+     FindRoot[
+      forFR, {{zzz$0$1, 0}, {zzz$0$2, 0}, {zzz$0$3, 0}, {zzz$0$4, 
+        0}}]]]]
+
+
+quickFunc[kValNow_, thetaValNow_, epsValNow_] := 
+ FixedPoint[
+  updateGuess @@ 
+    Append[#[[{2, 3}]], 
+     genEqnSubs01[kValNow, thetaValNow, epsValNow]] &, {.1, kVal, 1}, 
+  15]
+
+
+<<JavaGraphics`
+
+Plot3D[quickFunc[kkk, ttt, 0][[1]] - 
+  condExpExt[.1, kkk, .1, ttt, 0][[4]], {kkk, .1, .4}, {ttt, .9, 1.1},
+  PlotRange -> All]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(*approx
+
+
+
+eqnSubs00 = 
+  Join[{kk[t - 1] -> kNow, theta[t - 1] -> aThVal, 
+    eps[theta][t] -> anEpsVal}, 
+   Thread[{cc[t], kk[t], ratioThetaToC[t], theta[t], cc[t + 1], 
+      kk[t + 1], ratioThetaToC[t + 1], theta[t + 1]} -> 
+     Flatten[{xtExt00, xtp1Ext00} /. {xxxtm1Var$2 -> kVal, 
+         xxxtm1Var$4 -> aThVal, epsVar$1 -> anEpsVal} /. someSubs00]]];
+
+Private`rbcEqnsExt //. Private`tog /. eqnSubs00
+
+
+
+numNodes = 150; 
+aGSpec = {1, {numNodes, kLow, kHigh}, {numNodes, thLow, 
+    thHigh}, {numNodes, 3*sigLow, 3*sigHigh}};
+
+solnFuncsExt00PF = 
+  Private`makeInterpFuncPF[solnFuncsExt00, {1, 3}, aGSpec, 1];
+
+solnSubsExt01 = 
+  Private`makeConstraintFixedPointFunc[
+   Private`hFuncExt, {Private`bmatExt // N, Private`phimatExt // N, 
+    Private`fmatExt // N, Private`psiepsExt // N, 
+    Private`psicExt // N, Private`psizExt // N}, 
+   solnFuncsExt00PF[[8 + Range[4]]], {}, {{.2}, {.3}, {.2}, {.9}}, {1,
+     3}];
+someSubs01 = solnSubsExt01[.1, kNow, 10, aThVal, anEpsVal];
+solnFuncsExt01 = Private`subsFuncToVecFunc[solnSubsExt01];
+*)
