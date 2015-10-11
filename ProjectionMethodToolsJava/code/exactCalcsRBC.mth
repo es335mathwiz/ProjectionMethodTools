@@ -30,35 +30,26 @@ eqnErrs00 = eqnErrsOnPathPF[solnFuncsExt00, {.1, kVal*1.25, 10, .9, .05},
 
 (*two periods*)
 
-xtExt01 = (Private`computeNextXt[{Private`bmatExt, Private`phimatExt, 
-         Private`fmatExt, Private`psiepsExt, Private`psicExt, 
-         Private`psizExt}, 1] // N // Expand // 
-     Simplify) /. {zName_[t] -> zName};
-
-xtp1Ext01 = (Private`computeNextXtp1[{Private`bmatExt, 
-         Private`phimatExt, Private`fmatExt, Private`psiepsExt, 
-         Private`psicExt, Private`psizExt}, 1] // N // Expand // 
-     Simplify) /. {zName_[t] -> zName};
-
-xtp2Ext01 = 
-  Private`bmatExt . xtp1Ext01 // N // Expand // 
-   Simplify /. {zName_[t] -> zName};
-
-
-genEqnSubs01[kNow_, aThVal_, anEpsVal_] := 
+genEqnSubs01[kNow_, aThVal_, anEpsVal_] :=With[
+{ theZVars=Reverse[Flatten[genZVars[1,4,-1]]]/.zName_[t]->zName,
+theXtm1Vars=Private`genXtm1Vars[4],
+theEpsVars=Private`genEpsVars[1]},
  Function[{kkguess, thetaguess}, 
   Join[{kk[t - 1] -> kNow, theta[t - 1] -> aThVal, 
     eps[theta][t] -> anEpsVal}, 
    Thread[{cc[t], kk[t], ratioThetaToC[t], theta[t], cc[t + 1], 
       kk[t + 1], ratioThetaToC[t + 1], theta[t + 1], cc[t + 2], 
       kk[t + 2], ratioThetaToC[t + 2], theta[t + 2]} -> 
-     Flatten[{xtExt01, xtp1Ext01, xtp2Ext01} /. {xxxtm1Var$2 -> kNow, 
-        xxxtm1Var$4 -> aThVal, epsVar$1 -> anEpsVal}]], 
-   Thread[{zzz$1$1, zzz$1$2, zzz$1$3, 
-      zzz$1$4} :> {solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[
+    Flatten[(Private`computeXtPath[{Private`bmatExt // N, 
+Private`phimatExt // N,  Private`fmatExt // N, 
+Private`psiepsExt, Private`psicExt, 
+    Private`psizExt}, 2, 0][[4+Range[12]]] // N // Expand )/. 
+{theXtm1Vars[[2]] -> kNow, 
+        theXtm1Vars[[4]] -> aThVal, theEpsVars[[1]] -> anEpsVal}]], 
+   Thread[theZVars :> {solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[
        9]], solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[10]], 
       solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[11]], 
-      solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[12]]}]]]
+      solnFuncsExt00[{ig, kkguess, ig, thetaguess, 0}][[12]]}]]]]
 
 
 updateGuess[kkguessVal_, thetaguessVal_, theSubs_] := With[{},
@@ -80,14 +71,14 @@ quickFunc[kValNow_, thetaValNow_, epsValNow_] :=
     Append[#[[{2, 3}]], 
      genEqnSubs01[kValNow, thetaValNow, epsValNow]] &, {.1, kVal, 1}, 
   15]
-
+(*
 
 <<JavaGraphics`
 
 Plot3D[quickFunc[kkk, ttt, 0][[1]] - 
   condExpExt[.1, kkk, .1, ttt, 0][[4]], {kkk, .1, .4}, {ttt, .9, 1.1},
   PlotRange -> All]
-
+*)
 
 
 

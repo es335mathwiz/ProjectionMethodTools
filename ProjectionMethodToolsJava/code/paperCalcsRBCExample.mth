@@ -95,17 +95,26 @@ solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
 
 
 
+Print["copying pdf files to occBind paper directory"]
+
+occDir="../../../paperProduction/occBind/docs/"
 
 
 
+toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
+toOccDir/@{
+"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf"};
 
 
+toOccDir/@{
+"RBCParamSubs.pdf","RBCSSVal.pdf","truncErr.pdf",
+"RBCHmatSymb.pdf","RBCBmatSymb.pdf","RBCPhimatSymb.pdf","RBCFmatSymb.pdf",
+"RBCHSum.pdf","RBCSS.pdf","RBCPsissSymb.pdf"};
 
 
-
-
-
-
+toOccDir/@{
+"cFuncExt00Lin.pdf","cFuncExt00Exact.pdf","cFunc00PF.pdf"
+};
 
 
 
@@ -275,3 +284,10 @@ Plot3D[{solnFunc00PF[[1]] @@{0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxx
 Export["cFuncExt00PF.pdf",cfExt00=Plot3D[solnFuncsExt00PF[[1]][kk,tt],{kk,.01,2},{tt,.9,1.1},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
 
 *)
+
+
+
+
+
+
+
