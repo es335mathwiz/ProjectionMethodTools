@@ -273,6 +273,24 @@ eps[theta][t]->epst[[1,1]]}]
 
 
 
+
+rbcEqnsFunctional=Compile[
+{{xtm1,_Real,2},{xt,_Real,2},{xtp1,_Real,2},{epst,_Real,2}},
+With[{
+cctm1=xtm1[[1,1]],kktm1=xtm1[[2,1]],ratiotm1=xtm1[[3,1]],thetatm1=xtm1[[4,1]],
+cct=xt[[1,1]],kkt=xt[[2,1]],ratiot=xt[[3,1]],thetat=xt[[4,1]],
+cctp1=xtp1[[1,1]],kktp1=xtp1[[2,1]],ratiotp1=xtp1[[3,1]],thetatp1=xtp1[[4,1]],
+epsVal=epst[[1,1]]},#]]& @ (((rbcEqnsExt//.tog)//myN)/.
+{
+cc[t-1]->cctm1,kk[t-1]->kktm1,ratioThetaToC[t-1]->ratiotm1,theta[t-1]->thetatm1,
+cc[t]->cct,kk[t]->kkt,ratioThetaToC[t]->ratiot,theta[t]->thetat,
+cc[t+1]->cctp1,kk[t+1]->kktp1,ratioThetaToC[t+1]->ratiotp1,theta[t+1]->thetatp1,
+eps[theta][t]->epsVal})
+
+
+
+
+
 iterateDRPF[drFunc_Function,
 initVec:{ig1_,initK_,ig2_,initTh_,initEps_},
 numPers_Integer]:=
@@ -281,6 +299,14 @@ With[{theRes=NestList[drFunc[Append[#[[Range[4]]],0]]&,firVal,numPers-1]},
 theRes]]/;
 And[numPers>0]
 
+
+iterateExact[
+initVec:{ig1_,initK_,ig2_,initTh_,initEps_},
+numPers_Integer]:=
+With[{firVal=condExpExt @@ initVec},
+With[{theRes=NestList[(condExpExt[Sequence[#],1]& @@ Append[Flatten[#[[Range[4]]]],0])&,firVal,numPers-1]},
+theRes]]/;
+And[numPers>0]
 
 
 

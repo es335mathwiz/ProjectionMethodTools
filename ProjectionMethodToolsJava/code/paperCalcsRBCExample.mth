@@ -100,22 +100,26 @@ Print["copying pdf files to occBind paper directory"]
 occDir="../../../paperProduction/occBind/docs/"
 
 
-
+(*from demoApprox.mth*)
 toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
 toOccDir/@{
-"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf"};
+"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf",
+"RBCParamSubs.pdf","RBCSSVal.pdf","truncErr.pdf","truncErr.csv"};
 
-
+(*from AMAPaperCalcs.mth*)
 toOccDir/@{
-"RBCParamSubs.pdf","RBCSSVal.pdf","truncErr.pdf",
 "RBCHmatSymb.pdf","RBCBmatSymb.pdf","RBCPhimatSymb.pdf","RBCFmatSymb.pdf",
 "RBCHSum.pdf","RBCSS.pdf","RBCPsissSymb.pdf"};
 
-
+(*from paperCalcsRBCExample.mth*)
 toOccDir/@{
 "cFuncExt00Lin.pdf","cFuncExt00Exact.pdf","cFunc00PF.pdf"
 };
 
+(*from exact CalcsRBC.mth*)
+toOccDir/@{
+"cFuncTwoPerErr.pdf","cFuncThreePerErr.pdf"
+};
 
 
 (*
