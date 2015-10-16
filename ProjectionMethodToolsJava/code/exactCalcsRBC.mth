@@ -15,13 +15,14 @@ linMod={Private`bmatExt // N, Private`phimatExt // N,
     Private`fmatExt // N, Private`psiepsExt // N, 
     Private`psicExt // N, Private`psizExt // N};
 
-
+Print["exactCalcsRBC.mth:should compile"];
 genFRFunc[kktm1_?NumberQ,thtm1_?NumberQ,epsVal_?NumberQ]:=
-With[{aPath=
+With[{theZVars=Reverse[Flatten[genZVars[0,4]]]/.zName_[t]->zName,
+aPath=
 Private`computeXtPath[linMod,1,0]/.{
 xxxtm1Var$1->0,xxxtm1Var$2->kktm1,
 xxxtm1Var$3->0,xxxtm1Var$4->thtm1,epsVar$1->epsVal}},
-Function @@ {{zzz$0$1,zzz$0$2,zzz$0$3,zzz$0$4},aPath}]
+Function @@ {theZVars,aPath}]
 
 
 
