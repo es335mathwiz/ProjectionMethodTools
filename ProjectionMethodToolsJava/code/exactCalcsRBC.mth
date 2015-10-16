@@ -15,14 +15,49 @@ linMod={Private`bmatExt // N, Private`phimatExt // N,
     Private`fmatExt // N, Private`psiepsExt // N, 
     Private`psicExt // N, Private`psizExt // N};
 
+genX0Z0Funcs[linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ}]:=
+With[{numXVars=Length[BB],numZVars=Length[psiZ[[1]]]},
+With[{xtm1Vars=Private`genXtm1Vars[numXVars]},
+With[{compArgs={#,_Real}&/@xtm1Vars},
+{Compile @@ {compArgs,BB.Transpose[{xtm1Vars}]+
+Inverse[IdentityMatrix[Length[xtm1Vars]]-FF] . phi . psiC},
+Compile @@ {compArgs,ConstantArray[0,{numZVars,1}]}}]]]
+
+(*func of xtm1vars,epsvars,zvars*)
+genLilXkFunc[linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ}]:=
+With[{numXVars=Length[BB],
+numEpsVars=Length[psiEps[[1]]],numZVars=Length[psiZ[[1]]]},
+With[{xtm1Vars=Private`genXtm1Vars[numXVars],
+epsVars=Private`genEpsVars[numEpsVars],
+zVars=Reverse[Flatten[genZVars[0,numZVars]]]},
+With[{compArgs={#,_Real}&/@Join[xtm1Vars,epsVars,zVars]},
+Compile @@ {compArgs,
+With[{xtVals=BB.Transpose[{xtm1Vars}]+
+Inverse[IdentityMatrix[Length[xtm1Vars]]-FF] . phi . psiC + phi . psiEps . Transpose[{epsVars}]+
+phi . psiZ . Transpose[{zVars}]},
+Join[Transpose[{xtm1Vars}],xtVals,
+BB.xtVals+Inverse[IdentityMatrix[Length[xtm1Vars]]-FF] . phi . psiC,
+Transpose[{epsVars}]]]}]]]
+
+
+
+(*eqnsfuncs func of xtm1,xt,xtp1,eps  returns discrep*)
+(*xkfunc func of xtm1, eps zs returns xtm1,xt,xtp1,eps as matrices*)
 Print["exactCalcsRBC.mth:should compile"];
-genFRFunc[kktm1_?NumberQ,thtm1_?NumberQ,epsVal_?NumberQ]:=
-With[{theZVars=Reverse[Flatten[genZVars[0,4]]]/.zName_[t]->zName,
-aPath=
-Private`computeXtPath[linMod,1,0]/.{
-xxxtm1Var$1->0,xxxtm1Var$2->kktm1,
-xxxtm1Var$3->0,xxxtm1Var$4->thtm1,epsVar$1->epsVal}},
-Function @@ {theZVars,aPath}]
+
+(*returns function of xtm1 eps that gives xt and z*)
+
+genFRFunc[{numX_Integer,numEps_Integer,numZ_Integer},
+xkFunc_CompiledFunction,eqnsFunc_CompiledFunction]:=
+With[{funcArgs=Table[Unique["theFRFuncArgs"],{numX+numEps}],
+zArgs=Table[Unique["theFRZArgs"],{numZ}]},
+With[{zArgsInit={#,0}&/@zArgs,funcName=Unique["fName"]},
+funcName[funcArgs:{_?NumberQ..},zArgs:{_?NumberQ..}]:=
+eqnsFunc@@(Flatten[xkFunc@@Join[funcArgs,zArgs]]);
+ReplacePart[
+Function[xxxx,With[{zVals=zArgs/.FindRoot[funcName[funcArgs,zArgs],zArgsInit]},
+xkFunc@@Join[funcArgs,zVals]]],
+1->funcArgs]]]
 
 
 
