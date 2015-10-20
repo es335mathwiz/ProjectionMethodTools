@@ -68,6 +68,36 @@ tog=Join[paramSubs,forParamSubs]
 
 
 
+thNow[lastTh_]:=lastTh^rhoVal
+
+nxtK[lastK_,thNow_]:=((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
+
+yNow[kLag_,thNow_]:=thNow*kLag^(alpha//.tog//N)
+
+
+
+
+condExp=
+Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
+{ii,_Integer}},
+With[{thVals=Join[{},Drop[NestList[E^(((sigma^2)/2)//.Private`tog)*thNow[#]&,(E^epsVal)*thNow[thtm1],ii],-1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
+With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
+Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
+
+
+
+Print["computing steady state subs"];
+anExp=Expectation[E^ep,ep\[Distributed] NormalDistribution[0,sigma]]
+
+Print[thSubs=Flatten[Solve[theta==anExp*theta^rho,theta]][[1]]]
+Print[kSSSub=Flatten[Solve[nxtK[kk,theta/.thSubs]==kk,kk]][[-1]]]
+Print[cSSSub=cc->(yNow[kk/.kSSSub,theta/.thSubs]-kk/.kSSSub)]
+Print[ssSolnSubs=Flatten[{thSubs,kSSSub,cSSSub,ratioThetaToC->1/cc}]//.Private`tog]
+
+(*
 
 
 If[Length[cSSSub]===0,
@@ -80,7 +110,7 @@ rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0];
 Private`rbcSSThetaREEqn=Solve[(Log[theta]==Mean[LogNormalDistribution[0,sigma/.Private`paramSubs]])//.Private`tog,theta]
 ]
 ((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
-
+*)
 
 hmatSymbRaw=(((equationsToMatrix[
 rbcEqns]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)/.{eps[_]->0}//FullSimplify;
@@ -201,8 +231,9 @@ Flatten[bmat . {{0},{kVal},{tVal}}+phimat . (psieps*epsVal+psic)]//.paramSubs},
 
 (*/.paramSubs//myN;*)
 
+sigVal=sigma//.tog//N;
 rhoVal=rho//.tog//N;
-
+(*
 condExp=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
 {ii,_Integer}},
@@ -212,6 +243,8 @@ With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
 With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
+*)
+
 
 condExpExt=
 Compile[{{cctm1,_Real},{kktm1,_Real},
@@ -219,18 +252,12 @@ Compile[{{cctm1,_Real},{kktm1,_Real},
 condExp[cctm1,kktm1,thtm1,epsVal,1]]
 
 fixCondExp[cctm1_,kktm1_,thtm1_,epsVal_,ii_]:=
-With[{thVals=Join[{},Drop[NestList[E^(rhoVal*Log[#])&,E^(rhoVal*Log[thtm1]+epsVal),ii],-1]]},
+With[{thVals=Join[{},Drop[NestList[thNow,(E^epsVal)*thNow[thtm1],ii],-1]]},
 With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
 With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
 With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]
-
-
-
-nxtK[lastK_,thNow_]:=((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
-
-yNow[kLag_,thNow_]:=thNow*kLag^(alpha//.tog//N)
 
 compZs=Compile[{{tryMat,_Real,2},{phimat,_Real,2},{psieps,_Real,2},{psic,_Real,2},{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
 With[{thePath=Flatten[condExp[cctm1,kktm1,thtm1,epsVal,ii+2]]},
@@ -298,6 +325,32 @@ rbcEqnsFunctional=Compile[
 {cct^(-1) - (0.342*ratiotp1)/kkt^(16/25), cct + kkt - 1.*kktm1^(9/25)*thetat, 
  thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20), 
  ratiot - (1.*thetat)/cct}]
+
+
+rbcEqnsFunctionalNext=Compile[
+{
+{ctm1,_Real},{kktm1,_Real},{thetatm1,_Real},
+{cct,_Real},{kkt,_Real},{thetat,_Real},
+{cctp1,_Real},{kktp1,_Real},{thetatp1,_Real},
+{epsVal,_Real}
+},
+{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
+cct + kkt - 1.*kktm1^(9/25)*thetat, 
+thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}]
+
+
+rbcEqnsFunctionalNext=Compile[
+{
+{ctm1,_Real},{kktm1,_Real},{thetatm1,_Real},
+{cct,_Real},{kkt,_Real},{thetat,_Real},
+{cctp1,_Real},{kktp1,_Real},{thetatp1,_Real},
+{epsVal,_Real}
+},
+{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
+cct + kkt - 1.*kktm1^(9/25)*thetat, 
+thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}]
+
+
 
 
 

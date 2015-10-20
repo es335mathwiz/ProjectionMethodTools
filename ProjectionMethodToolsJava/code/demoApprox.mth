@@ -147,7 +147,7 @@ psimat *ee,Infinity],
 
 Print["start iZNorms"]
 {tz,ig}=Timing[iZNorms=Module[{},Function[{iter},Print[iter];infNorm[cmpDiffZ[#1,#2,#3,#4,iter]&, {{.1,.9},{.1,.9},{.9,1.1},{-.1,.1}}]]/@
-(lenVals=Join[Range[0,5], Range[10,100,10],Range[150,300,50]])]]
+(lenVals=Join[Range[0,5](*, Range[10,100,10],Range[150,300,50]*)])]]
 Print["done iZNorms"]
 
 Print["start iGNorms"]
