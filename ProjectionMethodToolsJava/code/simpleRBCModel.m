@@ -7,10 +7,6 @@ PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
-eqnErrsOnPathPF::usage="eqnErrsOnPathPF[drFunc_Function"
-condExpExt::usage="condExpExt"
-iterateDRPF::usage="iterateDRPF[drFunc_Function,initVec:{ig_,initK_?NumberQ,ig_,initTh_?NumberQ,initEps_?NumberQ},numPers_Integer]"
-
 ratioThetaToC::usage="rbc model variable"
 cc::usage="rbc model variable"
 kk::usage="rbc model variable"
@@ -19,13 +15,21 @@ theta::usage="rbc model parameter"
 alpha::usage="rbc model parameter"
 delta::usage="rbc model parameter"
 sigma::usage="rbc model parameter"
-compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
 rbcEqns::usage="rbc model equations"
-condExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
-fixCondExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
-compZs::usage="compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,ii_Integer]"
+simpParamSubs::usage="simpParamSubs=Join[paramSubs,forParamSubs]"
+ssSolnSubsRE::usage="rational expectations steady state"
+ssSolnSubsPF::usage="perfect foresight steady state"
+condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
+condExpPF::usage="condExpPF[kktm1_?NumberQ,ii_Integer]"
 
 Begin["Private`"]
+
+
+
+
+
+
+
 
 (*pg 165 of  maliar maliar solving neoclassical growth model  
 closed form solution version  beta=1 geometric discounting
@@ -37,6 +41,118 @@ cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
 (*Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]*)
 theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t])
 }
+(*parameters page 21 using state 1*)
+paramSubs={
+alpha->36/100,
+delta->95/100,
+rho->95/100,
+sigma->1/100
+} 
+
+forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
+simpSubs=Thread[forSubs->nu];
+forParamSubs=Thread[nu->forSubs]//.paramSubs
+simpParamSubs=Join[paramSubs,forParamSubs]
+
+
+If[Length[ssSolnSubsRE]===0,
+Print["computing steady state subs"];
+thNow[lastTh_,eps_]:=(E^eps)*lastTh^rho/.simpParamSubs;
+nxtK[lastK_,thNowVal_]:=((alpha*delta))*thNowVal*lastK^(alpha)/.simpParamSubs;
+yNow[kLag_,thNowVal_]:=thNowVal*kLag^(alpha)/.simpParamSubs;
+anExpRE=Expectation[E^ep,ep\[Distributed] NormalDistribution[0,sigma]/.simpParamSubs];
+Print[thSubsRE=Flatten[Solve[theta==anExpRE*thNow[theta,0],theta]][[2]]];
+Print[kSSSubRE=Flatten[Solve[nxtK[kk,theta/.thSubsRE]==kk,kk]][[-1]]];
+Print[cSSSubRE=cc->(yNow[kk/.kSSSubRE,theta/.thSubsRE]-kk/.kSSSubRE)];
+Print[ssSolnSubsRE=Flatten[{thSubsRE,kSSSubRE,cSSSubRE}]];
+anExpPF=1;
+Print[thSubsPF=Flatten[Solve[theta==anExpPF*theta^rho,theta]][[1]]];
+Print[kSSSubPF=Flatten[Solve[nxtK[kk,theta/.thSubsPF]==kk,kk]][[-1]]];
+Print[cSSSubPF=cc->(yNow[kk/.kSSSubPF,theta/.thSubsPF]-kk/.kSSSubPF)];
+Print[ssSolnSubsPF=Flatten[{thSubsPF,kSSSubPF,cSSSubPF}]];
+Print["done computing steady state subs"];
+]
+
+
+
+
+psiz=IdentityMatrix[3]
+
+Print["RE solutions"]
+hmatSymbRawRE=(((equationsToMatrix[
+rbcEqns/.simpParamSubs]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubsRE)/.{eps[_]->0}//FullSimplify;
+psiepsSymbRE=-Transpose[{((D[#,eps[theta][t]]&/@ rbcEqns)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubsRE}/.simpParamSubs]
+
+hmatSymbRE=hmatSymbRawRE//.simpSubs
+hSumRE=hmatSymbRE[[All,Range[3]]]+hmatSymbRE[[All,3+Range[3]]]+hmatSymbRE[[All,6+Range[3]]];
+
+ssSolnVecRE={{cc},{kk},{theta}}//.ssSolnSubsRE;
+psicSymbRE=hSumRE . ssSolnVecRE;
+
+
+{zfSymbRE,hfSymbRE}=symbolicAR[hmatSymbRE//.simpParamSubs];
+amatSymbRE=symbolicTransitionMatrix[hfSymbRE];
+{evlsSymbRE,evcsSymbRE}=Eigensystem[Transpose[amatSymbRE]];
+qmatSymbRE=Join[zfSymbRE,evcsSymbRE[[{1}]]];
+
+Print["computing and simplifying the symbolic b phi f etc"]
+{bmatSymbRE,phimatSymbRE,fmatSymbRE}=symbolicComputeBPhiF[hmatSymbRE,qmatSymbRE]//Simplify;
+
+
+
+
+condExpRE[cctm1_,kktm1_,thtm1_,epsVal_,
+ii_Integer]:=
+With[{thVals=Join[{},Drop[NestList[(anExpRE*thNow[#,0])&,(thNow[thtm1,epsVal]),ii],-1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
+With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
+Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]
+
+
+
+genZsRE[kk_,theta_,epsNow_,iters_Integer]:=
+With[{rbcPath=Flatten[condExpRE[ig,kk,theta,epsNow,iters+1]]},
+With[{begi=
+(hmatSymbRE//N). (Transpose[{rbcPath[[Range[9]]]}]) -(psicSymbRE//N)+psiepsSymbRE . {{epsNow}}},
+With[{along=((hmatSymbRE//N) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -(psicSymbRE//N)) &/@
+Range[iters-1]},Partition[Join[begi,Join @@along],3]]]]
+
+fSum[linMod,Private`genZsRE[.2,1,.01,30]]
+
+Print["PF solutions soon"]
+
+
+
+
+
+rbcEqnsFunctionalNext=Compile[
+{
+{ctm1,_Real},{kktm1,_Real},{thetatm1,_Real},
+{cct,_Real},{kkt,_Real},{thetat,_Real},
+{cctp1,_Real},{kktp1,_Real},{thetatp1,_Real},
+{epsVal,_Real}
+},
+{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
+cct + kkt - 1.*kktm1^(9/25)*thetat, 
+thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}]
+
+
+(*
+
+(*
+eqnErrsOnPathPF::usage="eqnErrsOnPathPF[drFunc_Function]"
+condExpExt::usage="condExpExt"
+iterateDRPF::usage="iterateDRPF[drFunc_Function,initVec:{ig_,initK_?NumberQ,ig_,initTh_?NumberQ,initEps_?NumberQ},numPers_Integer]"
+*)
+compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
+condExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
+fixCondExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
+compZs::usage="compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,ii_Integer]"
+
+
+
 
 
 rbcEqnsExt={
@@ -49,53 +165,28 @@ theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t]),
 
 
 
-(*parameters page 21 using state 1*)
-paramSubs={
-alpha->36/100,
-delta->95/100,
-rho->95/100,
-sigma->1/100
-} 
-
-forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
-simpSubs=Thread[forSubs->nu];
-
-forParamSubs=Thread[nu->forSubs]//.paramSubs
-tog=Join[paramSubs,forParamSubs]
 
 
 
 
 
 
-thNow[lastTh_]:=lastTh^rhoVal
-
-nxtK[lastK_,thNow_]:=((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
-
-yNow[kLag_,thNow_]:=thNow*kLag^(alpha//.tog//N)
 
 
 
 
-condExp=
+
+condExpRE=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
 {ii,_Integer}},
-With[{thVals=Join[{},Drop[NestList[E^(((sigma^2)/2)//.Private`tog)*thNow[#]&,(E^epsVal)*thNow[thtm1],ii],-1]]},
+With[{thVals=Join[{},Drop[NestList[E^(((sigma^2)/2))*thNow[#]&,(E^epsVal)*thNow[thtm1],ii],-1]]},
 With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
 With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
 With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
-Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
+Join[{{cctm1},{kktm1},{thtm1}},thetransp]//.simpParamSubs]]]]]]
 
 
-
-Print["computing steady state subs"];
-anExp=Expectation[E^ep,ep\[Distributed] NormalDistribution[0,sigma]]
-
-Print[thSubs=Flatten[Solve[theta==anExp*theta^rho,theta]][[1]]]
-Print[kSSSub=Flatten[Solve[nxtK[kk,theta/.thSubs]==kk,kk]][[-1]]]
-Print[cSSSub=cc->(yNow[kk/.kSSSub,theta/.thSubs]-kk/.kSSSub)]
-Print[ssSolnSubs=Flatten[{thSubs,kSSSub,cSSSub,ratioThetaToC->1/cc}]//.Private`tog]
 
 (*
 
@@ -107,47 +198,19 @@ kSSSub=PowerExpand[Simplify[Solve[delta*alpha*kk^alpha==kk,{kk},Reals],(0<alpha<
 cSSSub=Flatten[Solve[Simplify[rbcSSEqns//.kSSSub][[2]],cc]];
 ssSolnSubs=Join[cSSSub,kSSSub,{theta->1,ratioThetaToC->1/cc}];
 rbcSSEqns=Thread[(rbcEqns//.{eps[_][_]->0,xx_[t+_.]->xx})==0];
-Private`rbcSSThetaREEqn=Solve[(Log[theta]==Mean[LogNormalDistribution[0,sigma/.Private`paramSubs]])//.Private`tog,theta]
+Private`rbcSSThetaREEqn=Solve[(Log[theta]==Mean[LogNormalDistribution[0,sigma/.Private`paramSubs]])//.Private`simpParamSubs,theta]
 ]
-((alpha*delta)//.tog//N)*thNow*lastK^(alpha//.tog//N)
+((alpha*delta)//.simpParamSubs//N)*thNow*lastK^(alpha//.simpParamSubs//N)
 *)
-
-hmatSymbRaw=(((equationsToMatrix[
-rbcEqns]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)/.{eps[_]->0}//FullSimplify;
-hmatSymbRawExt=(((equationsToMatrix[
-rbcEqnsExt]//FullSimplify)/.{xx_[t+_.]->xx})//.ssSolnSubs)/.{eps[_]->0}//FullSimplify;
-rbcSimp=(rbcEqns)//.tog
-rbcSimpExt=(rbcEqnsExt)//.tog
-
-psiepsSymb=-Transpose[{((D[#,eps[theta][t]]&/@ rbcSimp)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
-psieps=psiepsSymb//.tog;
-
-
-psiepsSymbExt=-Transpose[{((D[#,eps[theta][t]]&/@ rbcSimpExt)/.{eps[_][_]->0,xx_[t+_.]->xx})//.ssSolnSubs}]
-psiepsExt=psiepsSymbExt//.tog;
-
-
-
-psiz=IdentityMatrix[3]
-psizExt=IdentityMatrix[4]
-
-
-
-hmatSymb=hmatSymbRaw//.simpSubs
-hSum=hmatSymb[[All,Range[3]]]+hmatSymb[[All,3+Range[3]]]+hmatSymb[[All,6+Range[3]]];
-ssSolnVec={{cc},{kk},{theta}}//.ssSolnSubs;
-psicSymb=hSum . ssSolnVec;
-psic=psicSymb//.tog
-
 
 hmatSymbExt=hmatSymbRawExt//.simpSubs
 hSumExt=hmatSymbExt[[All,Range[4]]]+hmatSymbExt[[All,4+Range[4]]]+hmatSymbExt[[All,8+Range[4]]];
 ssSolnVecExt={{cc},{kk},{ratioThetaToC},{theta}}//.ssSolnSubs;
 psicSymbExt=hSumExt . ssSolnVecExt;
-psicExt=psicSymbExt//.tog
+psicExt=psicSymbExt//.simpParamSubs
 
 
-{zfSymb,hfSymb}=symbolicAR[hmatSymb//.tog];
+{zfSymb,hfSymb}=symbolicAR[hmatSymb//.simpParamSubs];
 amatSymb=symbolicTransitionMatrix[hfSymb];
 {evlsSymb,evcsSymb}=Eigensystem[Transpose[amatSymb]];
 qmatSymb=Join[zfSymb,evcsSymb[[{1}]]];
@@ -155,7 +218,7 @@ qmatSymb=Join[zfSymb,evcsSymb[[{1}]]];
 
 
 		      
-{zfSymbExt,hfSymbExt}=symbolicAR[hmatSymbExt//.tog];
+{zfSymbExt,hfSymbExt}=symbolicAR[hmatSymbExt//.simpParamSubs];
 amatSymbExt=symbolicTransitionMatrix[hfSymbExt];
 {evlsSymbExt,evcsSymbExt}=Eigensystem[Transpose[amatSymbExt]];
 qmatSymbExt=Join[zfSymbExt,evcsSymbExt[[{1}]]];
@@ -163,14 +226,14 @@ qmatSymbExt=Join[zfSymbExt,evcsSymbExt[[{1}]]];
 Print["computing and simplifying the symbolic b phi f etc"]
 
 
-hmat=hmatSymb//.tog;
-qmat=qmatSymb//.tog;
+hmat=hmatSymb//.simpParamSubs;
+qmat=qmatSymb//.simpParamSubs;
 Print["computing and simplifying the symbolic b phi f etc"]
 {bmat,phimat,fmat}=symbolicComputeBPhiF[hmat,qmat]//Simplify;
 
 
-hmatExt=hmatSymbExt//.tog;
-qmatExt=qmatSymbExt//.tog;
+hmatExt=hmatSymbExt//.simpParamSubs;
+qmatExt=qmatSymbExt//.simpParamSubs;
 Print["computing and simplifying the symbolic b phi f etc"]
 {bmatExt,phimatExt,fmatExt}=symbolicComputeBPhiF[hmatExt,qmatExt]//Simplify;
 
@@ -231,8 +294,8 @@ Flatten[bmat . {{0},{kVal},{tVal}}+phimat . (psieps*epsVal+psic)]//.paramSubs},
 
 (*/.paramSubs//myN;*)
 
-sigVal=sigma//.tog//N;
-rhoVal=rho//.tog//N;
+sigVal=sigma//.simpParamSubs//N;
+rhoVal=rho//.simpParamSubs//N;
 (*
 condExp=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
@@ -273,7 +336,7 @@ raw+epsPart
 
 
 rbcEqnsApply[{ctm1_,ktm1_,ct_,kt_,ctp1_,ktp1_}]:=
-rbcEqns/.eps[theta][t]->0/.{cc[t]->ct,cc[t+1]->ctp1,kk[t-1]->ktm1,kk[t]->kt}//.tog
+rbcEqns/.eps[theta][t]->0/.{cc[t]->ct,cc[t+1]->ctp1,kk[t-1]->ktm1,kk[t]->kt}//.simpParamSubs
 
 
 
@@ -302,7 +365,7 @@ eps[theta][t]->epst[[1,1]]}]
 
 (*prep rbcEqnsFunctional*)
 (*
-lookey=(((Private`rbcEqnsExt//.Private`tog)//myN)/.
+lookey=(((Private`rbcEqnsExt//.Private`simpParamSubs)//myN)/.
 {
 cc[t-1]->cctm1,kk[t-1]->kktm1,ratioThetaToC[t-1]->ratiotm1,theta[t-1]->thetatm1,
 cc[t]->cct,kk[t]->kkt,ratioThetaToC[t]->ratiot,theta[t]->thetat,
@@ -406,7 +469,7 @@ If[reps==1,theMean,
 And[reps>0,numPers>0]
 *)
 
-
+*)
 End[]
 EndPackage[]
 Print["done reading simpleRBCModel.m"]

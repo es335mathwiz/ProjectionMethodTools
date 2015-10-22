@@ -1,19 +1,20 @@
 Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
-kVal = kk /. Private`kSSSub //. Private`tog;
-cVal = cc /. Private`cSSSub /. theta -> 1 //. Private`tog // N;
-kLow = .01*kVal;
+thVal=theta//.ssSolnSubsRE//.simpParamSubs;
+kVal = kk /. Private`kSSSubRE//.simpParamSubs;
+cVal = cc /. Private`cSSSubRE//.simpParamSubs ;
+kLow = 1/10*kVal;
 kHigh = 4*kVal;
-sigVal = sigma //. Private`tog // N;
+sigVal = sigma //. simpParamSubs;
 sigLow = -3*sigVal;
 sigHigh = 3*sigVal;
-thLow = .9;
-thHigh = 1.1;
+thLow = 9/10;
+thHigh = 11/10;
 pdf=NormalDistribution[0, sigVal];
 
-linMod={Private`bmat // N, Private`phimat // N, 
-    Private`fmat // N, Private`psieps // N, 
-    Private`psic // N, Private`psiz // N};
+linMod={Private`bmatSymbRE // N, Private`phimatSymbRE // N, 
+    Private`fmatSymbRE // N, Private`psiepsSymbRE // N, 
+    Private`psicSymbRE // N, Private`psiz // N,{{0}}};
 
 X0Z0=genX0Z0Funcs[linMod];
 
@@ -23,30 +24,24 @@ anXEps={1,.18,1.1,0.01};
 anXEpsZs={1,.18,1.1,0.01,.1,.2,.3,.4};
 probDims={3,1,3};
 
-genZs[kk_?NumberQ,theta_?NumberQ,epsNow_?NumberQ,iters_Integer]:=
-With[{rbcPath=Flatten[condExp[1,kVal,1,0,iters+1]]},
-With[{begi=
-Private`hmat. (Transpose[{rbcPath[[Range[9]]]}]) -Private`psic+Private`psieps . {{epsNow}}},
-With[{along=(Private`hmat. (Transpose[{rbcPath[[#*3+Range[9]]]}]) -Private`psic) &/@
-Range[iters-1]},{rbcPath,
-Join[begi,Join @@along]}]]]
-
 (*X0Z0 @@ anX -> xt,zt*)
 
 
 
-{x1z1PF,X1Z1FuncsPF}=doIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],
+{x1z1PF,X1Z1FuncsPF}=doIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext];
 
-{x1z1RE,X1Z1FuncsRE}=doIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],
+{x1z1RE,X1Z1FuncsRE}=doIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext,{pdf}];
+
+
+
+{x2z2PF,X2Z2FuncsPF}=doIterPF[linMod,X1Z1FuncsPF,X0Z0[1,.18,1,1][[Range[3]]],
+Private`rbcEqnsFunctionalNext];
 
 (*
 
-{x2z2PF,X2Z2FuncsPF}=doIterPF[linMod,X1Z1FuncsPF,X0Z0[1,.18,1,1][[Range[4]]],
-Private`rbcEqnsFunctionalNext];
-
-{x2z2RE,X2Z2FuncsRE}=doIterRE[linMod,X1Z1FuncsRE,X0Z0[1,.18,1,1][[Range[4]]],
+{x2z2RE,X2Z2FuncsRE}=doIterRE[linMod,X1Z1FuncsRE,X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext,{pdf}];
 
 
@@ -486,3 +481,5 @@ ReplacePart[
 Function[xxxx,aLilXkZkFunc@@Join[funcArgs,theZeroes]],
 1->funcArgs]]
 *)
+
+
