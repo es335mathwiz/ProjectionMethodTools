@@ -141,7 +141,7 @@ Range[iters-1]},Partition[Join[begi,Join @@along],3]]]]
 
 genZsRE=Compile[{{anHmat,_Real,2},{aPsiEps,_Real,2},{aPsiC,_Real,2},
 {cc, _Real},{kk, _Real},{theta,_Real},{epsNow, _Real},{iters,_Integer}},
-Module[{},Print["genZsRE"];
+Module[{},
 With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
 With[{begi=
 (anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(aPsiC)-aPsiEps. {{epsNow}}},
@@ -149,8 +149,8 @@ If[iters==1,{begi},
 With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -(aPsiC//N)) &/@
 Range[iters-1]},
 With[{theRes=doJoin[begi,along]},
-theRes]]]]],
-{{condExpRE[___],_Real,2},{doJoin[___],_Real,3}}]]
+theRes]]]]]],
+{{condExpRE[___],_Real,2},{doJoin[___],_Real,3}}]
 
 
 
@@ -164,9 +164,11 @@ Partition[Join[begi,Join @@along],3]
 compApproxRE[theHmat_?MatrixQ,
 linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
 cc_,kk_,theta_,epsNow_,iters_Integer]:=
-Module[{},Print["compApproxRE:"];
+Module[{},
+(*Print["compApproxRE:",{phi,FF,psiZ,{theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters}}];
+Print["huh:",genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]];*)
 With[{fPart=
-fSumC[phi,FF,psiZ,genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]]},Print["fPart"];
+fSumC[phi,FF,psiZ,genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]]},(*Print["fPart"];*)
 (*Print[{fPart,BB . Transpose[{{1,kk,theta}}] , phi . psiEps . {{epsNow}} ,Inverse[IdentityMatrix[3] - FF] . phi . psiC ,genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]}];*)
 BB . Transpose[{{1,kk,theta}}] + phi . psiEps . {{epsNow}} + 
 Inverse[IdentityMatrix[3] - FF] . phi . psiC +
@@ -176,7 +178,7 @@ fPart]]
 compApproxDiffRE[theHmat_?MatrixQ,
 linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
 cc_,kk_,theta_,epsNow_,iters_Integer]:=
-Module[{},Print["compApproxDiffRE:"];
+Module[{},(*Print["compApproxDiffRE:"];*)
 With[{theApprox=compApproxRE[theHmat,
 linMod,cc,kk,theta,epsNow,iters],
 exact=condExpRE[1,kk,theta,epsNow,1][[{4,5,6}]]
@@ -189,7 +191,7 @@ linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_
 With[{bigZ = maxZsRE[theHmat, psiEps, 
    psiC, rngs, iters],
 matPart = 
-  Norm[truncErrorMat[FF, phi, iters - 1], Infinity]},Print["compBounds mid"];
+  Norm[truncErrorMat[FF, phi, iters - 1], Infinity]},(*Print["compBounds mid"];*)
 {bigZ, matPart, bigZ[[1]]*matPart, 
  infNorm[compApproxDiffRE[theHmat, 
     linMod, #1, #2, #3, #4, iters] &, rngs]}]

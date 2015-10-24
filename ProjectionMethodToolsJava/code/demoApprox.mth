@@ -33,8 +33,29 @@ Export["RBCSSVal.pdf", MatrixForm[ssVal]];
 
 
 
-(*theLens=Join[Range[5],Range[10,100,10]]*)
-theLens=Range[5];
+theLens=Join[Range[5],Range[10,100,10]]
 theRngs={{1, 1}, {0.01, 1}, {.9, 1.1}, {-0.03, 0.03}};
+Print["here goes"];
 theNotRBCRes={Print[#];#,compBounds[nothmat//N,notLinMod,theRngs, #]}& /@ theLens;
+Print["here goes again"];
 theRBCRes={Print[#];#,compBounds[Private`hmatSymbRE // N,linMod,theRngs, #]}& /@ theLens;
+Print["done demo"];
+Export["rbcApprox.csv",
+{#[[1]],#[[2,1,1]],#[[2,2]],#[[2,3]],#[[2,4,1]]}&/@theRBCRes]
+
+
+Export["notRbcApprox.csv",
+{#[[1]],#[[2,1,1]],#[[2,2]],#[[2,3]],#[[2,4,1]]}&/@theNotRBCRes]
+
+
+
+occDir="../../../paperProduction/occBind/docs/"
+
+
+(*from demoApprox.mth*)
+toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
+toOccDir/@{
+"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf",
+"RBCParamSubs.pdf","RBCSSVal.pdf",
+"rbcApprox.csv","notRbcApprox.csv"
+};

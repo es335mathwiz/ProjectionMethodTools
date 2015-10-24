@@ -104,7 +104,9 @@ occDir="../../../paperProduction/occBind/docs/"
 toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
 toOccDir/@{
 "refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf",
-"RBCParamSubs.pdf","RBCSSVal.pdf","truncErr.pdf","truncErr.csv"};
+"RBCParamSubs.pdf","RBCSSVal.pdf",
+"rbcApprox.csv","notRbcApprox.csv"
+};
 
 (*from AMAPaperCalcs.mth*)
 toOccDir/@{
@@ -120,6 +122,8 @@ toOccDir/@{
 toOccDir/@{
 "cFuncTwoPerErr.pdf","cFuncThreePerErr.pdf"
 };
+
+
 
 
 (*

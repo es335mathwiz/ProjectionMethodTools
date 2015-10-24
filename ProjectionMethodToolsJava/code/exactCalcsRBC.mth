@@ -31,15 +31,25 @@ probDims={3,1,3};
 {x1z1PF,X1Z1FuncsPF}=doIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext];
 
+
+
 {x1z1RE,X1Z1FuncsRE}=doIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext,{pdf}];
 
-
+(*
 
 {x2z2PF,X2Z2FuncsPF}=doIterPF[linMod,X1Z1FuncsPF,X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext];
 
-(*
+
+
+bunchOfPFs=nestIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],
+Private`rbcEqnsFunctionalNext,4];
+
+pathErrs[probDims,bunchOfPFs[[3]],Private`rbcEqnsFunctionalNext,Transpose[{anX}],{{0.01}}]
+
+
+
 
 {x2z2RE,X2Z2FuncsRE}=doIterRE[linMod,X1Z1FuncsRE,X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext,{pdf}];
@@ -48,7 +58,7 @@ Private`rbcEqnsFunctionalNext,{pdf}];
 
 bunchOfPFs=nestIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],
 Private`rbcEqnsFunctionalNext,4];
-pathErrs[{4,1,4},bunchOfPFs[[3]],Private`rbcEqnsFunctionalNext,Transpose[{anX}],{{0.01}}]
+pathErrs[probDims,bunchOfPFs[[3]],Private`rbcEqnsFunctionalNext,Transpose[{anX}],{{0.01}}]
 
 
 
