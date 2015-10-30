@@ -52,12 +52,12 @@ alpha->36/100,
 delta->95/100,
 rho->95/100,
 sigma->1/100
-} 
+} ;
 
-forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)}
+forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)};
 simpSubs=Thread[forSubs->nu];
-forParamSubs=Thread[nu->forSubs]//.paramSubs
-simpParamSubs=Join[paramSubs,forParamSubs]
+forParamSubs=Thread[nu->forSubs]//.paramSubs;
+simpParamSubs=Join[paramSubs,forParamSubs];
 
 
 If[Length[ssSolnSubsRE]===0,
@@ -66,15 +66,15 @@ thNow[lastTh_,eps_]:=(E^eps)*lastTh^rho/.simpParamSubs;
 nxtK[lastK_,thNowVal_]:=((alpha*delta))*thNowVal*lastK^(alpha)/.simpParamSubs;
 yNow[kLag_,thNowVal_]:=thNowVal*kLag^(alpha)/.simpParamSubs;
 anExpRE=Expectation[E^ep,ep\[Distributed] NormalDistribution[0,sigma]/.simpParamSubs];
-Print[thSubsRE=Flatten[Solve[theta==anExpRE*thNow[theta,0],theta]][[2]]];
-Print[kSSSubRE=Flatten[Solve[nxtK[kk,theta/.thSubsRE]==kk,kk]][[-1]]];
-Print[cSSSubRE=cc->(yNow[kk/.kSSSubRE,theta/.thSubsRE]-kk/.kSSSubRE)];
-Print[ssSolnSubsRE=Flatten[{thSubsRE,kSSSubRE,cSSSubRE}]];
 anExpPF=1;
-Print[thSubsPF=Flatten[Solve[theta==anExpPF*theta^rho,theta]][[1]]];
-Print[kSSSubPF=Flatten[Solve[nxtK[kk,theta/.thSubsPF]==kk,kk]][[-1]]];
-Print[cSSSubPF=cc->(yNow[kk/.kSSSubPF,theta/.thSubsPF]-kk/.kSSSubPF)];
-Print[ssSolnSubsPF=Flatten[{thSubsPF,kSSSubPF,cSSSubPF}]];
+Identity[thSubsRE=Flatten[Solve[theta==anExpRE*thNow[theta,0],theta]][[2]]];
+Identity[kSSSubRE=Flatten[Solve[nxtK[kk,theta/.thSubsRE]==kk,kk]][[-1]]];
+Identity[cSSSubRE=cc->(yNow[kk/.kSSSubRE,theta/.thSubsRE]-kk/.kSSSubRE)];
+Identity[ssSolnSubsRE=Flatten[{thSubsRE,kSSSubRE,cSSSubRE}]];
+Identity[thSubsPF=Flatten[Solve[theta==theta^rho,theta]][[1]]];
+Identity[kSSSubPF=Flatten[Solve[nxtK[kk,theta/.thSubsPF]==kk,kk]][[-1]]];
+Identity[cSSSubPF=cc->(yNow[kk/.kSSSubPF,theta/.thSubsPF]-kk/.kSSSubPF)];
+Identity[ssSolnSubsPF=Flatten[{thSubsPF,kSSSubPF,cSSSubPF}]];
 Print["done computing steady state subs"];
 ]
 
@@ -121,6 +121,17 @@ condExpRE=Compile[
 {{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
 With[{thVals=Join[{},
 Drop[NestList[(anExpRE*thNow[#,0])&,
+(thNow[thtm1,epsVal]),ii],-1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
+With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
+Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
+
+condExpPF=Compile[
+{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
+With[{thVals=Join[{},
+Drop[NestList[(anExpPF*thNow[#,0])&,
 (thNow[thtm1,epsVal]),ii],-1]]},
 With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
 With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
@@ -470,31 +481,6 @@ eps[theta][t]->epsVal})//InputForm
 
 *)
 
-
-rbcEqnsFunctional=Compile[
-{
-{ctm1,_Real},{kktm1,_Real},{ratiotm1,_Real},{thetatm1,_Real},
-{cct,_Real},{kkt,_Real},{ratiot,_Real},{thetat,_Real},
-{ctp1,_Real},{kktp1,_Real},{ratiotp1,_Real},{thetatp1,_Real},
-{epsVal,_Real}
-},
-{cct^(-1) - (0.342*ratiotp1)/kkt^(16/25), cct + kkt - 1.*kktm1^(9/25)*thetat, 
- thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20), 
- ratiot - (1.*thetat)/cct}]
-
-
-rbcEqnsFunctionalNext=Compile[
-{
-{ctm1,_Real},{kktm1,_Real},{thetatm1,_Real},
-{cct,_Real},{kkt,_Real},{thetat,_Real},
-{cctp1,_Real},{kktp1,_Real},{thetatp1,_Real},
-{epsVal,_Real}
-},
-{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
-cct + kkt - 1.*kktm1^(9/25)*thetat, 
-thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}]
-
-
 rbcEqnsFunctionalNext=Compile[
 {
 {ctm1,_Real},{kktm1,_Real},{thetatm1,_Real},
@@ -546,6 +532,33 @@ Append[Transpose[{#}],{0}]& /@Drop[theVarsPath,1]
 ]
 
 (*
+
+
+
+
+rbcEqnsFunctional=Compile[
+{
+{ctm1,_Real},{kktm1,_Real},{ratiotm1,_Real},{thetatm1,_Real},
+{cct,_Real},{kkt,_Real},{ratiot,_Real},{thetat,_Real},
+{ctp1,_Real},{kktp1,_Real},{ratiotp1,_Real},{thetatp1,_Real},
+{epsVal,_Real}
+},
+{cct^(-1) - (0.342*ratiotp1)/kkt^(16/25), cct + kkt - 1.*kktm1^(9/25)*thetat, 
+ thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20), 
+ ratiot - (1.*thetat)/cct}]
+
+
+rbcEqnsFunctionalNext=Compile[
+{
+{ctm1,_Real},{kktm1,_Real},{thetatm1,_Real},
+{cct,_Real},{kkt,_Real},{thetat,_Real},
+{cctp1,_Real},{kktp1,_Real},{thetatp1,_Real},
+{epsVal,_Real}
+},
+{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
+cct + kkt - 1.*kktm1^(9/25)*thetat, 
+thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}]
+
 
 
 iterateDR[drFunc_Function,
