@@ -1,6 +1,6 @@
 Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
-Get["AMAPaperCalcs.mth"]
+Get["exactCalcsRBC.mth"]
 
 latexSubs={ProtectedSymbols`epsVar$1->Subscript[epsilon,t],
 ProtectedSymbols`xxxtm1Var$4->Subscript[theta,t-1],
@@ -18,6 +18,112 @@ ProtectedSymbols`zzz$1$1[t]->Subscript[Z,1t]
 };
 
 
+
+
+bunchOfPFs = 
+  nestIterPF[linMod, {X0Z0}, X0Z0[1, .18, 1][[Range[3]]], 
+   Private`rbcEqnsFunctionalNext, 4];
+
+toPlot[kk_?NumberQ, 
+  th_?NumberQ] := (bunchOfPFs[[2, 1]] @@ {1, kk, th, 0})[[1]]
+Print["lin graph"]
+Print[Timing[Export["cFuncExt00Lin.pdf", 
+ oneVsLin01 = 
+  Plot3D[toPlot[kk, th], {kk, kLow, kHigh}, {th, thLow, thHigh}, 
+   AxesLabel -> {Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     Subscript[c, t]}, 
+   PlotLabel -> 
+    Subscript[c, t][Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     0]]]]]
+
+
+toPlotExact01[kk_?NumberQ, th_?NumberQ] := 
+ With[{fir = ((bunchOfPFs[[2, 1]] @@ {1, kk, th, 0})[[1]]), 
+   sec = (condExpPF[1, kk, th, 0, 1][[4]])}, fir - sec]
+Print["exact graph"]
+Print[Timing[Export["cFunc00Exact.pdf", 
+ oneVsExac01 = 
+  Plot3D[toPlotExact01[kk, th], {kk, kLow, kHigh}, {th, thLow, 
+    thHigh}, 
+   AxesLabel -> {Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     Subscript[c, t]}, 
+   PlotLabel -> 
+    Subscript[c, t][Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     0]]]]]
+
+
+
+toPlotExact02[kk_?NumberQ, th_?NumberQ] := 
+ With[{fir = ((bunchOfPFs[[3, 1]] @@ {1, kk, th, 0})[[1]]), 
+   sec = (condExpPF[1, kk, th, 0, 1][[4]])}, fir - sec]
+
+Print["two graph"]
+Print[Timing[Export["cFuncTwoPerErr.pdf", 
+ oneVsExac02 = 
+  Plot3D[toPlotExact02[kk, th], {kk, kLow, kHigh}, {th, thLow, 
+    thHigh}, 
+   AxesLabel -> {Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     Subscript[c, t]}, 
+   PlotLabel -> 
+    Subscript[c, t][Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     0]]]]]
+
+toPlotExact03[kk_?NumberQ, th_?NumberQ] := 
+ With[{fir = ((bunchOfPFs[[4, 1]] @@ {1, kk, th, 0})[[1]]), 
+   sec = (condExpPF[1, kk, th, 0, 1][[4]])}, fir - sec]
+
+Print["lin graph"]
+Print[Timing[Export["cFuncThreePerErr.pdf", 
+ oneVsExac = 
+  Plot3D[toPlotExact03[kk, th], {kk, kLow, kHigh}, {th, thLow, 
+    thHigh}, 
+   AxesLabel -> {Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     Subscript[c, t]}, 
+   PlotLabel -> 
+    Subscript[c, t][Subscript[k, t - 1], Subscript[\[Theta], t - 1], 
+     0]]]]]
+
+
+
+
+
+
+
+Print["copying pdf files to occBind paper directory"]
+
+occDir="../../../paperProduction/occBind/docs/"
+
+
+(*from demoApprox.mth*)
+toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
+toOccDir/@{
+"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf",
+"RBCParamSubs.pdf","RBCSSVal.pdf",
+"rbcApprox.csv","notRbcApprox.csv"
+};
+
+(*from AMAPaperCalcs.mth*)
+toOccDir/@{
+"RBCHmatSymb.pdf","RBCBmatSymb.pdf","RBCPhimatSymb.pdf","RBCFmatSymb.pdf",
+"RBCHSum.pdf","RBCSS.pdf","RBCPsissSymb.pdf"};
+
+(*from paperCalcsRBCExample.mth*)
+toOccDir/@{
+"cFuncExt00Lin.pdf","cFuncExt00Exact.pdf"
+};
+
+(*from exactCalcsRBC.mth*)
+toOccDir/@{
+"cFuncTwoPerErr.pdf","cFuncThreePerErr.pdf"
+};
+
+
+
+
+
+
+(*
+
 (*00*)
 (*00*)
 
@@ -32,25 +138,6 @@ Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`
 
 solnFuncsExt00=Private`subsFuncToVecFunc[solnSubsExt00];
 
-
-kVal=kk/.Private`kSSSub//.Private`tog//N;
-kLow=.01*kVal;
-kHigh=4*kVal;
-sigVal=sigma//.Private`tog//N;
-sigLow=-3*sigVal;
-sigHigh=3*sigVal;
-thLow=.9;
-thHigh=1.1;
-aGSpec={1,{4,kLow,kHigh},{3,thLow,thHigh},{3,sigLow,3*sigHigh}};
-
-Export["cFuncExt00Lin.pdf",oneVsLin=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`xxxtm1Var$2,0,ProtectedSymbols`xxxtm1Var$4,0}][[1]],xtExt00[[1,1]]/.{ProtectedSymbols`zzzVar$4->0,ProtectedSymbols`zzzVar$3->0,ProtectedSymbols`zzzVar$2->0,ProtectedSymbols`zzzVar$1->0,ProtectedSymbols`epsVar$1->0}},
-{ProtectedSymbols`xxxtm1Var$2,
-kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]]]
-
-
-Export["cFuncExt00Exact.pdf",oneVsExac=Plot3D[{solnFuncsExt00[{0,ProtectedSymbols`xxxtm1Var$2,0,ProtectedSymbols`xxxtm1Var$4,0}][[1]]-condExp[0,ProtectedSymbols`xxxtm1Var$2,ProtectedSymbols`xxxtm1Var$4,0,1][[4]]},
-{ProtectedSymbols`xxxtm1Var$2,
-kLow,kHigh},{ProtectedSymbols`xxxtm1Var$4,thLow,thHigh},AxesLabel->{Subscript[k,t-1],Subscript[\[Theta],t-1],Subscript[c,t]},PlotLabel->(Subscript[c,t][Subscript[k,t-1],Subscript[\[Theta],t-1],0]-exact)(*,PlotRange->{0,1.5}*)]]
 
 solnFuncsExt00Interp=Private`makeInterpFunc[solnFuncsExt00,{1,3},aGSpec]
 
@@ -91,38 +178,6 @@ solnSubsExt01=
 Private`makeConstraintFindRootFunc[Private`hFuncExt,{Private`bmatExt//N,Private`phimatExt//N,Private`fmatExt//N,Private`psiepsExt//N,Private`psicExt//N,Private`psizExt//N},solnFuncsExt00PF[[8+Range[4]]],{},{{.2},{.3},{.2},{.9}},{1,3}];
 
 solnFuncsExt01=Private`subsFuncToVecFunc[solnSubsExt01];
-
-
-
-
-Print["copying pdf files to occBind paper directory"]
-
-occDir="../../../paperProduction/occBind/docs/"
-
-
-(*from demoApprox.mth*)
-toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
-toOccDir/@{
-"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf",
-"RBCParamSubs.pdf","RBCSSVal.pdf",
-"rbcApprox.csv","notRbcApprox.csv"
-};
-
-(*from AMAPaperCalcs.mth*)
-toOccDir/@{
-"RBCHmatSymb.pdf","RBCBmatSymb.pdf","RBCPhimatSymb.pdf","RBCFmatSymb.pdf",
-"RBCHSum.pdf","RBCSS.pdf","RBCPsissSymb.pdf"};
-
-(*from paperCalcsRBCExample.mth*)
-toOccDir/@{
-"cFuncExt00Lin.pdf","cFuncExt00Exact.pdf","cFunc00PF.pdf"
-};
-
-(*from exact CalcsRBC.mth*)
-toOccDir/@{
-"cFuncTwoPerErr.pdf","cFuncThreePerErr.pdf"
-};
-
 
 
 
@@ -299,3 +354,4 @@ Export["cFuncExt00PF.pdf",cfExt00=Plot3D[solnFuncsExt00PF[[1]][kk,tt],{kk,.01,2}
 
 
 
+*)

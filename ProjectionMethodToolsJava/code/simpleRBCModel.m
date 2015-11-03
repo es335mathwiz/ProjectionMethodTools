@@ -20,7 +20,8 @@ simpParamSubs::usage="simpParamSubs=Join[paramSubs,forParamSubs]"
 ssSolnSubsRE::usage="rational expectations steady state"
 ssSolnSubsPF::usage="perfect foresight steady state"
 condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
-condExpPF::usage="condExpPF[kktm1_?NumberQ,ii_Integer]"
+condExpPF::usage="condExpPF=Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}}]"
+
 compApproxRE::usage="compApproxRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 compApproxDiffRE::usage="compApproxDiffRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 maxZsRE::usage="maxZsRE[theHmat_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?Matrix,{{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]"
@@ -32,7 +33,8 @@ Begin["Private`"]
 
 
 
-
+makeCRRADrvFunc[theta_]:=If[theta==1,Function[cc,D[Log[cc],cc]],
+Function[cc,D[(1/(1-theta))*cc,cc]]]
 
 
 
@@ -43,7 +45,6 @@ chkcobb douglas production*)
 rbcEqns={
  1/cc[t]-(delta*((theta[t+1])*(1/cc[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
-(*Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]*)
 theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t])
 }
 (*parameters page 21 using state 1*)
