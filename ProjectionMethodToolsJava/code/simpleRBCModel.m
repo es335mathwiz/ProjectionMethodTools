@@ -21,6 +21,8 @@ ssSolnSubsRE::usage="rational expectations steady state"
 ssSolnSubsPF::usage="perfect foresight steady state"
 condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 condExpPF::usage="condExpPF[kktm1_?NumberQ,ii_Integer]"
+  condExpREFunc::usage="condExpREFunc"
+  condExpPFFunc::usage="condExpREFunc"
 compApproxRE::usage="compApproxRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 compApproxDiffRE::usage="compApproxDiffRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 maxZsRE::usage="maxZsRE[theHmat_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?Matrix,{{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]"
@@ -106,16 +108,6 @@ Print["computing and simplifying the symbolic b phi f etc"]
 
 
 (*made up c value =1*)
-(*
-condExpRE[cctm1_,kktm1_,thtm1_,epsVal_,
-ii_Integer]:=
-With[{thVals=Join[{},Drop[NestList[(anExpRE*thNow[#,0])&,(thNow[thtm1,epsVal]),ii],-1]]},
-With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
-With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
-With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
-With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
-Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]
-*)
 
 condExpRE=Compile[
 {{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
@@ -139,6 +131,13 @@ With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 
+
+condExpREFunc = 
+ Function[{cc, kk, tt, ee}, 
+  Drop[(condExpRE @@ Append[{cc, kk, tt, ee}, 1]), 3]]
+condExpPFFunc = 
+ Function[{cc, kk, tt, ee}, 
+  Drop[(condExpPF @@ Append[{cc, kk, tt, ee}, 1]), 3]]
 
 (*made up c value =1*)(*
 genZsRE[{anHmat_?MatrixQ,aPsiEps_?MatrixQ,aPsiC_?MatrixQ},
