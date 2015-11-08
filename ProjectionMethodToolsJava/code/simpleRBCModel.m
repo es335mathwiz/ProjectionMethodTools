@@ -20,9 +20,12 @@ simpParamSubs::usage="simpParamSubs=Join[paramSubs,forParamSubs]"
 ssSolnSubsRE::usage="rational expectations steady state"
 ssSolnSubsPF::usage="perfect foresight steady state"
 condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
-condExpPF::usage="condExpPF[kktm1_?NumberQ,ii_Integer]"
-  condExpREFunc::usage="condExpREFunc"
-  condExpPFFunc::usage="condExpREFunc"
+
+
+condExpPF::usage="condExpPF=Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}}]"
+condExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
+condExpPFFunc::usage="condExpPF=Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}}]"
+
 compApproxRE::usage="compApproxRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 compApproxDiffRE::usage="compApproxDiffRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 maxZsRE::usage="maxZsRE[theHmat_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?Matrix,{{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]"
@@ -34,7 +37,8 @@ Begin["Private`"]
 
 
 
-
+makeCRRADrvFunc[theta_]:=If[theta==1,Function[cc,D[Log[cc],cc]],
+Function[cc,D[(1/(1-theta))*cc,cc]]]
 
 
 
@@ -45,7 +49,6 @@ chkcobb douglas production*)
 rbcEqns={
  1/cc[t]-(delta*((theta[t+1])*(1/cc[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
-(*Log[theta[t]]-rho*Log[theta[t-1]] - eps[theta][t]*)
 theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t])
 }
 (*parameters page 21 using state 1*)
@@ -107,7 +110,6 @@ Print["computing and simplifying the symbolic b phi f etc"]
 
 
 
-(*made up c value =1*)
 
 condExpRE=Compile[
 {{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
@@ -131,6 +133,11 @@ With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 
+condExpPFFunc = 
+ Function[{cc, kk, th, eps}, Drop[condExpPF[cc, kk, th, eps, 1], 3]]
+
+condExpREFunc = 
+ Function[{cc, kk, th, eps}, Drop[condExpRE[cc, kk, th, eps, 1], 3]]
 
 condExpREFunc = 
  Function[{cc, kk, tt, ee}, 
@@ -161,9 +168,48 @@ Range[iters-1]},
 With[{theRes=doJoin[begi,along]},
 theRes]]]]]],
 {{condExpRE[___],_Real,2},{doJoin[___],_Real,3}}]
+(*
+newGenZsRE=Compile[{{anHmat,_Real,2},{aPsiEps,_Real,2},{aPsiC,_Real,2},
+{cc, _Real},{kk, _Real},{theta,_Real},{epsNow, _Real},{iters,_Integer}},
+Module[{},
+With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
+With[{worsePaths=Private`worstPathForErrDRREIntegrate[condExpREFunc,Range[3]+3*(#-1),{{{eev,NormalDistribution[0.0.01]}}},Private`rbcEqnsFunctionalNext]&/@Range[Length[rbcPath]/3]},
+With[{begi=
+(anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(aPsiC)-aPsiEps. {{epsNow}}},
+If[iters==1,{begi},
+With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -(aPsiC//N)) &/@
+Range[iters-1]},
+With[{theRes=doJoin[begi,along]},
+theRes]]]]]]],
+{{condExpRE[___],_Real,2},{doJoin[___],_Real,3}}]
+
+*)
 
 
+newGenZsRE[anHmat_?MatrixQ,PsiEps_?MatrixQ,PsiC_?MatrixQ,
+cc_?NumberQ,kk_?NumberQ,theta_?NumberQ,epsNow_?NumberQ,iters_Integer]:=
+Module[{},
+With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
+With[{firVal=Private`rbcEqnsFunctionalNext@@
+      Append[Flatten[rbcPath[[Range[9]]]],epsNow],
+worsePaths=
+  Private`worstPathForErrDRREIntegrate[condExpREFunc,
+   rbcPath[[Range[3]+3*(#)]],
+  {{{eev,NormalDistribution[0,0.01]}}},
+    Private`rbcEqnsFunctionalNext]&/@Range[(Length[rbcPath]/3)-1]},
+With[{begi=
+(anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(PsiC)-PsiEps. {{epsNow}}},
+If[iters==1,
+    {begi},
+With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -
+	     (PsiC //N)) & /@
+	      Range[iters-1]},With[{theRes=doJoin[begi,along]},
+    {firVal,theRes,worsePaths}]
+]]
+]]]]
 
+
+   
 
 doJoin[begi_?MatrixQ,along:{_?MatrixQ..}]:=
 Partition[Join[begi,Join @@along],3]
