@@ -137,6 +137,12 @@ condExpPFFunc =
 condExpREFunc = 
  Function[{cc, kk, th, eps}, Drop[condExpRE[cc, kk, th, eps, 1], 3]]
 
+condApproxExpREFunc[theHmat_?MatrixQ,
+linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
+cc_,kk_,theta_,epsNow_,iters_Integer]:=
+Function[{cc, kk, th, eps},compApproxRE[theHmat,linMod,cc,kk,theta,epsNow,iters]
+
+
 (*made up c value =1*)(*
 genZsRE[{anHmat_?MatrixQ,aPsiEps_?MatrixQ,aPsiC_?MatrixQ},
 cc_,kk_,theta_,epsNow_,iters_Integer]:=
