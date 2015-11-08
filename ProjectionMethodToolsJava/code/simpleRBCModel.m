@@ -139,12 +139,20 @@ condExpPFFunc =
 condExpREFunc = 
  Function[{cc, kk, th, eps}, Drop[condExpRE[cc, kk, th, eps, 1], 3]]
 
+
 condExpREFunc = 
  Function[{cc, kk, tt, ee}, 
   Drop[(condExpRE @@ Append[{cc, kk, tt, ee}, 1]), 3]]
 condExpPFFunc = 
  Function[{cc, kk, tt, ee}, 
   Drop[(condExpPF @@ Append[{cc, kk, tt, ee}, 1]), 3]]
+
+condApproxExpREFunc[theHmat_?MatrixQ,
+		    linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},iters_Integer]:=
+Function[{cc, kk, th, eps},
+	 compApproxRE[theHmat,linMod,cc,kk,th,eps,iters]]
+
+
 
 (*made up c value =1*)(*
 genZsRE[{anHmat_?MatrixQ,aPsiEps_?MatrixQ,aPsiC_?MatrixQ},
@@ -186,14 +194,15 @@ theRes]]]]]]],
 *)
 
 
-newGenZsRE[anHmat_?MatrixQ,PsiEps_?MatrixQ,PsiC_?MatrixQ,
+  newGenZsRE[anHmat_?MatrixQ,PsiEps_?MatrixQ,PsiC_?MatrixQ,theFunc_Function,
 cc_?NumberQ,kk_?NumberQ,theta_?NumberQ,epsNow_?NumberQ,iters_Integer]:=
 Module[{},
-With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
+       With[{rbcPath=Flatten[iterateDRREIntegrate[theFunc,{cc,kk,theta,epsNow},
+	   {{{ee, NormalDistribution[0, 0.01]}}},iters+1]]},
 With[{firVal=Private`rbcEqnsFunctionalNext@@
       Append[Flatten[rbcPath[[Range[9]]]],epsNow],
 worsePaths=
-  Private`worstPathForErrDRREIntegrate[condExpREFunc,
+  Private`worstPathForErrDRREIntegrate[theFunc,
    rbcPath[[Range[3]+3*(#)]],
   {{{eev,NormalDistribution[0,0.01]}}},
     Private`rbcEqnsFunctionalNext]&/@Range[(Length[rbcPath]/3)-1]},
@@ -204,7 +213,7 @@ If[iters==1,
 With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -
 	     (PsiC //N)) & /@
 	      Range[iters-1]},With[{theRes=doJoin[begi,along]},
-    {firVal,theRes,worsePaths}]
+    {firVal,theRes,worsePaths,Private`rbcEqnsFunctionalNext @@ Flatten[#]&/@worsePaths}]
 ]]
 ]]]]
 
