@@ -143,79 +143,44 @@ condExpREFunc =
 condExpREFunc = 
  Function[{cc, kk, tt, ee}, 
   Drop[(condExpRE @@ Append[{cc, kk, tt, ee}, 1]), 3]]
+
 condExpPFFunc = 
  Function[{cc, kk, tt, ee}, 
   Drop[(condExpPF @@ Append[{cc, kk, tt, ee}, 1]), 3]]
 
+ condOneExpRE=Function[{cc,kk,tt,ee},condExpRE[cc,kk,tt,ee,1]]
+
+
+
+
 condApproxExpREFunc[theHmat_?MatrixQ,
-		    linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},iters_Integer]:=
+		    linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},theFunc:(_Function|_CompiledFunction),iters_Integer]:=
 Function[{cc, kk, th, eps},
-	 compApproxRE[theHmat,linMod,cc,kk,th,eps,iters]]
+	 compApproxRE[theHmat,linMod,theFunc,cc,kk,th,eps,iters]]
 
 
 
-(*made up c value =1*)(*
-genZsRE[{anHmat_?MatrixQ,aPsiEps_?MatrixQ,aPsiC_?MatrixQ},
-cc_,kk_,theta_,epsNow_,iters_Integer]:=
-With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
-With[{begi=
-(anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(aPsiC)-aPsiEps. {{epsNow}}},
-With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -(aPsiC//N)) &/@
-Range[iters-1]},Partition[Join[begi,Join @@along],3]]]]
-*)
 
-genZsRE=Compile[{{anHmat,_Real,2},{aPsiEps,_Real,2},{aPsiC,_Real,2},
-{cc, _Real},{kk, _Real},{theta,_Real},{epsNow, _Real},{iters,_Integer}},
-Module[{},
-With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
-With[{begi=
-(anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(aPsiC)-aPsiEps. {{epsNow}}},
-If[iters==1,{begi},
-With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -(aPsiC//N)) &/@
-Range[iters-1]},
-With[{theRes=doJoin[begi,along]},
-theRes]]]]]],
-{{condExpRE[___],_Real,2},{doJoin[___],_Real,3}}]
-(*
-newGenZsRE=Compile[{{anHmat,_Real,2},{aPsiEps,_Real,2},{aPsiC,_Real,2},
-{cc, _Real},{kk, _Real},{theta,_Real},{epsNow, _Real},{iters,_Integer}},
-Module[{},
-With[{rbcPath=Flatten[condExpRE[cc,kk,theta,epsNow,iters+1]]},
-With[{worsePaths=Private`worstPathForErrDRREIntegrate[condExpREFunc,Range[3]+3*(#-1),{{{eev,NormalDistribution[0.0.01]}}},Private`rbcEqnsFunctionalNext]&/@Range[Length[rbcPath]/3]},
-With[{begi=
-(anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(aPsiC)-aPsiEps. {{epsNow}}},
-If[iters==1,{begi},
-With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -(aPsiC//N)) &/@
-Range[iters-1]},
-With[{theRes=doJoin[begi,along]},
-theRes]]]]]]],
-{{condExpRE[___],_Real,2},{doJoin[___],_Real,3}}]
-
-*)
-
-
-  newGenZsRE[anHmat_?MatrixQ,PsiEps_?MatrixQ,PsiC_?MatrixQ,theFunc_Function,
+newGenZsRE[anHmat_?MatrixQ,PsiEps_?MatrixQ,PsiC_?MatrixQ,theFunc:(_Function|_CompiledFunction),
 cc_?NumberQ,kk_?NumberQ,theta_?NumberQ,epsNow_?NumberQ,iters_Integer]:=
 Module[{},
-       With[{rbcPath=Flatten[iterateDRREIntegrate[theFunc,{cc,kk,theta,epsNow},
-	   {{{ee, NormalDistribution[0, 0.01]}}},iters+1]]},
+ With[{rbcPath=Flatten[iterateDRREIntegrate[theFunc,{cc,kk,theta,epsNow},
+	   {{{ee, NormalDistribution[0, 0.01]}}},iters+1]]},Print["done rbcPath"];
 With[{firVal=Private`rbcEqnsFunctionalNext@@
       Append[Flatten[rbcPath[[Range[9]]]],epsNow],
 worsePaths=
   Private`worstPathForErrDRREIntegrate[theFunc,
    rbcPath[[Range[3]+3*(#)]],
   {{{eev,NormalDistribution[0,0.01]}}},
-    Private`rbcEqnsFunctionalNext]&/@Range[(Length[rbcPath]/3)-1]},
+				       Private`rbcEqnsFunctionalNext]&/@Range[(Length[rbcPath]/3)-1]},Print["done worsePaths"];
 With[{begi=
 (anHmat). (Transpose[{rbcPath[[Range[9]]]}]) -(PsiC)-PsiEps. {{epsNow}}},
 If[iters==1,
     {begi},
-With[{along=((anHmat) . (Transpose[{rbcPath[[#*3+Range[9]]]}]) -
-	     (PsiC //N)) & /@
-	      Range[iters-1]},With[{theRes=doJoin[begi,along]},
-    {firVal,theRes,worsePaths,Private`rbcEqnsFunctionalNext @@ Flatten[#]&/@worsePaths}]
+ Join[{begi},
+      Private`rbcEqnsFunctionalNext @@ Flatten[#]&/@worsePaths]
 ]]
-]]]]
+]]]
 
 
    
@@ -227,44 +192,45 @@ Partition[Join[begi,Join @@along],3]
 
 (*made up c value =1*)
 compApproxRE[theHmat_?MatrixQ,
-linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
+	     linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},theFunc:(_Function|_CompiledFunction),
 cc_,kk_,theta_,epsNow_,iters_Integer]:=
 Module[{},
 (*Print["compApproxRE:",{phi,FF,psiZ,{theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters}}];
-Print["huh:",genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]];*)
+ Print["huh:",newGenZsRE[theHmat,psiEps,psiC,theFunc,cc,kk,theta,epsNow,iters]];*)Print["theFunc",theFunc];
 With[{fPart=
-fSumC[phi,FF,psiZ,genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]]},(*Print["fPart"];*)
-(*Print[{fPart,BB . Transpose[{{1,kk,theta}}] , phi . psiEps . {{epsNow}} ,Inverse[IdentityMatrix[3] - FF] . phi . psiC ,genZsRE[theHmat,psiEps,psiC,cc,kk,theta,epsNow,iters]}];*)
+      fSumC[phi,FF,psiZ,newGenZsRE[theHmat,psiEps,psiC,theFunc,cc,kk,theta,epsNow,iters]]},(*Print["fPart"];*)
+  (*Print[{fPart,BB . Transpose[{{1,kk,theta}}] , phi . psiEps . {{epsNow}} ,Inverse[IdentityMatrix[3] - FF] . phi . psiC ,newGenZsRE[theHmat,psiEps,psiC,theFunc,cc,kk,theta,epsNow,iters]}];*)
 BB . Transpose[{{1,kk,theta}}] + phi . psiEps . {{epsNow}} + 
 Inverse[IdentityMatrix[3] - FF] . phi . psiC +
 fPart]]
 
 
 compApproxDiffRE[theHmat_?MatrixQ,
-linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
+		 linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},theFunc_Function,
 cc_,kk_,theta_,epsNow_,iters_Integer]:=
 Module[{},(*Print["compApproxDiffRE:"];*)
 With[{theApprox=compApproxRE[theHmat,
-linMod,cc,kk,theta,epsNow,iters],
+			     linMod,theFunc,cc,kk,theta,epsNow,iters],
 exact=condExpRE[1,kk,theta,epsNow,1][[{4,5,6}]]
 },theApprox-exact]]
 
 
 
 compBounds[theHmat_?MatrixQ,
-linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},rngs:{{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]:=
+	   linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},theFunc_Function,
+	   rngs:{{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]:=
 With[{bigZ = maxZsRE[theHmat, psiEps, 
    psiC, rngs, iters],
 matPart = 
   Norm[truncErrorMat[FF, phi, iters - 1], Infinity]},(*Print["compBounds mid"];*)
 {bigZ, matPart, bigZ[[1]]*matPart, 
  infNorm[compApproxDiffRE[theHmat, 
-    linMod, #1, #2, #3, #4, iters] &, rngs]}]
+			  linMod,theFunc, #1, #2, #3, #4, iters] &, rngs]}]
 
 
-maxZsRE[theHmat_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,
+maxZsRE[theHmat_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,theFunc_Function,
 {{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]:=
-infNorm[genZsRE[theHmat,psiEps,psiC,#1,#2,#3,#4,iters][[-1]]&,
+	 infNorm[newGenZsRE[theHmat,psiEps,psiC,theFunc,#1,#2,#3,#4,iters][[-1]]&,
 {{lowc,highc},{lowk,highk},{lowt,hight},{lowe,highe}}]
 
 
@@ -334,6 +300,7 @@ theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t]),
 
 
 
+
 condExpRE=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
 {ii,_Integer}},
@@ -343,7 +310,6 @@ With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
 With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]//.simpParamSubs]]]]]]
-
 
 
 (*
