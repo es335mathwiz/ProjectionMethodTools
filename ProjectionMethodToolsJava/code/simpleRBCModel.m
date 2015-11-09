@@ -188,6 +188,16 @@ If[iters==1,
 doJoin[begi_?MatrixQ,along:{_?MatrixQ..}]:=
 Partition[Join[begi,Join @@along],3]
 
+genLinDR[linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ}]:=
+Function[{cctm1,kktm1,thtm1,epsVal},BB . {{cctm1},{kktm1},{thtm1}}+phi . pisEps . {{epsVal}}+ Inverse[IdentityMatrix[3] -FF] . phi . psiC]
+
+
+
+
+
+
+
+
 
 
 (*made up c value =1*)
