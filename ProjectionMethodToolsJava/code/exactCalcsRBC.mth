@@ -16,6 +16,14 @@ linMod={Private`bmatSymbRE // N, Private`phimatSymbRE // N,
     Private`fmatSymbRE // N, Private`psiepsSymbRE // N, 
     Private`psicSymbRE // N, Private`psiz // N,{{0}}};
 
+Get["genArbLin.mth"]
+
+notLinMod={abmat // N, aphimat // N, 
+    anfmat // N, apsieps // N, 
+    apsic // N, apsiz // N,{{0}}};
+
+
+
 X0Z0=genX0Z0Funcs[linMod];
 
 
@@ -25,6 +33,7 @@ anXEpsZs={1,.18,1.1,0.01,.1,.2,.3};
 probDims={3,1,3};
 
 aGSpec={1,{4,kLow,kHigh},{3,thLow,thHigh},{3,sigLow,3*sigHigh}};
+theDist = {{{ee, NormalDistribution[0, 0.01]}}};
 
 (*X0Z0 @@ anX -> xt,zt*)
 

@@ -36,6 +36,8 @@ Begin["Private`"]
 
 
 
+  CARAU=Function[{cc,eta},If[theta==1,Log[cc],(1/(1-eta))*(cc^(1-eta)-1)]]
+
 
 makeCRRADrvFunc[theta_]:=If[theta==1,Function[cc,D[Log[cc],cc]],
 Function[cc,D[(1/(1-theta))*cc,cc]]]
@@ -189,7 +191,7 @@ doJoin[begi_?MatrixQ,along:{_?MatrixQ..}]:=
 Partition[Join[begi,Join @@along],3]
 
 genLinDR[linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ}]:=
-Function[{cctm1,kktm1,thtm1,epsVal},BB . {{cctm1},{kktm1},{thtm1}}+phi . pisEps . {{epsVal}}+ Inverse[IdentityMatrix[3] -FF] . phi . psiC]
+Function[{cctm1,kktm1,thtm1,epsVal},BB . {{cctm1},{kktm1},{thtm1}}+phi . psiEps . {{epsVal}}+ Inverse[IdentityMatrix[3] -FF] . phi . psiC]
 
 
 
