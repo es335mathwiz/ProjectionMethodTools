@@ -1,0 +1,12 @@
+Needs["AMASeriesRepresentation`"]
+Needs["betterRBC`"]
+
+	X0Z0=genX0Z0Funcs[linMod];
+anXEps={1,.2,1,1.1,0.01}   
+
+
+
+bunchOfPFs=nestIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,4];
+
+
+bunchOfREs=nestIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,theDist,4];
