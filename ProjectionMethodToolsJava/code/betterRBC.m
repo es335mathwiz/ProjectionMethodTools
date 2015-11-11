@@ -94,18 +94,39 @@ Print["done computing steady state subs"];
 
 
 
-
-
-
-condExpRE=
-Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
-{ii,_Integer}},
-With[{thVals=Join[{},Drop[NestList[E^(((sigma^2)/2))*thNow[#]&,(E^epsVal)*thNow[thtm1],ii],-1]]},
+condExpRE=Compile[
+{{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
+With[{thVals=Join[{},
+Drop[NestList[(anExpRE*thNow[#,0])&,
+(thNow[thtm1,epsVal]),ii],-1]]},
 With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
 With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
-With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
-With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
-Join[{{cctm1},{kktm1},{thtm1}},thetransp]//.simpParamSubs]]]]]]
+With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
+With[{nlVals=(thVals)* (1/ccVals)},
+With[{thetransp=Partition[Flatten[Transpose[
+{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[nlVals],Flatten[Drop[thVals,0]]}]],1]},
+Join[{{cctm1},{kktm1},{nltm1},{thtm1}},thetransp]]]]]]]]
+
+condExpPF=Compile[
+{{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
+With[{thVals=Join[{},
+Drop[NestList[(anExpPF*thNow[#,0])&,
+(thNow[thtm1,epsVal]),ii],-1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
+With[{thetransp=Partition[Flatten[Transpose[
+{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}
+]],1]},
+Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
+
+condExpPFFunc = 
+ Function[{cc, kk, nl, th, eps}, Drop[condExpPF[cc, kk,nl, th, eps, 1], 4]]
+
+condExpREFunc = 
+ Function[{cc, kk, nl, th, eps}, Drop[condExpRE[cc, kk,nl, th, eps, 1], 4]]
+
+
 
 
 psiz=IdentityMatrix[4]
@@ -135,10 +156,10 @@ linMod={bmatSymbRE // N, phimatSymbRE // N,
     psicSymbRE // N, psiz // N,{{0}}};
 
 
-condExpREFunc = 
- Function[{cc, kk, th, eps}, Drop[condExpRE[cc, kk, th, eps, 1], 3]]
 
-
+ 
+theDist={{{ee, 
+    NormalDistribution[0, 0.01]}}};
 
 (*End[]*)
 EndPackage[]
