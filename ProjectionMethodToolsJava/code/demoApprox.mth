@@ -13,7 +13,7 @@ Export["RBCSSVal.pdf", MatrixForm[ssVal]];
 
 
 
-theLens=Join[Range[5],Range[10,100,10]]
+theLens=Join[Range[5](*,Range[10,100,10]*)]
 theRngs={{1, 1}, {0.01, 1}, {.9, 1.1}, {-0.03, 0.03}};
 Print["here goes"];
 theNotRBCRes={Print[#];#,compBounds[nothmat//N,notLinMod,theRngs, #]}& /@ theLens;

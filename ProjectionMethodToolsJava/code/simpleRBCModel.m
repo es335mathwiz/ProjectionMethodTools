@@ -36,11 +36,9 @@ Begin["Private`"]
 
 
 
-  CARAU=Function[{cc,eta},If[theta==1,Log[cc],(1/(1-eta))*(cc^(1-eta)-1)]]
 
 
-makeCRRADrvFunc[theta_]:=If[theta==1,Function[cc,D[Log[cc],cc]],
-Function[cc,D[(1/(1-theta))*cc,cc]]]
+CRRAUDrv[cc_,eta_]:=If[eta==1,D[Log[cc],cc],D[(1/(1-eta))*(cc^(1-eta)-1),cc]]
 
 
 
@@ -49,7 +47,7 @@ closed form solution version  beta=1 geometric discounting
 chkcobb douglas production*)
 
 rbcEqns={
- 1/cc[t]-(delta*((theta[t+1])*(1/cc[t+1])*((alpha *(kk[t]^(alpha-1)) )))),
+ CRRAUDrv[cc[t],1]-(delta*((theta[t+1])* CRRAUDrv[cc[t+1],1]*((alpha *(kk[t]^(alpha-1)) )))),
 cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
 theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t])
 }
