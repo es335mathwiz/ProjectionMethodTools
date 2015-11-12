@@ -13,6 +13,20 @@ condExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 theDist::usage="charactizes the distribution of epsilon"
 linMod::usage="linear model matrices for approx"
 rbcEqnsCompiled::usage="compiled version of model equations"
+ssSolnSubsRE::usage="solns subs for steady state"
+ssSolnSubsPF::usage="solns subs for steady state"
+simpParamSubs::usage="simpParamSubs=Join[paramSubs,forParamSubs]"
+
+
+cc::usage="rbc model variable"
+kk::usage="rbc model variable"
+nl::usage="rbc model variable"
+rho::usage="rbc model parameter"
+theta::usage="rbc model parameter"
+alpha::usage="rbc model parameter"
+delta::usage="rbc model parameter"
+sigma::usage="rbc model parameter"
+
 
 Begin["Private`"]
 

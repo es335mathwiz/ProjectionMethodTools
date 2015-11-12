@@ -1,19 +1,57 @@
-Needs["AMASeriesRepresentation`"]
 Needs["betterRBC`"]
+
+
 X0Z0=genX0Z0Funcs[linMod];
 anXEps={1,.2,1,1.1,0.01}   
 
 
+thVal=(theta//.ssSolnSubsRE//.(simpParamSubs//N))//N;
+kVal = (kk /. Private`kSSSubRE//.(simpParamSubs//N))//N;
+cVal = (cc /. Private`cSSSubRE//.(simpParamSubs//N))//N ;
+kLow = 1/10*kVal//N;
+kHigh = 4*kVal//N;
+sigVal = sigma //. (simpParamSubs//N);
+sigLow = -3*sigVal;
+sigHigh = 3*sigVal;
+thLow = 9/10;
+thHigh = 11/10;
+pdf=NormalDistribution[0, sigVal];
+
+
+aGSpec={1,{{4,kLow,kHigh},{3,thLow,thHigh},{3,sigLow,3*sigHigh}}};
+theDist = {{{ee, NormalDistribution[0, 0.01]}}};
 
 bunchOfPFs=nestIterPF[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,4];
 
 
-{x1z1re,X1Z1RE}=doIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,theDist];
+
+
 
 
 
 
 (*
+bunchOfPFInterps=nestIterPFInterp[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,{1,3},aGSpec,1];
+
+{x1z1re,X1Z1RE}=doIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,theDist];
 
 bunchOfREs=nestIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,theDist,4];
 *)
+
+
+
+
+
+
+justCall[linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ}(*,XZFuncsNow:{_(Function|InterpolatingFunction|CompiledFunction)..}*),
+xtGuess_?MatrixQ,eqnsFunc_CompiledFunction,
+aGS:{_Integer,{{_Integer,_?NumberQ,_?NumberQ}..}},numIters_Integer]:=
+Module[{},
+Print["in"]]
+
+justCall[linMod(*,{X0Z0}*),X0Z0[1,.18,1,1][[Range[4]]],rbcEqnsCompiled,aGSpec,4]
+
+
+whyNot[aGS:{_Integer,{{_Integer,_?NumberQ,_?NumberQ}..}}]:=
+Module[{},
+Print["in"]]
