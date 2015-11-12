@@ -10,9 +10,11 @@ BeginPackage["betterRBC`",{"AMASeriesRepresentation`","ProtectedSymbols`","AMAMo
 
 condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 condExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
+theDist::usage="charactizes the distribution of epsilon"
+linMod::usage="linear model matrices for approx"
+rbcEqnsCompiled::usage="compiled version of model equations"
 
-
-(*Begin["Private`"]*)
+Begin["Private`"]
 
 
 
@@ -161,6 +163,6 @@ linMod={bmatSymbRE // N, phimatSymbRE // N,
 theDist={{{ee, 
     NormalDistribution[0, 0.01]}}};
 
-(*End[]*)
+End[]
 EndPackage[]
 Print["done reading betterRBC.m"]

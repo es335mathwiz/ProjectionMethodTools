@@ -1,5 +1,6 @@
-Needs["simpleRBCModel`"]
 Needs["AMASeriesRepresentation`"]
+(*Needs["betterRBC`"]*)
+
 thVal=theta//.ssSolnSubsRE//.simpParamSubs;
 kVal = kk /. Private`kSSSubRE//.simpParamSubs;
 cVal = cc /. Private`cSSSubRE//.simpParamSubs ;
@@ -46,7 +47,7 @@ Private`rbcEqnsFunctionalNext];
 
 {x1z1RE,X1Z1RE}=doIterRE[linMod,{X0Z0},X0Z0[1,.18,1,1][[Range[3]]],
 Private`rbcEqnsFunctionalNext,{pdf}];
-
+CRRAUDrv[#,1]
 
 
 {x2z2PF,X2Z2PF}=doIterPF[linMod,X1Z1PF,X0Z0[1,.18,1,1][[Range[3]]],
