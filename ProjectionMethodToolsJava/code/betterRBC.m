@@ -173,6 +173,8 @@ linMod={bmatSymbRE // N, phimatSymbRE // N,
 
 
 
+X0Z0=genX0Z0Funcs[linMod];
+
  
 theDist={{{ee, 
     NormalDistribution[0, 0.01]}}};
