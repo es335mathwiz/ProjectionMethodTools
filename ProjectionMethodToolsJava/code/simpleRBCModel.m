@@ -7,6 +7,7 @@ PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
+theDist::usage="theDist={{{ee,NormalDistribution[0,0.01]}}};"
 ratioThetaToC::usage="rbc model variable"
 cc::usage="rbc model variable"
 kk::usage="rbc model variable"
@@ -58,6 +59,8 @@ delta->95/100,
 rho->95/100,
 sigma->1/100
 } ;
+
+theDist={{{ee,NormalDistribution[0,sigma]}}}//.paramSubs;
 
 forSubs={alpha^(1 - alpha)^(-1)*delta^(1 - alpha)^(-1)};
 simpSubs=Thread[forSubs->nu];
