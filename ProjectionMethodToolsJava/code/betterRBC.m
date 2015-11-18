@@ -41,9 +41,10 @@ closed form solution version  beta=1 geometric discounting
 chkcobb douglas production*)
 
 rbcEqns={
- CRRAUDrv[cc[t],1]-(delta*(nlPart[t+1]*((alpha *(kk[t]^(alpha-1)) )))),
-cc[t] + kk[t]-((theta[t])*(kk[t-1]^alpha)),
-nlPart[t] - (nlPartRHS=(theta[t])* CRRAUDrv[cc[t],1]),
+CRRAUDrv[cc[t],1]-
+(delta*(theta[t])*(nlPart[t+1]*((alpha *(kk[t]^(alpha-1)) )))),
+cc[t] + kk[t]-((theta[t-1])*(kk[t-1]^alpha)),
+nlPart[t] - (nlPartRHS=(1)* CRRAUDrv[cc[t],1]),
 theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t])
 }
 
@@ -108,21 +109,7 @@ ssSolnSubsPF=Flatten[{thSubsPF,kSSSubPF,cSSSubPF,nlPartSSSubPF}];
 Print["done computing steady state subs"];
 (*]*)
 
-
-
-condExpRE=Compile[
-{{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
-With[{thVals=Join[{},
-Drop[NestList[(anExpRE*thNow[#,0])&,
-(thNow[thtm1,epsVal]),ii],-1]]},
-With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
-With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
-With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
-With[{nlVals=(thVals)* (1/ccVals)},
-With[{thetransp=Partition[Flatten[Transpose[
-{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[nlVals],Flatten[Drop[thVals,0]]}]],1]},
-Join[{{cctm1},{kktm1},{nltm1},{thtm1}},thetransp]]]]]]]]
-
+(*
 condExpPF=Compile[
 {{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
 With[{thVals=Join[{},
@@ -135,12 +122,31 @@ With[{thetransp=Partition[Flatten[Transpose[
 {Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}
 ]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
+*)
 
-condExpPFFunc = 
- Function[{cc, kk, nl, th, eps}, Drop[condExpPF[cc, kk,nl, th, eps, 1], 4]]
+
+
+
+condExpRE=Compile[
+{{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
+With[{thVals=Join[{thtm1},
+Drop[NestList[(anExpRE*thNow[#,0])&,
+(thNow[thtm1,epsVal]),ii+1],-1]]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],-1]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,-1]}]},
+With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
+With[{nlVals= (1/ccVals)},
+With[{thetransp=Partition[Flatten[Transpose[
+{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[nlVals],Flatten[Drop[thVals,1]]}]],1]},
+Join[{{cctm1},{kktm1},{nltm1},{thtm1}},Drop[thetransp,-4]]]]]]]]]
+
 
 condExpREFunc = 
- Function[{cc, kk, nl, th, eps}, Drop[condExpRE[cc, kk,nl, th, eps, 1], 4]]
+ Function[{cc, kk, nl, th, eps}, 
+With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
+With[{kkt=(th*alpha*delta*kk^alpha)//.simpParamSubs//N},
+With[{cct=((th*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
+Transpose[{{cct,kkt,1/cct,tht}}]]]]]
 
 
 
