@@ -8,6 +8,7 @@ Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
 theDist::usage="theDist={{{ee,NormalDistribution[0,0.01]}}};"
+linMod::usage="linear model matrices for approx"
 ratioThetaToC::usage="rbc model variable"
 cc::usage="rbc model variable"
 kk::usage="rbc model variable"
@@ -609,6 +610,16 @@ And[reps>0,numPers>0]
 *)
 
 *)
+
+linMod={Private`bmatSymbRE // N, Private`phimatSymbRE // N, 
+    Private`fmatSymbRE // N, Private`psiepsSymbRE // N, 
+    Private`psicSymbRE // N, Private`psiz // N,{{0}}};
+    
+
+
+X0Z0=genX0Z0Funcs[linMod];
+
+
 End[]
 EndPackage[]
 Print["done reading simpleRBCModel.m"]
