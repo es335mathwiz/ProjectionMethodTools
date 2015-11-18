@@ -1,20 +1,24 @@
 PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation/"]
 Get["prepBetter.m"]
 
+aPath=iterateDRREIntegrate[condExpREFunc,anXEps,theDist,rbcEqnsCompiled,1]
+theZs=genZsRE[condExpREFunc,anXEps,theDist,rbcEqnsCompiled,1]
 
-
-{x1z1re,X1Z1RE}=doIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist]
 (*
 
+{x1z1re,X1Z1RE}=doIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist]
 
 
 {huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist,15]];
 
-numNodes=5
-nuGS={1, {{numNodes, 0.018732441104784652, 0.7492976441913861}, {numNodes, 9/10, 11/10},  {numNodes, -0.03, 0.09}}};
-{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nuGS,theDist,15]];
+cAnXEps=ReplacePart[anXEps,4->E^((Log[1.1]-.01)/(rho//.simpParamSubs))]
+
+numN=5;nGSpec=
+{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+  {numN, -0.03, 0.09}}}
+
+{huh,vals}=Timing[bunchOfREs5=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
 
 
-{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist,2];
-
+condExpREFunc @@ cAnXEps
 *)
