@@ -1,0 +1,12 @@
+PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation/"]
+Get["prepBetter.m"]
+
+
+
+{x1z1re,X1Z1RE}=doIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist]
+(*
+
+
+{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,theDist,2];
+
+*)
