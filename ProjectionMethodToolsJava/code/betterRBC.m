@@ -180,7 +180,7 @@ linMod={bmatSymbRE // N, phimatSymbRE // N,
 
 (*
 
-gInd={1,2,4};
+
 hmatLilSymbRE=hmatSymbRE[[gInd,Join[gInd,gInd+3,gInd+6]]]
 
 hSumRE=hmatLilSymbRE[[All,Range[3]]]+hmatLilSymbRE[[All,3+Range[3]]]+hmatLilSymbRE[[All,6+Range[3]]];
@@ -201,6 +201,8 @@ lilLinMod={bmatLilSymbRE[[gInd,gInd]] // N, phimatLilSymbRE[[gInd,gInd]] // N,
     psicLilSymbRE[[gInd]] // N, psiz[[gInd,gInd]] // N,{{0}}};
 
 *)
+
+gInd={1,2,4};
 
 lilCondExpREFunc = 
  Function[{cc, kk,  th, eps},

@@ -1,4 +1,4 @@
-Needs["betterRBC`"]
+(*Needs["betterRBC`"]*)
 nothmat={
 {1.,.5,-.5,1.,.4,.9,1.,1.,.9},
 {4.,.2,-.5,7.,.4,.8,3.,2.,.6},
@@ -9,10 +9,10 @@ nothmat={
 
 
 {ig,aphimat,anfmat}=numericComputeBPhiF[nothmat,aqmat]//Chop;
-apsieps={{.1},{.4},{-.5}};
+apsieps={{0},{0},{1}};
 apsiz=IdentityMatrix[3];
 ssVal={{.2},{-.3},{.5}}(*{{cc},{kk},{theta}}//.Private`ssSolnSubs/.Private`paramSubs//N*)
-apsic=(nothmat .Join[ssVal,ssVal,ssVal])
+apsic=0*(nothmat . Join[ssVal,ssVal,ssVal])
 
 
 notLinMod={abmat // N, aphimat // N, 

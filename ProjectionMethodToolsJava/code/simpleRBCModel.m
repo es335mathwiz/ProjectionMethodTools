@@ -140,13 +140,19 @@ Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 condExpPFFunc = 
  Function[{cc, kk, th, eps}, Drop[condExpPF[cc, kk, th, eps, 1], 3]]
 
-condExpREFunc = 
- Function[{cc, kk, th, eps}, Drop[condExpRE[cc, kk, th, eps, 1], 3]]
 
 
 condExpREFunc = 
- Function[{cc, kk, tt, ee}, 
-  Drop[(condExpRE @@ Append[{cc, kk, tt, ee}, 1]), 3]]
+ Function[{cc, kk, th, eps}, 
+With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
+With[{kkt=(th*alpha*delta*kk^alpha)//.simpParamSubs//N},
+With[{cct=((th*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
+Transpose[{{cct,kkt,tht}}]]]]]
+
+
+
+
+
 
 condExpPFFunc = 
  Function[{cc, kk, tt, ee}, 
