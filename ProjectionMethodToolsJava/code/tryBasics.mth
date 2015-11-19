@@ -3,6 +3,45 @@ Get["prepBetter.m"]
 
 
 
+(*
+{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist,15]];
+
+#[[1]]@@ anXEps&/@bunchOfREs
+(*
+{{0.405499}, {0.210761}, {2.4661}, {1.10577}}
+{{0.403087}, {0.212022}, {2.501}, {1.10577}, {-0.0501452}, {-0.000136571},     {0.0549319}, {0.000718209}}}
+
+*)
+numN=8;
+nGSpec=
+{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+  {numN, -0.03, 0.09}}}
+{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
+#[[1]]@@ anXEps&/@bunchOfREsN
+    {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
+     {0.0387448}, {0.000745808}}}
+
+
+numN=15;
+nGSpec=
+{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+  {numN, -0.03, 0.09}}}
+{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
+#[[1]]@@ anXEps&/@bunchOfREs15
+    {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
+     {0.0387448}, {0.000745808}}}
+
+
+
+numN=25;
+nGSpec=
+{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+  {numN, -0.03, 0.09}}}
+{huhN25,valsN25}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
+#[[1]]@@ anXEps&/@bunchOfREs15
+    {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
+     {0.0387448}, {0.000745808}}}
+
 
 duh = genx0z0Funcs[linMod]
 theZs = genZsRE[duh, anXEps, theDist, rbcEqnsCompiled, 2];
@@ -11,14 +50,13 @@ theZFuncs =
    Drop[theZs, 1];
 maybe = Private`genLilXkZkFunc[linMod, 
   theZFuncs, {{0}, {0}, {0}, {0}}];
-(*
+
 
 aPath=iterateDRREIntegrate[condExpREFunc,anXEps,theDist,rbcEqnsCompiled,1]
 theZs=genZsRE[condExpREFunc,anXEps,theDist,rbcEqnsCompiled,2]
 {x1z1re,X1Z1RE}=doIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist]
 
 
-{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist,15]];
 
 cAnXEps=ReplacePart[anXEps,4->E^((Log[1.1]-.01)/(rho//.simpParamSubs))]
 

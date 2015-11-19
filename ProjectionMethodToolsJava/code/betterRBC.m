@@ -1,4 +1,4 @@
-sPrependTo[$Path,"../../../mathAMA/AMAModel/"];
+PrependTo[$Path,"../../../mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA/"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
