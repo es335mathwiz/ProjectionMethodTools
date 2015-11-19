@@ -1,4 +1,4 @@
-PrependTo[$Path,"../../../mathAMA/AMAModel/"];
+sPrependTo[$Path,"../../../mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA/"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
 PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
@@ -10,6 +10,7 @@ BeginPackage["betterRBC`",{"AMASeriesRepresentation`","ProtectedSymbols`","AMAMo
 
 condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 condExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
+lilCondExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 theDist::usage="charactizes the distribution of epsilon"
 linMod::usage="linear model matrices for approx"
 rbcEqnsCompiled::usage="compiled version of model equations"
@@ -177,6 +178,33 @@ linMod={bmatSymbRE // N, phimatSymbRE // N,
     fmatSymbRE // N, psiepsSymbRE // N, 
     psicSymbRE // N, psiz // N,{{0}}};
 
+(*
+
+gInd={1,2,4};
+hmatLilSymbRE=hmatSymbRE[[gInd,Join[gInd,gInd+3,gInd+6]]]
+
+hSumRE=hmatLilSymbRE[[All,Range[3]]]+hmatLilSymbRE[[All,3+Range[3]]]+hmatLilSymbRE[[All,6+Range[3]]];
+
+ssSolnVecRE={{cc},{kk},{theta}}//.ssSolnSubsRE;
+psicLilSymbRE=hSumRE . ssSolnVecRE;
+
+
+{zfLilSymbRE,hfLilSymbRE}=symbolicAR[hmatLilSymbRE//.simpParamSubs];
+amatLilSymbRE=symbolicTransitionMatrix[hfLilSymbRE];
+{evlsLilSymbRE,evcsLilSymbRE}=Eigensystem[Transpose[amatLilSymbRE]];
+qmatLilSymbRE=Join[zfLilSymbRE,evcsLilSymbRE[[{1}]]];
+
+
+
+lilLinMod={bmatLilSymbRE[[gInd,gInd]] // N, phimatLilSymbRE[[gInd,gInd]] // N, 
+    fmatLilSymbRE[[gInd,gInd]] // N, psiepsLilSymbRE[[gInd]] // N, 
+    psicLilSymbRE[[gInd]] // N, psiz[[gInd,gInd]] // N,{{0}}};
+
+*)
+
+lilCondExpREFunc = 
+ Function[{cc, kk,  th, eps},
+condExpREFunc[cc,kk,1,th,eps][[gInd]]]
 
 
 X0Z0=genX0Z0Funcs[linMod];

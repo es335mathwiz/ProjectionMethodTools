@@ -1,4 +1,4 @@
-
+Needs["betterRBC`"]
 nothmat={
 {1.,.5,-.5,1.,.4,.9,1.,1.,.9},
 {4.,.2,-.5,7.,.4,.8,3.,2.,.6},
@@ -18,3 +18,5 @@ apsic=(nothmat .Join[ssVal,ssVal,ssVal])
 notLinMod={abmat // N, aphimat // N, 
     anfmat // N, apsieps // N, 
     apsic // N, apsiz // N,{{0}}};
+
+

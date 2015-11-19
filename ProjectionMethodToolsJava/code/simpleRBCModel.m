@@ -615,8 +615,9 @@ linMod={Private`bmatSymbRE // N, Private`phimatSymbRE // N,
     Private`fmatSymbRE // N, Private`psiepsSymbRE // N, 
     Private`psicSymbRE // N, Private`psiz // N,{{0}}};
     
-
-
+lilLinMod=linMod;
+lilHmat=hmat;
+Save["forLilMod.mth",{lilHmat,lilLinMod}]
 X0Z0=genX0Z0Funcs[linMod];
 
 
