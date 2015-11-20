@@ -120,8 +120,8 @@ condExpRE=Compile[
 With[{thVals=Join[{},
 Drop[NestList[(anExpRE*thNow[#,0])&,
 (thNow[thtm1,epsVal]),ii],-1]]},
-With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
-With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,Join[{thtm1},Drop[thVals,-1]]],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Join[{thtm1},Drop[thVals,-1]]}]},
 With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
