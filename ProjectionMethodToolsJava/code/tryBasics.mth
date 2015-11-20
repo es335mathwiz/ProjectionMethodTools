@@ -130,4 +130,21 @@ numN=5;nGSpec=
 
 
 condExpREFunc @@ cAnXEps
++ nGSpec=
++ {1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
++   {numN, -0.03, 0.09}}}
++ {huhN25p,valsN25p}=Timing[bunchOfREsNp25=nestIterREInterp[linMod,valsN25[[-1,2]],{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
++ #[[1]]@@ anXEps&/@bunchOfREs15
++ 
++ >    {{0.404692}, {0.210664}, {2.47542}, {1.10577}, {-0.0480792}, 
++  
++ >     {0.000109837}, {0.0417126}, {0.000718209}}}
++ 
++ 
++ condExpREFunc @@ anXEps  
++ Out[50]= {{0.405499}, {0.210761}, {2.4661}, {1.10577}}
++ 
+
+
+
 *)
