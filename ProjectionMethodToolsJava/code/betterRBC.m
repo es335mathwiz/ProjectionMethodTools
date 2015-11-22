@@ -7,10 +7,15 @@ PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading betterRBC.m"]
 BeginPackage["betterRBC`",{"AMASeriesRepresentation`","ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"}]
 
+		
+betterExactDR::usage= "betterExactDR"
+betterRBCExactCondExp::usage = "makeREIterFunc[betterRBCExactDR,theDist]"
 
+(*
 condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 condExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 lilCondExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
+*)
 theDist::usage="charactizes the distribution of epsilon"
 linMod::usage="linear model matrices for approx"
 rbcEqnsCompiled::usage="compiled version of model equations"
@@ -76,12 +81,16 @@ eps[theta][t]->epsVal
 
 rbcEqnsCompiled=Compile @@ {
 {
-{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},
-{cct,_Real},{kkt,_Real},{nlt,_Real},{tht,_Real},
-{cctp1,_Real},{kktp1,_Real},{nltp1,_Real},{thtp1,_Real},
+{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thetatm1,_Real},
+{cct,_Real},{kkt,_Real},{nlt,_Real},{thetat,_Real},
+{cctp1,_Real},{kktp1,_Real},{nltp1,_Real},{thetatp1,_Real},
 {epsVal,_Real}
 },
-rbcCompileGuts}
+{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
+cct + kkt - 1.*kktm1^(9/25)*thetat, 
+nlt - 1/cct,
+thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}}
+
 
 Needs["CompiledFunctionTools`"]
 
@@ -127,7 +136,7 @@ Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 
 
 
-
+(*
 condExpRE=Compile[
 {{cctm1,_Real},{kktm1,_Real},{nltm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
 With[{thVals=Join[{thtm1},
@@ -141,15 +150,21 @@ With[{thetransp=Partition[Flatten[Transpose[
 {Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[nlVals],Flatten[Drop[thVals,1]]}]],1]},
 Join[{{cctm1},{kktm1},{nltm1},{thtm1}},Drop[thetransp,-4]]]]]]]]]
 
-
-condExpREFunc = 
+*)
+betterExactDR = 
  Function[{cc, kk, nl, th, eps}, 
 With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
-With[{kkt=(th*alpha*delta*kk^alpha)//.simpParamSubs//N},
-With[{cct=((th*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
+With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
+With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
 Transpose[{{cct,kkt,1/cct,tht}}]]]]]
 
 
+
+theDist={{{ee,NormalDistribution[0,sigma]}}}//.paramSubs;
+
+
+
+betterRBCExactCondExp = makeREIterFunc[betterRBCExactDR,theDist]
 
 
 psiz=IdentityMatrix[4]
@@ -203,15 +218,14 @@ lilLinMod={bmatLilSymbRE[[gInd,gInd]] // N, phimatLilSymbRE[[gInd,gInd]] // N,
 *)
 
 gInd={1,2,4};
-
+(*
 lilCondExpREFunc = 
  Function[{cc, kk,  th, eps},
 condExpREFunc[cc,kk,1,th,eps][[gInd]]]
-
+*)
 
 X0Z0=genX0Z0Funcs[linMod];
 
-theDist={{{ee,NormalDistribution[0,sigma]}}}//.paramSubs;
 
 End[]
 EndPackage[]

@@ -7,6 +7,10 @@ PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading simpleRBCModel.m"]
 BeginPackage["simpleRBCModel`",{"AMASeriesRepresentation`",(*"occBindRecur`",*)"ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"(*,"ProjectionInterface`"*)}]
 
+simpRBCExactDR::usage="simpRBCExactDR"
+simpRBCExactCondExp::usage = "makeREIterFunc[simpRBCExactDR,theDist]simpRBCExactCondExp = makeREIterFunc[simpRBCExactDR,theDist]"
+
+
 theDist::usage="theDist={{{ee,NormalDistribution[0,0.01]}}};"
 linMod::usage="linear model matrices for approx"
 ratioThetaToC::usage="rbc model variable"
@@ -21,13 +25,13 @@ rbcEqns::usage="rbc model equations"
 simpParamSubs::usage="simpParamSubs=Join[paramSubs,forParamSubs]"
 ssSolnSubsRE::usage="rational expectations steady state"
 ssSolnSubsPF::usage="perfect foresight steady state"
-condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
+(*condExpRE::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"*)
 
-
+(*
 condExpPF::usage="condExpPF=Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}}]"
 condExpREFunc::usage="condExpRE[kktm1_?NumberQ,ii_Integer]"
 condExpPFFunc::usage="condExpPF=Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}}]"
-
+*)
 compApproxRE::usage="compApproxRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 compApproxDiffRE::usage="compApproxDiffRE[theHmat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},kk_,theta_,epsNow_,iters_Integer]"
 maxZsRE::usage="maxZsRE[theHmat_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?Matrix,{{lowc_,highc_},{lowk_,highk_},{lowt_,hight_},{lowe_,highe_}},iters_Integer]"
@@ -113,15 +117,15 @@ Print["computing and simplifying the symbolic b phi f etc"]
 {bmatSymbRE,phimatSymbRE,fmatSymbRE}=symbolicComputeBPhiF[hmatSymbRE,qmatSymbRE]//Simplify;
 
 
-
+(*
 
 condExpRE=Compile[
 {{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},{ii,_Integer}},
 With[{thVals=Join[{},
 Drop[NestList[(anExpRE*thNow[#,0])&,
 (thNow[thtm1,epsVal]),ii],-1]]},
-With[{kkVals=Drop[FoldList[nxtK,kktm1,thVals],0]},
-With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Drop[thVals,0]}]},
+With[{kkVals=Drop[FoldList[nxtK,kktm1,Join[{thtm1},Drop[thVals,-1]]],0]},
+With[{yyVals=MapThread[yNow,{Drop[kkVals,-1],Join[{thtm1},Drop[thVals,-1]]}]},
 With[{ccVals=(Drop[yyVals,0]-Drop[kkVals,1])},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
@@ -140,8 +144,8 @@ Join[{{cctm1},{kktm1},{thtm1}},thetransp]]]]]]]
 condExpPFFunc = 
  Function[{cc, kk, th, eps}, Drop[condExpPF[cc, kk, th, eps, 1], 3]]
 
-
-
+*)
+(*
 condExpREFunc = 
  Function[{cc, kk, th, eps}, 
 With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
@@ -151,6 +155,26 @@ Transpose[{{cct,kkt,tht}}]]]]]
 
 
 
+condExpREFunc = 
+ Function[{cc, kk, th, eps}, 
+With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
+With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
+With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
+Transpose[{{cct,kkt,tht}}]]]]]
+
+*)
+
+simpRBCExactDR = 
+ Function[{cc, kk, th, eps}, 
+With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
+With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
+With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
+Transpose[{{cct,kkt,tht}}]]]]]
+
+simpRBCExactCondExp = makeREIterFunc[simpRBCExactDR,theDist]
+
+
+(*
 
 
 
@@ -169,7 +193,7 @@ Function[{cc, kk, th, eps},
 	 compApproxRE[theHmat,linMod,theFunc,cc,kk,th,eps,iters]]
 
 
-
+*)
 
 newGenZsRE[anHmat_?MatrixQ,PsiEps_?MatrixQ,PsiC_?MatrixQ,theFunc:(_Function|_CompiledFunction),
 cc_?NumberQ,kk_?NumberQ,theta_?NumberQ,epsNow_?NumberQ,iters_Integer]:=
@@ -319,7 +343,7 @@ theta[t]-E^(rho*Log[theta[t-1]] + eps[theta][t]),
 
 
 
-
+(*
 
 condExpRE=
 Compile[{{cctm1,_Real},{kktm1,_Real},{thtm1,_Real},{epsVal,_Real},
@@ -331,7 +355,7 @@ With[{ccVals=Drop[yyVals,0]-Drop[kkVals,1]},
 With[{thetransp=Partition[Flatten[Transpose[{Flatten[ccVals],Flatten[Drop[kkVals,1]],Flatten[Drop[thVals,0]]}]],1]},
 Join[{{cctm1},{kktm1},{thtm1}},thetransp]//.simpParamSubs]]]]]]
 
-
+*)
 (*
 
 
