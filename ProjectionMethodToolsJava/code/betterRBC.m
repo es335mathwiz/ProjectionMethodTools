@@ -86,9 +86,9 @@ rbcEqnsCompiled=Compile @@ {
 {cctp1,_Real},{kktp1,_Real},{nltp1,_Real},{thetatp1,_Real},
 {epsVal,_Real}
 },
-{cct^(-1) - (0.342*((1.*thetatp1)/cctp1))/kkt^(16/25), 
+{cct^(-1) - (0.342*((1.)*(nltp1(*thetatp1/cctp1*))))/kkt^(16/25), 
 cct + kkt - 1.*kktm1^(9/25)*thetat, 
-nlt - 1/cct,
+nlt - thetat/cct,
 thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}}
 
 
@@ -156,7 +156,7 @@ betterExactDR =
 With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
 With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
 With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
-Transpose[{{cct,kkt,1/cct,tht}}]]]]]
+Transpose[{{cct,kkt,tht/cct,tht}}]]]]]
 
 
 
@@ -189,7 +189,7 @@ qmatSymbRE=Join[zfSymbRE,evcsSymbRE[[{1}]]];
 Print["computing and simplifying the symbolic b phi f etc"]
 {bmatSymbRE,phimatSymbRE,fmatSymbRE}=symbolicComputeBPhiF[hmatSymbRE,qmatSymbRE]//Simplify;
 
-linMod={bmatSymbRE // N, phimatSymbRE // N, 
+linMod={hmatSymbRE//N,bmatSymbRE // N, phimatSymbRE // N, 
     fmatSymbRE // N, psiepsSymbRE // N, 
     psicSymbRE // N, psiz // N,{{0}}};
 

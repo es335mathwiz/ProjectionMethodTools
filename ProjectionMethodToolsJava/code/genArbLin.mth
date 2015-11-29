@@ -19,4 +19,14 @@ notLinMod={abmat // N, aphimat // N,
     anfmat // N, apsieps // N, 
     apsic // N, apsiz // N,{{0}}};
 
+Export["refHmat.pdf", MatrixForm[nothmat]];
+Export["refBmat.pdf", MatrixForm[abmat]];
+Export["refPhimat.pdf", MatrixForm[aphimat]];
+Export["refFmat.pdf", MatrixForm[anfmat]];
 
+
+occDir="../../../paperProduction/occBind/docs/"
+toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
+toOccDir/@{
+"refHmat.pdf","refBmat.pdf","refPhimat.pdf","refFmat.pdf"
+};

@@ -641,7 +641,7 @@ And[reps>0,numPers>0]
 
 *)
 
-linMod={Private`bmatSymbRE // N, Private`phimatSymbRE // N, 
+linMod={hmatSymbRE//N,Private`bmatSymbRE // N, Private`phimatSymbRE // N, 
     Private`fmatSymbRE // N, Private`psiepsSymbRE // N, 
     Private`psicSymbRE // N, Private`psiz // N,{{0}}};
     
