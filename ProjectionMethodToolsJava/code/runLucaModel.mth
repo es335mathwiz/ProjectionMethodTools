@@ -1,15 +1,89 @@
-Needs["lucaSimpleModel`"]
+Get["betterLucaMod.m"]
+(*
+ss 
+Inverse[IdentityMatrix[3] -Private`fmat] . Private`phimat . Private`psic
+{{0.00753294}, {0.00753294}, {0.015}}
+anXVec={.3,99,.2} (* eps=0*)
+anXEpsVec={.3,99,.2,0} (* eps=0*)
+Private`bmat . Transpose[{anXVec}]  +{{0.00753294}, {0.00753294}, {0.015}}
+*)
+
+lilxz=Private`genLilXkZkFunc[lucaLinMod,{lucaX0Z0},{{0},{0},{0}}]
+fr=Private`genFRFunc[{3,1,1},lilxz,lucaEqnFuncs]
+fp=Private`genFPFunc[lucaLinMod,{lucaX0Z0},{{0},{0},{0}},lucaEqnFuncs]
+
+
+{huhN,valsN}=Timing[bunchOfREsN=nestIterRE[lucaLinMod,{lucaX0Z0},
+{{}},lucaEqnFuncs,lucaDist,1]];
+
+gate2I[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsN[[2,1]]@@{xx,0.4,yy,0})[[indx,1]]
+
+gate3[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsN[[3,1]]@@{xx,0.4,yy,0})[[indx,1]]
+
+<<JavaGraphics`
+Plot3D[gate[xx,yy,1],{xx,-.2,.2},{yy,-.2,.5},PlotRange->All]
 
 
 
-Print["provide shock names should come from model bmat comp"];
-theResPF=Table[With[{chkPts={
-{numPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
-{numPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
-{numPts,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}}},
-Timing[{ig,ig,zFuncsOnePF,finFuncOnePF}=genFinalPF[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},chkOrd,chkPts,{},3]]],{chkOrd,0,3},{numPts,5,25,5}]
-theResRE=Table[With[{chkPts={
-{numPts,qLow//.lucaSubs//N,qHigh//.lucaSubs//N},
-{numPts,ruLow//.lucaSubs//N,ruHigh//.lucaSubs//N},
-{numPts,-2*sigma$u//.lucaSubs//N,2*sigma$u//.lucaSubs//N}}},
-Timing[{ig,ig,zFuncsOneRE,finFuncOneRE}=genFinalRE[{compCon,stateSel,{{xqtm1},{xrtm1},{xrutm1}},noCnstrnGuess,{2,3,1,1,1},getLucaFixedPoint},chkOrd,chkPts,{},.02,3]]],{chkOrd,0,3},{numPts,5,25,5}]
+numN=15;
+nGSpec=
+{{2},1, {{numN, -.2,.2}, {numN, -.2, .5}, 
+  {numN, -0.03, 0.03}}};
+{huhI,valsI}=Timing[bunchOfREsN=nestIterREInterp[lucaLinMod,{lucaX0Z0},
+{{}},lucaEqnFuncs,nGSpec,lucaDist,15]];
+
+gps=Private`gridPts[nGSpec[[3]]];
+gid=Private`genInterpData[valsN[[2,1]],nGSpec]
+gateN2[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsN[[2,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+gateI2[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[2,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+
+
+g1=Plot3D[gateN2[xx,yy,1]-gateI2[xx,yy,1],{xx,-.2,.2},{yy,-.2,.5}]
+g2=ListPointPlot3D[Union[Append[#[[{1,2}]],0]&/@gps],PlotStyle->PointSize[Large]]
+
+gateI2[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[2,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+gateI3[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[3,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI4[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[4,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI5[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[5,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+gateI6[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[6,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI7[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[7,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+
+gateI10[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[10,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI11[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[11,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+
+
+
+gateI12[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[12,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI13[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[13,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI14[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[14,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI15[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[15,1]]@@{xx,0.4,yy,0})[[indx,1]]
+gateI16[xx_?NumberQ,yy_?NumberQ,indx_Integer]:=
+(valsI[[16,1]]@@{xx,0.4,yy,nGSpec[[3,3,2]]})[[indx,1]]
+
+
+
+<<JavaGraphics`
+Plot3D[gate2[xx,yy,1],{xx,-.2,.2},{yy,-.2,.5},PlotRange->All]
+Plot3D[gate2[xx,yy,2],{xx,-.2,.2},{yy,-.2,.5},PlotRange->All]
+
+Plot3D[gate3[xx,yy,1],{xx,-.2,.2},{yy,-.2,.5},PlotRange->All]
+Plot3D[gate3[xx,yy,2],{xx,-.2,.2},{yy,-.2,.5},PlotRange->All]
+
+
+

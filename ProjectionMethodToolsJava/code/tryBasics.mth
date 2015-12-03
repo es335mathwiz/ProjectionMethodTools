@@ -6,7 +6,7 @@ Get["prepBetter.m"]
 nGSpec=
 {1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
   {numN, -0.03, 0.09}}}
-{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,5]];
+{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,5]];
 
 
 pltFunc01[kk_?NumberQ,tt_?NumberQ,eps_?NumberQ]:=
@@ -63,7 +63,7 @@ genZsREWorst[theDRFunc:(_Function|_CompiledFunction),initVec_?VectorQ,allArgs:{e
 
 genSeriesReps[hMat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
 	initVec_?VectorQ,allArgs:{expctSpec:{{_Symbol,_}..},opts_:{}},theExactDR:(_Function|_CompiledFunction),maxIters_Integer]:=
-{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist,15]];
+{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,aGSpec,theDist,15]];
 
 #[[1]]@@ anXEps&/@bunchOfREs
 (*
@@ -76,9 +76,9 @@ genSeriesReps[hMat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_
 
 numN=8;
 nGSpec=
-{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+{{1,3},1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
   {numN, -0.03, 0.09}}}
-{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,5]];
+{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,5]];
 #[[1]]@@ anXEps&/@bunchOfREsN
     {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
      {0.0387448}, {0.000745808}}}
@@ -86,9 +86,9 @@ nGSpec=
 
 numN=15;
 nGSpec=
-{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+{{1,3},1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
   {numN, -0.03, 0.09}}}
-{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
+{huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,15]];
 #[[1]]@@ anXEps&/@bunchOfREs15
     {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
      {0.0387448}, {0.000745808}}}
@@ -97,9 +97,9 @@ nGSpec=
 
 numN=25;
 nGSpec=
-{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+{{1,3},1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
   {numN, -0.03, 0.09}}}
-{huhN25,valsN25}=Timing[bunchOfREsN25=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
+{huhN25,valsN25}=Timing[bunchOfREsN25=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,15]];
 #[[1]]@@ anXEps&/@bunchOfREs25
     {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
      {0.0387448}, {0.000745808}}}
@@ -116,24 +116,24 @@ maybe = Private`genLilXkZkFunc[linMod,
 
 aPath=iterateDRREIntegrate[condExpREFunc,anXEps,theDist,rbcEqnsCompiled,1]
 theZs=genZsRE[condExpREFunc,anXEps,theDist,rbcEqnsCompiled,2]
-{x1z1re,X1Z1RE}=doIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},aGSpec,theDist]
+{x1z1re,X1Z1RE}=doIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,aGSpec,theDist]
 
 
 
 cAnXEps=ReplacePart[anXEps,4->E^((Log[1.1]-.01)/(rho//.simpParamSubs))]
 
 numN=5;nGSpec=
-{1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
+{{1,3},1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
   {numN, -0.03, 0.09}}}
 
-{huh,vals}=Timing[bunchOfREs5=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
+{huh,vals}=Timing[bunchOfREs5=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,15]];
 
 
 condExpREFunc @@ cAnXEps
 + nGSpec=
 + {1, {{numN, 0.018732441104784652, 0.7492976441913861}, {numN, 9/10, 11/10}, 
 +   {numN, -0.03, 0.09}}}
-+ {huhN25p,valsN25p}=Timing[bunchOfREsNp25=nestIterREInterp[linMod,valsN25[[-1,2]],{{}},rbcEqnsCompiled,{1,3},nGSpec,theDist,15]];
++ {huhN25p,valsN25p}=Timing[bunchOfREsNp25=nestIterREInterp[linMod,valsN25[[-1,2]],{{}},rbcEqnsCompiled,nGSpec,theDist,15]];
 + #[[1]]@@ anXEps&/@bunchOfREs15
 + 
 + >    {{0.404692}, {0.210664}, {2.47542}, {1.10577}, {-0.0480792}, 

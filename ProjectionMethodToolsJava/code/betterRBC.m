@@ -89,7 +89,7 @@ rbcEqnsCompiled=Compile @@ {
 {cct^(-1) - (0.342*((1.)*(nltp1(*thetatp1/cctp1*))))/kkt^(16/25), 
 cct + kkt - 1.*kktm1^(9/25)*thetat, 
 nlt - thetat/cct,
-thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)}}
+thetat - 1.*2.718281828459045^epsVal*thetatm1^(19/20)},"RuntimeOptions"->{"RuntimeErrorHandler"->Function[$Failed],"CatchMachineOverflow"->True,"CatchMachineUnderflow"->True}}
 
 
 Needs["CompiledFunctionTools`"]
