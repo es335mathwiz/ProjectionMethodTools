@@ -1,13 +1,14 @@
 Get["betterLucaMod.m"]
+anXVec={.3,99,.2} (* eps=0*)
+anXEpsVec={.3,99,.2,0} (* eps=0*)
+
 (*
 ss 
 Inverse[IdentityMatrix[3] -Private`fmat] . Private`phimat . Private`psic
 {{0.00753294}, {0.00753294}, {0.015}}
-anXVec={.3,99,.2} (* eps=0*)
-anXEpsVec={.3,99,.2,0} (* eps=0*)
 Private`bmat . Transpose[{anXVec}]  +{{0.00753294}, {0.00753294}, {0.015}}
 *)
-
+(*
 lilxz=Private`genLilXkZkFunc[lucaLinMod,{lucaX0Z0},{{0},{0},{0}}]
 fr=Private`genFRFunc[{3,1,1},lilxz,lucaEqnFuncs]
 fp=Private`genFPFunc[lucaLinMod,{lucaX0Z0},{{0},{0},{0}},lucaEqnFuncs]
@@ -87,3 +88,4 @@ Plot3D[gate3[xx,yy,2],{xx,-.2,.2},{yy,-.2,.5},PlotRange->All]
 
 
 
+*)

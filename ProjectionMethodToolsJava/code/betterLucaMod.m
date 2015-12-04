@@ -8,6 +8,7 @@ Print["reading betterLucaMod.m"]
 BeginPackage["betterLucaMod`",{"AMASeriesRepresentation`","ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"}]
 
 		
+discreteDist::usage="charactizes the distribution of epsilon"
 lucaDist::usage="charactizes the distribution of epsilon"
 lucaLinMod::usage="linear model matrices for approx"
 lucaSubs::usage="luca model param subs"
@@ -60,6 +61,7 @@ lucaX0Z0=genX0Z0Funcs[lucaLinMod];
 
 
 lucaDist={{{ee,NormalDistribution[0,sigma$u]}}}//.lucaSubs;
+discreteDist={{{bb,BernoulliDistribution[0.2]}}}//.lucaSubs;
 
 
 lucaGuts=Private`lucaEqns//.lucaSubs//InputForm
@@ -86,8 +88,6 @@ qqt,rrt,rut,
 qqtp1,rrtp1,rutp1,
 epsVal};
 
-xtp1Vec=
-Transpose[{{qqtp1,rrtp1,rutp1}}];
 
 
 
@@ -108,23 +108,13 @@ lilHDet1Func= Function @@ {funcArgs,theLilHDet1};
 theBigHDet={{Coefficient[lucaGuts[[1,1]],Private`qq[t+1]],0,0},{0,0,0},{0,0,0}}
 bigHDetFunc= Function @@ {funcArgs,theBigHDet};
 
-allFuncs={theSelFunc,{{lilHDet0Func,bigHDetFunc},{lilHDet1Func,bigHDetFunc}}}
 
 
 cndtn=theCond[[2]]/.qq[t]->qqt;
 theSelFunc= Function @@{funcArgs,
 Switch[cndtn,True,0,False,1]}
 
-makeFunc[funcArgsNow_List,numX_Integer,{theS_Function,
-thePairs:{{(_Function|CompiledFunction),(_Function|CompiledFunction)}..}}]:=
-With[{xtPos=Range[numX]+2*numX},
-With[{preArgs=
-(Function[xxxx,With[{indx=(theS@@xxxx+1)},
-thePairs[[indx,1]]@@xxxx + 
-(thePairs[[indx,2]]@@xxxx).(xxxx[[xxxxXtPos]])]])},
-With[{xxxxLocs=Position[preArgs,xxxx$],
-xxxxXtPos=Position[preArgs,xxxxXtPos]},
-ReplacePart[preArgs,{xxxxLocs->funcArgsNow,xxxxXtPos->xtPos}]]]]
+allFuncs={theSelFunc,{{lilHDet0Func,bigHDetFunc},{lilHDet1Func,bigHDetFunc}}}
 
 
 
