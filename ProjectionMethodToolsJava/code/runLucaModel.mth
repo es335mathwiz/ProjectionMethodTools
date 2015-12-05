@@ -1,11 +1,10 @@
 Get["betterLucaMod.m"]
-anXVec={.3,99,.2} (* eps=0*)
-anXEpsVec={.3,99,.2,0} (* eps=0*)
-
 (*
 ss 
 Inverse[IdentityMatrix[3] -Private`fmat] . Private`phimat . Private`psic
 {{0.00753294}, {0.00753294}, {0.015}}
+anXVec={.3,99,.2} (* eps=0*)
+anXEpsVec={.3,99,.2,0} (* eps=0*)
 Private`bmat . Transpose[{anXVec}]  +{{0.00753294}, {0.00753294}, {0.015}}
 *)
 (*

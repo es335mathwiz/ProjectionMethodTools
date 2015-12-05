@@ -1,0 +1,41 @@
+Get["barthmarxRSwitch.m"]
+anXVec={.1,0,.2,.3};
+anXEpsVec=Append[anXVec,0.01];
+anXEpsReg1Vec=Join[anXVec,{0.01,1}];
+anXEpsReg0Vec=Join[anXVec,{0.01,0}];
+(*regime val needed*)
+anXEpsReg1ZVec=Join[anXEpsReg1Vec,{0,0,0,0}];
+anXEpsReg0ZVec=Join[anXEpsReg0Vec,{0,0,0,0}];
+
+(*
+ss 
+Inverse[IdentityMatrix[3] -Private`fmat] . Private`phimat . Private`psic
+{{0.00753294}, {0.00753294}, {0.015}}
+Private`bmat . Transpose[{anXVec}]  +{{0.00753294}, {0.00753294}, {0.015}}
+*)
+(*
+lilxz=Private`genLilXkZkFunc[bmRSwitchLinMod,{bmRSwitchX0Z0},{{0},{0},{0},{0}}]
+(*lilxz@@ anXEpsReg0ZVec*)
+fr=Private`genFRFunc[{4,2,4},lilxz,bmRSwitchEqnFuncs]
+(*fr @@ anXEpsRegVec *)
+fp=Private`genFPFunc[bmRSwitchLinMod,{bmRSwitchX0Z0},{{0},{0},{0},{0}},bmRSwitchEqnFuncs]
+(*fp @@ anXEpsRegVec*)
+
+{huhN,valsN}=Timing[bunchOfREsN=nestIterRE[bmRSwitchLinMod,{bmRSwitchX0Z0},
+{{}},bmRSwitchEqnFuncs,bmRSwitchDist,1]];
+
+gate0[rr_?NumberQ,eps_?NumberQ,reg_Integer,indx_Integer]:=
+valsN[[2,1]][1,1,rr,1,ep,reg][[indx]]
+
+
+numN=15;
+nGSpec=
+{{1,2,4},1, {{numN, -1,1}, {numN, -0.03, 0.03}}};
+
+
+
+{huhI,valsI}=Timing[bunchOfREsN=nestIterREInterp[lucaLinMod,{lucaX0Z0},
+{{}},lucaEqnFuncs,nGSpec,lucaDist,15]];
+
+
+*)

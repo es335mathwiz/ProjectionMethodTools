@@ -8,6 +8,10 @@ Print["reading barthMarxRSwitch.m"]
 BeginPackage["barthMarxRSwitch`",{"AMASeriesRepresentation`","ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"}]
 (*regime[t] like epsilon in timing, but "history matters"*)
 
+bmRSwitchDist::usage="bmRSwitchDist"
+bmRSwitchX0Z0::usage="bmRSwitchX0Z0";
+bmRSwitchParamSubs::usage="bmRSwitchParamSubs"
+bmRSwitchLinMod::usage="bmRSwitchLinMod" 
 bmRSwitchEqnFuncs::usage="makeFunc[funcArgs,8,allFuncs]bmRSwitchEqnFuncs=makeFunc[funcArgs,8,allFuncs]"
 bmRSwitchProbFunc::usage="bmRSwitchProbFunc = Function @@{Append[funcArgs[[Range[3]]],epsVal]}"
 
@@ -17,32 +21,25 @@ Begin["Private`"]
 
 
 
-
-  (*
-bmRSwitchEqns={
-$1ii[t] -($1thePi[t+1] + $1rr[t]),
-$1rr[t]= rho * $1rr[t-1] +eps[u][t],
-$1ii[t]= $1alpha * $1thePi[t],
-$2ii[t] -($2thePi[t+1] + $2rr[t]),
-$2rr[t]= rho * $2rr[t-1] +eps[u][t],
-$2ii[t]=$2alpha * $2thePi[t]
-  }*)
 (*but see page 18*)
-bmRSwitchParamSubs={$0alpha->.9, 
-$1alpha->3,rho->.99,lam->.1,probGamma->1,
-$1gamma->.3,$2gamma->.2}
+bmRSwitchParamSubs={$0alpha->0.9, 
+$1alpha->3,rho->.99,lam->.01,probGamma->1,
+$1gamma->.3,$2gamma->.2,sigma$u->0.01}
 
 
 
 funcArgs=
 {
 iitm1,
+regimetm1,
 rrtm1,
 thePitm1,
 iit,
+regimet,
 rrt,
 thePit,
 iitp1,
+regimetp1,
 rrtp1,
 thePitp1,
 epsVal,
@@ -50,14 +47,16 @@ regimeVal
 }
 
 lilHDet0Guts={
-iit - (thePitp1 + rrt),
+iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
-iit - $0alpha * thePit
+iit - $0alpha * thePit,
+regimet-1
 }
 lilHDet1Guts={
-iit - (thePitp1 + rrt),
+iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
-iit - $1alpha * thePit
+iit - $1alpha * thePit,
+regimet-1
 }
 
 lilHDet0Func= Function @@ {funcArgs,lilHDet0Guts}//.bmRSwitchParamSubs;
@@ -65,9 +64,10 @@ lilHDet1Func= Function @@ {funcArgs,lilHDet1Guts}//.bmRSwitchParamSubs;
 
 
 bigHDetGuts={
-{0,0,-1},
-{0,0,0},
-{0,0,0}
+{0,0,0,-1},
+{0,0,0,0},
+{0,0,0,0},
+{0,0,0,0}
 }
 
 
@@ -83,7 +83,7 @@ Switch[regimeVal,0,0,1,1]}
 allFuncs=
   {theSelFunc,{{lilHDet0Func,bigHDetFunc},{lilHDet1Func,bigHDetFunc}}}
 
-bmRSwitchEqnFuncs=makeFunc[funcArgs,3,allFuncs]
+bmRSwitchEqnFuncs=makeFunc[funcArgs,4,allFuncs]
 
 pBarMat={
 {.95, 0.05},
@@ -91,15 +91,71 @@ pBarMat={
 lambdaMat={
 {0,0},
 {-lam,lam}}
-probGuts =pBarMat+probGamma*lambdaMat*($1thePitm1^2)
+probGuts =pBarMat+probGamma*lambdaMat*(thePitm1^2)
 
 bmRSwitchProbFunc = Function @@
-{Append[funcArgs[[Range[3]]],epsVal],probGuts}//.bmRSwitchParamSubs;
+{Join[funcArgs[[Range[4]]],{epsVal,toRegime}],
+probGuts[[regimetm1+1,toRegime+1]]}//.bmRSwitchParamSubs;
 
 (*
 
 pp[ii_Integer,jj_Integer]:= ppBar[ii,jj] + gamma lambda[ii,jj]*$1thePi[t-1]^2
 *)
+
+
+bmRSwitchDist={{{ee,NormalDistribution[0,sigma$u]}},
+{2,bmRSwitchProbFunc}}//.bmRSwitchParamSubs;
+
+
+eqnArgs=
+{
+ii[t-1],
+regime[t-1],
+rr[t-1],
+thePi[t-1],
+ii[t],
+regime[t],
+rr[t],
+thePi[t],
+ii[t+1],
+regime[t+1],
+rr[t+1],
+thePi[t+1],
+eps[u][t],
+1
+}
+
+
+
+bmRSwitchEqns=
+bmRSwitchEqnFuncs @@ eqnArgs
+
+
+{hmat,qmat,{bmat,phimat,fmat}}=(numericLinearizeSystemForOBC[
+(bmRSwitchEqns//.(bmRSwitchParamSubs)//Rationalize[#,1/100000000]&)]//myN);
+psic=({{0},{0},{0},{0}}//.bmRSwitchParamSubs)//myN;
+
+psiz=IdentityMatrix[4];
+psieps={{0,0},{1,0},{0,0},{0,1}};
+(*psieps={{0},{1},{0},{0}};*)
+
+
+hmatSymb=equationsToMatrix[
+bmRSwitchEqns/.{eps[_][_]->0,eqvdIf[_,xx_,_]->xx}]//FullSimplify;
+{zfSymb,hfSymb}=symbolicAR[hmatSymb];
+amatSymb=symbolicTransitionMatrix[hfSymb];
+{evlsSymb,evcsSymb}=Eigensystem[Transpose[amatSymb]];
+qmatSymb=Join[zfSymb,evcsSymb[[{1}]]];
+{bmatSymb,phimatSymb,fmatSymb}=symbolicComputeBPhiF[hmatSymb,qmatSymb]//FullSimplify;
+
+
+bmRSwitchLinMod={hmatSymb//N,bmatSymb // N, phimatSymb // N, 
+    fmatSymb // N, psieps // N, 
+    psic // N, psiz // N,{{0}}}//.bmRSwitchParamSubs;
+
+bmRSwitchX0Z0=genX0Z0Funcs[bmRSwitchLinMod];
+
+
 
 
 End[]
