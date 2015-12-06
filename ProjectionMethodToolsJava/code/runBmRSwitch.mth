@@ -1,11 +1,19 @@
 Get["barthMarxRSwitch.m"]
-anXVec={.1,0,.2,.3};
-anXEpsVec=Append[anXVec,0.01];
-anXEpsReg1Vec=Join[anXVec,{0.01,1}];
-anXEpsReg0Vec=Join[anXVec,{0.01,0}];
+an0XVec={0,.1,.2,.3};
+an0XEpsVec=Append[anXVec,0.01];
+an0XEpsReg1Vec=Join[anXVec,{0.01,1}];
+an0XEpsReg0Vec=Join[anXVec,{0.01,0}];
 (*regime val needed*)
-anXEpsReg1ZVec=Join[anXEpsReg1Vec,{0,0,0,0}];
-anXEpsReg0ZVec=Join[anXEpsReg0Vec,{0,0,0,0}];
+an0XEpsReg1ZVec=Join[anXEpsReg1Vec,{0,0,0,0}];
+an0XEpsReg0ZVec=Join[anXEpsReg0Vec,{0,0,0,0}];
+
+an1XVec={1,.1,.2,.3};
+an1XEpsVec=Append[anXVec,0.01];
+an1XEpsReg1Vec=Join[anXVec,{0.01,1}];
+an1XEpsReg0Vec=Join[anXVec,{0.01,0}];
+(*regime val needed*)
+an1XEpsReg1ZVec=Join[anXEpsReg1Vec,{0,0,0,0}];
+an1XEpsReg0ZVec=Join[anXEpsReg0Vec,{0,0,0,0}];
 
 (*
 ss 
@@ -30,7 +38,7 @@ valsN[[2,1]][1,1,rr,1,ep,reg][[indx]]
 
 numN=15;
 nGSpec=
-{{1,2,4},1, {{numN, -1,1}, {numN, -0.03, 0.03}},2};
+{{2,4},1, {{numN, -1,1}, {numN, -0.03, 0.03}},2};
 
 
 

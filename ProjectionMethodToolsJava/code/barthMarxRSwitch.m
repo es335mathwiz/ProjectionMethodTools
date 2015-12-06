@@ -5,7 +5,8 @@ PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
 PrependTo[$Path,"../../../protectedSymbolsDir/ProtectedSymbols"];
 PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Print["reading barthMarxRSwitch.m"]
-BeginPackage["barthMarxRSwitch`",{"AMASeriesRepresentation`","ProtectedSymbols`","AMAModel`","SymbolicAMA`","NumericAMA`"}]
+BeginPackage["barthMarxRSwitch`",{"AMASeriesRepresentation`",
+      "ProtectedSymbols`","SymbolicAMA`","NumericAMA`","AMAModel`"}]
 (*regime[t] like epsilon in timing, but "history matters"*)
 
 bmRSwitchDist::usage="bmRSwitchDist"
@@ -30,16 +31,16 @@ $1gamma->.3,$2gamma->.2,sigma$u->0.01}
 
 funcArgs=
 {
-iitm1,
 regimetm1,
+iitm1,
 rrtm1,
 thePitm1,
-iit,
 regimet,
+iit,
 rrt,
 thePit,
-iitp1,
 regimetp1,
+iitp1,
 rrtp1,
 thePitp1,
 epsVal,
@@ -93,11 +94,9 @@ lambdaMat={
 {-lam,lam}}
 probGuts =pBarMat+probGamma*lambdaMat*(thePitm1^2)
 
-bmRSwitchProbFunc = ReplacePart[
-Function[
-xxxxx,
-probGuts[[regimetm1+1,toRegime+1]]//.bmRSwitchParamSubs],
-1->Join[funcArgs[[Range[4]]],{epsVal,toRegime}]];
+bmRSwitchProbFunc = 
+  Function @@ {Join[funcArgs[[Range[4]]],{epsVal,toRegime}],
+probGuts[[regimetm1+1,toRegime+1]]//.bmRSwitchParamSubs};
 
 (*
 
