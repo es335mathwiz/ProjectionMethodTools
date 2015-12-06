@@ -50,7 +50,7 @@ lilHDet0Guts={
 iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
 iit - $0alpha * thePit,
-regimet-1
+regimet-0
 }
 lilHDet1Guts={
 iit - ( rrt),
@@ -93,9 +93,11 @@ lambdaMat={
 {-lam,lam}}
 probGuts =pBarMat+probGamma*lambdaMat*(thePitm1^2)
 
-bmRSwitchProbFunc = Function @@
-{Join[funcArgs[[Range[4]]],{epsVal,toRegime}],
-probGuts[[regimetm1+1,toRegime+1]]}//.bmRSwitchParamSubs;
+bmRSwitchProbFunc = ReplacePart[
+Function[
+xxxxx,
+probGuts[[regimetm1+1,toRegime+1]]//.bmRSwitchParamSubs],
+1->Join[funcArgs[[Range[4]]],{epsVal,toRegime}]];
 
 (*
 
@@ -104,7 +106,7 @@ pp[ii_Integer,jj_Integer]:= ppBar[ii,jj] + gamma lambda[ii,jj]*$1thePi[t-1]^2
 
 
 bmRSwitchDist={{{ee,NormalDistribution[0,sigma$u]}},
-{2,bmRSwitchProbFunc}}//.bmRSwitchParamSubs;
+{2,$transFuncNoShocks,bmRSwitchProbFunc}}//.bmRSwitchParamSubs;
 
 
 eqnArgs=
