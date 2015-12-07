@@ -4,7 +4,7 @@ occDir="../../../paperProduction/occBind/docs/"
 toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
 
 
-Get["prepSimple.m"]
+Get["prepSimple.mth"]
 
 Get["genArbLin.mth"]
 
@@ -63,7 +63,7 @@ toOccDir/@{
 "simpBoundsVActual.pdf"
 };
 
-Get["prepBetter.m"]
+Get["prepBetter.mth"]
 
 exactEvalInterp = makeDREvalInterp[betterExactDR, theDist,rbcEqnsCompiled,aGSpec]
 

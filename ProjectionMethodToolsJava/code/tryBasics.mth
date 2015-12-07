@@ -1,5 +1,5 @@
 PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation/"]
-Get["prepBetter.m"]
+Get["prepBetter.mth"]
 
 
 (*numN=8;
