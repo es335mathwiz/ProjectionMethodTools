@@ -29,7 +29,7 @@ Export["fifth.pdf",Plot3D[pltFunc01[kk,tt,0]-condExpREFunc[1,kk,1,tt,0][[1]],{kk
 Export["exact.pdf",Plot3D[condExpREFunc[1,kk,1,tt,0][[1]],{kk,kLow,kHigh},{tt,thLow,thHigh},PlotRange->All]]
 
 
-Export["best.pdf",Plot3D[Plot3D[pltFunc01[kk,tt,0],{kk,kLow,kHigh},{tt,thLow,thHigh},PlotRange->All]]
+Export["best.pdf",Plot3D[Plot3D[pltFunc01[kk,tt,0],{kk,kLow,kHigh},{tt,thLow,thHigh},PlotRange->All]]]
 
 Plot3D[pltFunc01[kk,tt,0],{kk,kLow,kHigh},{ll,lLow,lHigh}]
 *)
@@ -72,7 +72,7 @@ genSeriesReps[hMat_?MatrixQ,linMod:{BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_
 
 *)
 
-
+(*
 
 numN=8;
 nGSpec=
@@ -81,7 +81,7 @@ nGSpec=
 {huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,5]];
 #[[1]]@@ anXEps&/@bunchOfREsN
     {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
-     {0.0387448}, {0.000745808}}}
+     {0.0387448}, {0.000745808}}
 
 
 numN=15;
@@ -91,7 +91,7 @@ nGSpec=
 {huhN,valsN}=Timing[bunchOfREsN=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,15]];
 #[[1]]@@ anXEps&/@bunchOfREs15
     {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
-     {0.0387448}, {0.000745808}}}
+     {0.0387448}, {0.000745808}}
 
 
 
@@ -102,7 +102,7 @@ nGSpec=
 {huhN25,valsN25}=Timing[bunchOfREsN25=nestIterREInterp[linMod,{X0Z0},{{}},rbcEqnsCompiled,nGSpec,theDist,15]];
 #[[1]]@@ anXEps&/@bunchOfREs25
     {{0.404457}, {0.211506}, {2.47426}, {1.1058}, {-0.0453307}, {0.000717197}, 
-     {0.0387448}, {0.000745808}}}
+     {0.0387448}, {0.000745808}}
 
 
 duh = genx0z0Funcs[linMod]
@@ -138,7 +138,7 @@ condExpREFunc @@ cAnXEps
 + 
 + >    {{0.404692}, {0.210664}, {2.47542}, {1.10577}, {-0.0480792}, 
 +  
-+ >     {0.000109837}, {0.0417126}, {0.000718209}}}
++ >     {0.000109837}, {0.0417126}, {0.000718209}}
 + 
 + 
 + condExpREFunc @@ anXEps  

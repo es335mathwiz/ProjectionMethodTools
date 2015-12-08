@@ -15,7 +15,7 @@ ssVal={{.2},{-.3},{.5}}(*{{cc},{kk},{theta}}//.Private`ssSolnSubs/.Private`param
 apsic=0*(nothmat . Join[ssVal,ssVal,ssVal])
 
 
-notLinMod={abmat // N, aphimat // N, 
+notLinMod={nothmat,abmat // N, aphimat // N, 
     anfmat // N, apsieps // N, 
     apsic // N, apsiz // N,{{0}}};
 
