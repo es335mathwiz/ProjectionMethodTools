@@ -51,13 +51,13 @@ lilHDet0Guts={
 iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
 iit - $0alpha * thePit,
-regimet-0
+regimet-regimetm1
 }
 lilHDet1Guts={
 iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
 iit - $1alpha * thePit,
-regimet-1
+regimet-regimetm1
 }
 
 lilHDet0Func= Function @@ {funcArgs,lilHDet0Guts}//.bmRSwitchParamSubs;

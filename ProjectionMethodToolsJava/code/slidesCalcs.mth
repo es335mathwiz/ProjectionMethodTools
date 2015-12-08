@@ -9,7 +9,7 @@ Get["prepSimple.mth"]
 Get["genArbLin.mth"]
 
 trueVal=Flatten[simpRBCExactDR @@ anXEps]
-numVals=30;
+numVals=3;
 
 genSeriesReps[linMod:{hMat_?MatrixQ,BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
 	initVec_?VectorQ,allArgs:{expctSpec:{{_Symbol,_}..},opts_:{}},theExactDR:(_Function|_CompiledFunction),maxIters_Integer]:=

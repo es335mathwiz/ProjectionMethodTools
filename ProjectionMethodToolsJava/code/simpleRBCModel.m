@@ -318,7 +318,7 @@ compCon::usage="compCon[aPath_?MatrixQ]:=Function[{aPath,theZs}"
 condExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
 fixCondExp::usage="condExp[kktm1_?NumberQ,ii_Integer]"
 compZs::usage="compZs[hmatNum_?MatrixQ,kktm1_?NumberQ,ii_Integer]"
-
+ simpX0Z0::usage="an X0Z0 for sim"
 
 
 
@@ -648,7 +648,7 @@ linMod={hmatSymbRE//N,Private`bmatSymbRE // N, Private`phimatSymbRE // N,
 lilLinMod=linMod;
 lilHmat=hmat;
 Save["forLilMod.mth",{lilHmat,lilLinMod}]
-X0Z0=genX0Z0Funcs[linMod];
+simpX0Z0=genX0Z0Funcs[linMod];
 
 
 End[]
