@@ -1,0 +1,11 @@
+PrependTo[$Path,"/tmp/fixApprox/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
+PrependTo[$Path,"../../../mathAMA/AMAModel/"];
+PrependTo[$Path,"../../../mathAMA/NumericAMA/"];
+PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
+PrependTo[$Path,"../../../mathSmolyak/mathSmolyak/"];
+PrependTo[$Path,"../../../protectedSymbolsDir/ProtectedSymbols"];
+PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
+Get["prepSimple.mth"]
+
+SetDirectory["/tmp/fixApprox/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
+Get["genArbLin.mth"]
