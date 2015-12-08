@@ -11,7 +11,7 @@ nothmat={
 {ig,aphimat,anfmat}=numericComputeBPhiF[nothmat,aqmat]//Chop;
 apsieps={{0},{0},{1}};
 apsiz=IdentityMatrix[3];
-ssVal={{20},{30},{1.0}}(*{{cc},{kk},{theta}}//.Private`ssSolnSubs/.Private`paramSubs//N*)
+ssVal={{.2},{-.3},{.5}}(*{{cc},{kk},{theta}}//.Private`ssSolnSubs/.Private`paramSubs//N*)
 apsic=(nothmat . Join[ssVal,ssVal,ssVal])
 
 
