@@ -1,4 +1,4 @@
-PrependTo[$Path,"/tmp/fixApprox/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
+PrependTo[$Path,"/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
 PrependTo[$Path,"../../../mathAMA/AMAModel/"];
 PrependTo[$Path,"../../../mathAMA/NumericAMA/"];
 PrependTo[$Path,"../../../mathAMA/SymbolicAMA"];
@@ -7,5 +7,42 @@ PrependTo[$Path,"../../../protectedSymbolsDir/ProtectedSymbols"];
 PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation"];
 Get["prepSimple.mth"]
 
-SetDirectory["/tmp/fixApprox/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
+SetDirectory["~/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
 Get["genArbLin.mth"]
+
+
+(*
+genSeriesRepFunc[linMod,theDist,simpRBCExactDR,1]
+
+genSeriesRep[linMod,anXEps,theDist,simpRBCExactDR,2]
+
+genGPpec[nn_Integer]:=
+{{1}, 1., {{nn, 0.018732441104784652, 0.7492976441913861}, {nn, 0.9, 1.1}, 
+  {nn, -0.03, 0.09}}}
+
+
+doo10=nestIterREInterp[linMod,{Private`simpX0Z0},{{}},Private`rbcEqnsFunctionalNext,genGSpec[10],theDist,5];
+
+
+
+
+worstPathForErrDRREIntegrate[doo[[1,1]],anX,theDist,Private`rbcEqnsFunctionalNext];
+evalBadPathErrDRREIntegrate[doo[[1,1]],anX,theDist,Private`rbcEqnsFunctionalNext];
+
+
+
+checkLinMod[notLinMod,anX,anEps]
+
+
+checkMod[notLinMod,aGSpec,theDist,anX,anEps,Private`rbcEqnsFunctionalNext]
+
+
+boo=nestIterRE[notLinMod,{notX0Z0},{{}},Private`rbcEqnsFunctionalNext,theDist,1]
+
+coo=nestIterREInterp[notLinMod,{notX0Z0},{{}},Private`rbcEqnsFunctionalNext,aGSpec,theDist,1]
+
+
+
+doo=nestIterREInterp[linMod,{Private`simpX0Z0},{{}},Private`rbcEqnsFunctionalNext,aGSpec,theDist,3]
+
+*)
