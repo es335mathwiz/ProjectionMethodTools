@@ -10,8 +10,30 @@ Get["prepSimple.mth"]
 SetDirectory["~/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/"];
 Get["genArbLin.mth"]
 
+exactVal=simpRBCExactDR @@anXEps;
 
+numApprox=8;
+approxGSpec={{1}, 1,
+{{numApprox, 0.018732441104784652, 0.7492976441913861},
+{numApprox, 9/10, 11/10}, 
+{numApprox, -0.03, 0.09}}}
+
+doCompErr[terms_Integer]:=
+With[{simp01=genSeriesRepFunc[linMod,theDist,simpRBCExactDR,terms],
+infNorm01=Norm[truncErrorMat[getF[linMod],getPhi[linMod],terms],Infinity]
+},Print["done simp01"];
+With[{simp01Interp=Private`makeInterpFunc[simp01,approxGSpec]},Print["done simp01interp"];
+With[{errSimp01=evalBadPathErrDRREIntegrate[simp01Interp,anX,theDist,
+Private`rbcEqnsFunctionalNext]},Print["done errsimp01"];
+With[{pred=infNorm01*errSimp01[[1]],
+actual=Norm[((simp01Interp@@anXEps)[[{4,5,6}]])-exactVal,Infinity]},
+{pred,actual,actual<=pred}]]]]
 (*
+
+
+Private`worstPathForErrDRREIntegrate[simp01Interp,anX,theDist,Private`rbcEqnsFunctionalNext]
+
+
 genSeriesRepFunc[linMod,theDist,simpRBCExactDR,1]
 
 genSeriesRep[linMod,anXEps,theDist,simpRBCExactDR,2]
