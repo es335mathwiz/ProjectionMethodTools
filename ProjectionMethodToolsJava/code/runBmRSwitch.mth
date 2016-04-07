@@ -1,19 +1,40 @@
 Get["barthMarxRSwitch.m"]
 an0XVec={0,.1,.2,.3};
-an0XEpsVec=Append[anXVec,0.01];
-an0XEpsReg1Vec=Join[anXVec,{0.01,1}];
-an0XEpsReg0Vec=Join[anXVec,{0.01,0}];
+an1XVec={1,.1,.2,.3};
+anEps0={0.01,0};
+anEps1={0.01,1};
+(*
+
+an0XEpsVec=Append[an0XVec,0.01];
+an0XEpsReg1Vec=Join[an0XVec,{0.01,1}];
+an0XEpsReg0Vec=Join[an0XVec,{0.01,0}];
 (*regime val needed*)
 an0XEpsReg1ZVec=Join[anXEpsReg1Vec,{0,0,0,0}];
 an0XEpsReg0ZVec=Join[anXEpsReg0Vec,{0,0,0,0}];
 
-an1XVec={1,.1,.2,.3};
-an1XEpsVec=Append[anXVec,0.01];
-an1XEpsReg1Vec=Join[anXVec,{0.01,1}];
-an1XEpsReg0Vec=Join[anXVec,{0.01,0}];
+
+an1XEpsVec=Append[an1XVec,0.01];
+an1XEpsReg1Vec=Join[an1XVec,{0.01,1}];
+an1XEpsReg0Vec=Join[an1XVec,{0.01,0}];
 (*regime val needed*)
 an1XEpsReg1ZVec=Join[anXEpsReg1Vec,{0,0,0,0}];
 an1XEpsReg0ZVec=Join[anXEpsReg0Vec,{0,0,0,0}];
+*)
+
+numN=4
+nGSpec=
+{{2,4},1, {{numN, -1,1}, {numN, -0.03, 0.03}},2};
+
+
+checkLinMod[bmRSwitchLinMod,an0XVec,anEps0]
+checkLinMod[bmRSwitchLinMod,an0XVec,anEps1]
+checkLinMod[bmRSwitchLinMod,an1XVec,anEps0]
+checkLinMod[bmRSwitchLinMod,an1XVec,anEps1]
+
+
+checkMod[bmRSwitchLinMod,nGSpec,bmRSwitchDist,an0XVec,anEps0,bmRSwitchEqnFuncs]
+
+
 
 (*
 ss 
@@ -36,7 +57,7 @@ gate0[rr_?NumberQ,eps_?NumberQ,reg_Integer,indx_Integer]:=
 valsN[[2,1]][1,1,rr,1,ep,reg][[indx]]
 
 
-numN=15;
+numN=6;
 nGSpec=
 {{2,4},1, {{numN, -1,1}, {numN, -0.03, 0.03}},2};
 

@@ -1,28 +1,28 @@
 PrependTo[$Path,"../../../AMASeriesRepresentation/AMASeriesRepresentation/"]
 
-occDir="../../../paperProduction/occBind/docs/"
-toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
+(*"../../../paperProduction/occBind/docs/"*)
 
 
 Get["prepSimple.mth"]
 
 Get["genArbLin.mth"]
 
+
+Print["occDir=",occDir]
+occDir="~/Dropbox/Apps/Texpad/paperProduction/occBind/docs/"
+Print["occDir=",occDir]
+
+toOccDir[fName_String]:=CopyFile[fName,occDir <>fName,OverwriteTarget -> True];
+
+
 trueVal=Flatten[simpRBCExactDR @@ anXEps]
-numVals=3;
-
-genSeriesReps[linMod:{hMat_?MatrixQ,BB_?MatrixQ,phi_?MatrixQ,FF_?MatrixQ,psiEps_?MatrixQ,psiC_?MatrixQ,psiZ_?MatrixQ,psiZPreComp_?MatrixQ},
-	initVec_?VectorQ,allArgs:{expctSpec:{{_Symbol,_}..},opts_:{}},theExactDR:(_Function|_CompiledFunction),maxIters_Integer]:=
-{huh,vals}=Timing[bunchOfREs=nestIterREInterp[linMod,{X0Z0},{{}},
-Private`rbcEqnsFunctionalNext,aGSpec,theDist,15]];
-
-
+numVals=30;
 
 
 
 arbMod = genSeriesReps[notLinMod,anXEps, theDist, 
    simpRBCExactDR, numVals];
-theArbZs=genZsREExact[nothmat,notLinMod,anXEps,theDist,simpRBCExactDR,numVals];
+theArbZs=genZsREExact[notLinMod,anXEps,theDist,simpRBCExactDR,numVals];
 arbErrMatNorms=Norm[truncErrorMat[notLinMod[[3]],notLinMod[[2]],#-1] ,Infinity]&/@Range[numVals]
 
 
@@ -41,16 +41,11 @@ toOccDir/@{
 };
 
 
-
-
-
-
-
 simpMod = 
   genSeriesReps[ linMod,anXEps, theDist, 
    simpRBCExactDR, numVals];
-theSimpZs=genZsREExact[Private`hmatSymbRE,linMod,anXEps,theDist,simpRBCExactDR,numVals];
-simpErrMatNorms=Norm[truncErrorMat[notLinMod[[3]],notLinMod[[2]],#],Infinity]&/@Range[numVals]
+theSimpZs=genZsREExact[linMod,anXEps,theDist,simpRBCExactDR,numVals];
+simpErrMatNorms=Norm[truncErrorMat[notLinMod[[3]],notLinMod[[2]],#-1],Infinity]&/@Range[numVals]
 
 
 
@@ -74,8 +69,11 @@ toOccDir/@{
 
 Get["prepBetter.mth"]
 
+(*
 exactEvalInterp = makeDREvalInterp[betterExactDR, theDist,
-Private`rbcEqnsFunctionalNext,aGSpec]
+rbcEqnsCompiled,aGSpec]
+
+
 
 Export["exactNormErrorZeroEQ"<>#<>".pdf",
 Plot3D[exactEvalInterp[.1, xx, 1, yy, 0][[ToExpression[#]]], 
@@ -89,7 +87,7 @@ toOccDir/@{
 "exactNormErrorZeroEQ4.pdf"
 };
 
-
+kLow=
 
 FindMaximum[{Norm[exactEvalInterp[.1, xx, 1, yy, 0]], 
   kLow <= xx <= kHigh && thLow <= yy <= thHigh}, {xx, yy}]
@@ -100,7 +98,7 @@ approxExactDR=Private`makeInterpFunc[betterExactDR,aGSpec];
 
 
 approxEvalInterp = makeDREvalInterp[approxExactDR, theDist,
-Private`rbcEqnsFunctionalNext,aGSpec]
+rbcEqnsCompiled,aGSpec]
 
 
 Export["approxNormErrorZeroEQ"<>#<>".pdf",
@@ -120,7 +118,7 @@ betterApproxExactDR=Private`makeInterpFunc[betterExactDR,betterGSpec];
 
 
 betterApproxEvalInterp = makeDREvalInterp[betterApproxExactDR, theDist,
-Private`rbcEqnsFunctionalNext,betterGSpec]
+rbcEqnsCompiled,betterGSpec]
 
 
 Export["betterApproxNormErrorZeroEQ"<>#<>".pdf",
@@ -144,7 +142,7 @@ betterApproxExactDR=Private`makeInterpFunc[betterExactDR,betterGSpec];
 
 
 betterApproxEvalInterp = makeDREvalInterp[betterApproxExactDR, theDist,
-Private`rbcEqnsFunctionalNext,betterGSpec]
+rbcEqnsCompiled,betterGSpec]
 
 
 Export["betterApproxNormErrorZeroEQ"<>#<>".pdf",
@@ -164,7 +162,7 @@ betterGSpec={{1, 3}, 1,
 betterBetterBetterApproxExactDR=Private`makeInterpFunc[betterExactDR,betterGSpec];
 
 
-betterBetterBetterApproxEvalInterp = makeDREvalInterp[betterBetterBetterApproxExactDR, theDist,Private`rbcEqnsFunctionalNext,betterGSpec]
+betterBetterBetterApproxEvalInterp = makeDREvalInterp[betterBetterBetterApproxExactDR, theDist,rbcEqnsCompiled,betterGSpec]
 
 
 Export["betterBetterBetterApproxNormErrorZeroEQ"<>#<>".pdf",
@@ -173,25 +171,25 @@ Plot3D[betterBetterBetterApproxEvalInterp[.1, xx, 1, yy, 0][[ToExpression[#]]],
 
 (*
 
-evalExpctPathErrDRREIntegrate[betterExactDR,anX,theDist,Private`rbcEqnsFunctionalNext]
-Private`worstPathForErrDRREIntegrate[betterExactDR,anX,theDist,Private`rbcEqnsFunctionalNext]
+evalExpctPathErrDRREIntegrate[betterExactDR,anX,theDist,rbcEqnsCompiled]
+Private`worstPathForErrDRREIntegrate[betterExactDR,anX,theDist,rbcEqnsCompiled]
 
-bp=evalBadPathErrDRREIntegrate[betterExactDR,anX,theDist,Private`rbcEqnsFunctionalNext]
+bp=evalBadPathErrDRREIntegrate[betterExactDR,anX,theDist,rbcEqnsCompiled]
 badXEps=Append[anX,bp[[2,-1,-1]]]
-Norm[evalPathErrDRREIntegrate[betterExactDR,badXEps,theDist,Private`rbcEqnsFunctionalNext],Infinity]
+Norm[evalPathErrDRREIntegrate[betterExactDR,badXEps,theDist,rbcEqnsCompiled],Infinity]
 
-betterApproxEvalInterp = makeDREvalInterp[betterApproxExactDR, theDist,Private`rbcEqnsFunctionalNext,betterGSpec]
-
-
+betterApproxEvalInterp = makeDREvalInterp[betterApproxExactDR, theDist,rbcEqnsCompiled,betterGSpec]
 
 
 
-anApproxEvalInterp = makeDREvalInterp[betterApproxExactDR, theDist,Private`rbcEqnsFunctionalNext,aGSpec];
+
+
+anApproxEvalInterp = makeDREvalInterp[betterApproxExactDR, theDist,rbcEqnsCompiled,aGSpec];
 thePts=Private`gridPts[aGSpec[[3]]]
-evalPathErrDRREIntegrate[betterExactDR,Sequence[#],theDist,Private`rbcEqnsFunctionalNext]&/@thePts
+evalPathErrDRREIntegrate[betterExactDR,Sequence[#],theDist,rbcEqnsCompiled]&/@thePts
 
 
-evalPathErrDRREIntegrate[betterExactDR,Private`fillIn[{{},{1,3},#}],theDist,Private`rbcEqnsFunctionalNext]&/@(thePts[[{1,2}]])
+evalPathErrDRREIntegrate[betterExactDR,Private`fillIn[{{},{1,3},#}],theDist,rbcEqnsCompiled]&/@(thePts[[{1,2}]])
 
 (anApproxEvalInterp@@Private`fillIn[{{},{1,3},#}])&/@(thePts[[{1,2}]])
 numTerms=4;
@@ -210,7 +208,7 @@ betterGSpec={{1, 3}, 1,
 
 numTerms=20;
 {truncEvalInterp,truncEval} = 
-makeDREvalInterp[genTruncFunc[numTerms], theDist,Private`rbcEqnsFunctionalNext,betterGSpec]
+makeDREvalInterp[genTruncFunc[numTerms], theDist,rbcEqnsCompiled,betterGSpec]
 
 Export["ugly0NormErrorZeroEQ"<>#<>".pdf",
 Plot3D[truncEvalInterp[.1, xx, 1, yy, 0][[ToExpression[#]]], 
@@ -225,6 +223,6 @@ Needs["DifferentialEquations`InterpolatingFunctionAnatomy`"];
 *)
 
 
-
+*)
 
 

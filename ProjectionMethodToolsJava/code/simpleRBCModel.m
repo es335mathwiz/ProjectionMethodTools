@@ -116,6 +116,18 @@ qmatSymbRE=Join[zfSymbRE,evcsSymbRE[[{1}]]];
 Print["computing and simplifying the symbolic b phi f etc"]
 {bmatSymbRE,phimatSymbRE,fmatSymbRE}=symbolicComputeBPhiF[hmatSymbRE,qmatSymbRE]//Simplify;
 
+Print["defining exactdr"]
+simpRBCExactDR = 
+ Function[{cc, kk, th, eps}, 
+With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
+With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
+With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
+Transpose[{{cct,kkt,tht}}]]]]]
+
+simpRBCExactCondExp = makeREIterFunc[simpRBCExactDR,theDist]
+
+
+
 
 (*
 
@@ -149,9 +161,9 @@ condExpPFFunc =
 condExpREFunc = 
  Function[{cc, kk, th, eps}, 
 With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
-With[{kkt=(th*alpha*delta*kk^alpha)//.simpParamSubs//N},
-With[{cct=((th*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
-Transpose[{{cct,kkt,tht}}]]]]]
+With[{kkt=(th*alpha*delta*kk^alpha) //. simpParamSubs //N },
+With[{cct=((th*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N },
+Transpose[{{cct,kkt,tht}}]]]]]]]]
 
 
 
@@ -160,19 +172,9 @@ condExpREFunc =
 With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
 With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
 With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
-Transpose[{{cct,kkt,tht}}]]]]]
+Transpose[{{cct,kkt,tht}}]]]]]]]]
 
 *)
-
-simpRBCExactDR = 
- Function[{cc, kk, th, eps}, 
-With[{tht=(th^rho)*E^eps//.simpParamSubs//N},
-With[{kkt=(tht*alpha*delta*kk^alpha)//.simpParamSubs//N},
-With[{cct=((tht*kk^alpha)*(1-alpha*delta))//.simpParamSubs//N},
-Transpose[{{cct,kkt,tht}}]]]]]
-
-simpRBCExactCondExp = makeREIterFunc[simpRBCExactDR,theDist]
-
 
 (*
 

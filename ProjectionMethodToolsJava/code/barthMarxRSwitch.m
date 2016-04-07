@@ -10,6 +10,7 @@ BeginPackage["barthMarxRSwitch`",{"AMASeriesRepresentation`",
 (*regime[t] like epsilon in timing, but "history matters"*)
 
 bmRSwitchDist::usage="bmRSwitchDist"
+bmRSwitchDistPF::usage="bmRSwitchDist"
 bmRSwitchX0Z0::usage="bmRSwitchX0Z0";
 bmRSwitchParamSubs::usage="bmRSwitchParamSubs"
 bmRSwitchLinMod::usage="bmRSwitchLinMod" 
@@ -51,13 +52,13 @@ lilHDet0Guts={
 iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
 iit - $0alpha * thePit,
-regimet-regimetm1
+regimet(*-regimetm1*)
 }
 lilHDet1Guts={
 iit - ( rrt),
 rrt - ( rho * rrtm1 +epsVal),
 iit - $1alpha * thePit,
-regimet-regimetm1
+regimet(*-regimetm1*)
 }
 
 lilHDet0Func= Function @@ {funcArgs,lilHDet0Guts}//.bmRSwitchParamSubs;
@@ -105,6 +106,8 @@ pp[ii_Integer,jj_Integer]:= ppBar[ii,jj] + gamma lambda[ii,jj]*$1thePi[t-1]^2
 
 
 bmRSwitchDist={{{ee,NormalDistribution[0,sigma$u]}},
+{2,$transFuncNoShocks,bmRSwitchProbFunc}}//.bmRSwitchParamSubs;
+bmRSwitchDistPF={{{ee,PerfectForesight}},
 {2,$transFuncNoShocks,bmRSwitchProbFunc}}//.bmRSwitchParamSubs;
 
 
