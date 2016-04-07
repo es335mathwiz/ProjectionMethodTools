@@ -18,7 +18,7 @@ Private`rbcEqnsFunctionalNext,aGSpec,theDist,15]];
 
 
 
-
+(*
 
 arbMod = genSeriesReps[notLinMod,anXEps, theDist, 
    simpRBCExactDR, numVals];
@@ -41,7 +41,7 @@ toOccDir/@{
 };
 
 
-
+*)
 
 
 
