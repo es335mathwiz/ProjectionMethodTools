@@ -14,7 +14,7 @@ bmRSwitchDistPF::usage="bmRSwitchDist"
 bmRSwitchX0Z0::usage="bmRSwitchX0Z0";
 bmRSwitchParamSubs::usage="bmRSwitchParamSubs"
 bmRSwitchLinMod::usage="bmRSwitchLinMod" 
-bmRSwitchEqnFuncs::usage="makeFunc[funcArgs,8,allFuncs]bmRSwitchEqnFuncs=makeFunc[funcArgs,8,allFuncs]"
+bmRSwitchEqnFuncs::usage="makeRegimeFunc[funcArgs,8,allFuncs]bmRSwitchEqnFuncs=makeRegimeFunc[funcArgs,8,allFuncs]"
 bmRSwitchProbFunc::usage="bmRSwitchProbFunc = Function @@{Append[funcArgs[[Range[3]]],epsVal]}"
 
 
@@ -85,7 +85,7 @@ Switch[regimeVal,0,0,1,1]}
 allFuncs=
   {theSelFunc,{{lilHDet0Func,bigHDetFunc},{lilHDet1Func,bigHDetFunc}}}
 
-bmRSwitchEqnFuncs=makeFunc[funcArgs,4,allFuncs]
+bmRSwitchEqnFuncs=makeRegimeFunc[funcArgs,4,allFuncs]
 
 pBarMat={
 {.95, 0.05},
@@ -95,14 +95,12 @@ lambdaMat={
 {-lam,lam}}
 probGuts =pBarMat+probGamma*lambdaMat*(thePitm1^2)
 
+
 bmRSwitchProbFunc = 
-  Function @@ {Join[funcArgs[[Range[4]]],{epsVal,toRegime}],
-probGuts[[regimetm1+1,toRegime+1]]//.bmRSwitchParamSubs};
+ReplacePart[
+Function[xxxxxxx,probGuts[[regimetm1+1,toRegime+1]]//.bmRSwitchParamSubs],
+{1->Join[funcArgs[[Range[4]]],{epsVal,toRegime}]}]
 
-(*
-
-pp[ii_Integer,jj_Integer]:= ppBar[ii,jj] + gamma lambda[ii,jj]*$1thePi[t-1]^2
-*)
 
 
 bmRSwitchDist={{{ee,NormalDistribution[0,sigma$u]}},
@@ -110,7 +108,7 @@ bmRSwitchDist={{{ee,NormalDistribution[0,sigma$u]}},
 bmRSwitchDistPF={{{ee,PerfectForesight}},
 {2,$transFuncNoShocks,bmRSwitchProbFunc}}//.bmRSwitchParamSubs;
 
-
+(*
 eqnArgs=
 {
 ii[t-1],
@@ -161,7 +159,7 @@ bmRSwitchX0Z0=genX0Z0Funcs[bmRSwitchLinMod];
 
 
 
-
+*)
 End[]
 EndPackage[]
 Print["done reading barthMarxRSwitch.m"]
