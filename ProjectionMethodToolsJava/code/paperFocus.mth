@@ -1,7 +1,8 @@
+Print["reading paperFocus.mth"]
 Needs["occBindRecur`"];
 (*Get["prepPackages.mth"]; Get["applyReliable.mth"];*)
 <<JavaGraphics`
-(*
+
 lucaSubs = {betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1, 
   rUnderBar -> 2/100, qLow -> -1/2, qHigh -> 1/2, 
   ruLow -> -4*sigma$u/(1 - rho$ru), ruHigh ->  4*sigma$u/(1 - rho$ru),
@@ -17,9 +18,10 @@ mySubs={betap -> 99/100, phip -> 1, rhop -> 1/2, sigmap -> 1,
 
 
 
-
+(*
+this definition in protectedsymbols now
 myN[xx_]:=(N[xx/.{t-1->$tm1,t+1->$tp1}])/.{$tm1->t-1,$tp1->t+1}
-
+*)
 numIt[xx_]:=xx//.lucaSubs//myN//Expand//Chop
 
 forFzComp[xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1Exp_?MatrixQ]:=(bmat .xtm1 + 
@@ -55,9 +57,9 @@ fzIterComp[
 Transpose[{{qt,rt,rut}}],Transpose[{{qtm1,rtm1,rutm1}}],
 {{eps}},{{zz}},{{zz/.zsubNow/.{eps->0,qtm1->qt,rtm1->rt,rutm1->rut}}}]//.lucaSubs//myN//Expand//Chop
 
-*)
 
 
+Print["before export"]
 forSimp = Union[Cases[bmatSymb, Sqrt[___], Infinity]][[1]];
 latexSubs = Join[N[lucaSubs],{(*forSimp -> \[Nu],*) 
 betap -> Subscript[\[Beta], p], 
@@ -75,7 +77,7 @@ Export["prettyHmatSymbCons.pdf", MatrixForm[hmatSymbCons //. latexSubs]];
 Export["prettyBmatSymbCons.pdf", MatrixForm[bmatSymbCons //. latexSubs]];
 Export["prettyPhimatSymbCons.pdf", MatrixForm[phimatSymbCons //. latexSubs]];
 Export["prettyFmatSymbCons.pdf", MatrixForm[fmatSymbCons //. latexSubs]];
-
+Print["after export"]
 applyBmatSymb[xtm1_?MatrixQ,bmatSymb_?MatrixQ,num_?NumberQ]:=
 ArrayFlatten[Transpose[{NestList[bmatSymb . #&,xtm1,num]}]]
 
@@ -86,7 +88,7 @@ compZ0[xtm1_?MatrixQ,epst_?MatrixQ,zt_?MatrixQ,ztp1_?MatrixQ]:=
 With[{theComp=applyFormula[xtm1,epst,zt,ztp1]},
 With[{zZap=(Solve[myN[((theComp[[2,1]]//.lucaSubs))] == rUnderBar,zt[[1,1]]]//Flatten)},{zZap,theComp/.zZap}]]
 
-
+Print["at bogus left paren"]
 (*
 
 
@@ -346,3 +348,4 @@ Show[GraphicsGrid[{{plt1,plt2}}]]]
 
 
 *)
+Print["done reading paperFocus.mth"]

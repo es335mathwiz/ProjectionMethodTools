@@ -3,7 +3,7 @@ package gov.frb.ma.msu.ProjectionMethodToolsJava;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.calculation.Calculation.Ret;
 import org.ujmp.core.doublematrix.impl.DefaultSparseDoubleMatrix;
-import org.ujmp.core.matrix.SparseMatrix;
+import org.ujmp.core.*;
 
 /**
  * 
@@ -154,7 +154,7 @@ public class UJMPMatrix implements MatrixStrategy {
 	public ProjCodeMatrix fromArray(double[][] array){
 		int rows = array.length;
 		int cols = array[1].length;
-		Matrix m1 = SparseMatrix.factory.zeros(rows,cols);
+		Matrix m1 = SparseMatrix.Factory.zeros(rows,cols);
 		for(int row=0;row <rows; row++){
 			for(int col=0; col<cols; col++){
 				if (array[row][col] != 0){

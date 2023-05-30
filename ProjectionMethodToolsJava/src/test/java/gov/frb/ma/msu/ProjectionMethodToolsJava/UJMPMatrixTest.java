@@ -5,7 +5,7 @@ import gov.frb.ma.msu.ProjectionMethodToolsJava.UJMPMatrix;
 
 import org.ujmp.core.Matrix;
 import org.ujmp.core.doublematrix.impl.DefaultSparseDoubleMatrix;
-import org.ujmp.core.matrix.SparseMatrix;
+import org.ujmp.core.*;
 
 import junit.framework.TestCase;
 
@@ -17,12 +17,12 @@ public class UJMPMatrixTest extends TestCase {
 
 	public void testAdd(){ 
 		double[][] C1 = {{0,0,0},{0,2,4},{8,0,0}}; 
-		Matrix m1 = SparseMatrix.factory.zeros(3,3); 
-		//Matrix m1 = DefaultSparseDoubleMatrix.factory.zeros(3,3);
+		Matrix m1 = SparseMatrix.Factory.zeros(3,3); 
+		//Matrix m1 = DefaultSparseDoubleMatrix.Factory.zeros(3,3);
 		m1.setAsDouble(2,1,1);
 		m1.setAsDouble(3,2,0); 
 		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(m1);
-		Matrix m2 = SparseMatrix.factory.zeros(3,3);
+		Matrix m2 = SparseMatrix.Factory.zeros(3,3);
 		m2.setAsDouble(5,2,0);
 		m2.setAsDouble(4,1,2);
 		matrix2.UJMPRepresentation = new DefaultSparseDoubleMatrix(m2);
@@ -46,7 +46,7 @@ public class UJMPMatrixTest extends TestCase {
 	
 	public void testAddScalar(){ 
 		double[][] C1 = {{0,0,0},{0,7,0},{8,0,0}}; 
-		Matrix m1 = SparseMatrix.factory.zeros(3,3); 
+		Matrix m1 = SparseMatrix.Factory.zeros(3,3); 
 		m1.setAsDouble(2,1,1);
 		m1.setAsDouble(3,2,0); 
 		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(m1);		
@@ -72,7 +72,7 @@ public class UJMPMatrixTest extends TestCase {
 	}
 	public void testsubtractScalar(){ 
 		double[][] C1 = {{0,0,0},{0,-3,0},{-2,0,0}}; 
-		Matrix m1 = SparseMatrix.factory.zeros(3,3); 
+		Matrix m1 = SparseMatrix.Factory.zeros(3,3); 
 		m1.setAsDouble(2,1,1);
 		m1.setAsDouble(3,2,0); 
 		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(m1);		
@@ -98,13 +98,13 @@ public class UJMPMatrixTest extends TestCase {
 	}
 	public void testMult(){  
 		double[][] C2 = {{28,0,0},{0,6,12},{7,0,0}};
-		Matrix A = SparseMatrix.factory.zeros(3,3);
+		Matrix A = SparseMatrix.Factory.zeros(3,3);
 		A.setAsDouble(4,0,2);
 		A.setAsDouble(6,1,0);
 		A.setAsDouble(1,2,2);
 		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(A);
 		
-		Matrix B = SparseMatrix.factory.zeros(3,3);
+		Matrix B = SparseMatrix.Factory.zeros(3,3);
 		B.setAsDouble(1,0,1);
 		B.setAsDouble(2,0,2);
 		B.setAsDouble(7,2,0);
@@ -129,7 +129,7 @@ public class UJMPMatrixTest extends TestCase {
 	
 	public void testMultiScalar(){ 
 		double[][] C3 = {{0,0,12},{18,0,0},{0,0,3}};
-		Matrix A = SparseMatrix.factory.zeros(3,3);
+		Matrix A = SparseMatrix.Factory.zeros(3,3);
 		A.setAsDouble(4,0,2);
 		A.setAsDouble(6,1,0);
 		A.setAsDouble(1,2,2);
@@ -160,7 +160,7 @@ public class UJMPMatrixTest extends TestCase {
 	
 	public void testExp(){
 		double[][] C3 = {{0,0,0},{0,0,0},{0,0,2.718}};
-		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(SparseMatrix.factory.zeros(3,3));
+		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(SparseMatrix.Factory.zeros(3,3));
 		matrix1.UJMPRepresentation.setAsDouble(1,2,2);
 		
 		try {    
@@ -180,7 +180,7 @@ public class UJMPMatrixTest extends TestCase {
 	
 	public void testPowE(){
 		double[][] C4 = {{0,0,0},{0,0,0},{0,0,4}};
-		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(SparseMatrix.factory.zeros(3,3));
+		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(SparseMatrix.Factory.zeros(3,3));
 		matrix1.UJMPRepresentation.setAsDouble(2,2,2);
 		
 		try {    
@@ -199,7 +199,7 @@ public class UJMPMatrixTest extends TestCase {
 	
 	public void testPow(){  
 		double[][] C2 = {{0,0,4},{0,0,24},{0,0,1}};
-		Matrix A = SparseMatrix.factory.zeros(3,3);
+		Matrix A = SparseMatrix.Factory.zeros(3,3);
 		A.setAsDouble(4,0,2);
 		A.setAsDouble(6,1,0);
 		A.setAsDouble(1,2,2);
@@ -224,7 +224,7 @@ public class UJMPMatrixTest extends TestCase {
 	
 	public void testLogE(){
 		double[][] C3 = {{0,0,0},{0,0,0},{0,0,0}};
-		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(SparseMatrix.factory.zeros(3,3));
+		matrix1.UJMPRepresentation = new DefaultSparseDoubleMatrix(SparseMatrix.Factory.zeros(3,3));
 		matrix1.UJMPRepresentation.setAsDouble(1,2,2);
 		
 		try {    

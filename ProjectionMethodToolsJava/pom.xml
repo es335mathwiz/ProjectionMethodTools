@@ -10,8 +10,28 @@
   <name>ProjectionMethodToolsJava</name>
   <url>http://maven.apache.org</url>
 
+
+ <repositories>
+    <repository>
+      <id>my-repo1</id>
+      <name>your custom repo</name>
+      <url>https://repo1.maven.org/maven2</url>
+    </repository>
+    <repository>
+      <id>my-pavlab</id>
+      <name>your custom repo</name>
+      <url>https://maven2.pavlab.msl.ubc.ca</url>
+    </repository>
+
+
+
+  </repositories>
+
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -22,8 +42,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>math.nist.gov</groupId>
-    	<artifactId>Jama</artifactId>
+    	<groupId>gov.nist.math</groupId>
+    	<artifactId>jama</artifactId>
     	<version>1.0.3</version>
     </dependency>
     <dependency>
@@ -31,27 +51,33 @@
 	<artifactId>commons-math</artifactId>
 	<version>2.0</version>
 </dependency>
+ <dependency>
+    <groupId>mtj</groupId>
+    <artifactId>mtj</artifactId>
+    <version>0.9.13</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.ujmp/ujmp-core -->
+<dependency>
+    <groupId>org.ujmp</groupId>
+    <artifactId>ujmp-core</artifactId>
+    <version>0.3.0</version>
+</dependency>
+
+
     <dependency>
-    	<groupId>ooNumMethods</groupId>
-    	<artifactId>OONumericalMethods</artifactId>
-    	<version>1.0</version>
+    	<groupId>cemarllc</groupId>
+    	<artifactId>OONumMethToJar</artifactId>
+    	<version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-    	<groupId>net.sourceforge</groupId>
-    	<artifactId>ujmp</artifactId>
-    	<version>0.2.5</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.grepcode</groupId>
-    	<artifactId>mtj</artifactId>
-    	<version>0.9.14</version>
-    </dependency>
+
+
   </dependencies>
  
    <distributionManagement>
        <snapshotRepository>
            <id>snapshots-repo</id>
-<url>file:///msu/res1/Software/mavenRepositories/gary-anderson-mvn-repo/snapshots</url>
+<url>file:///home/garyyrag/.m2/repository/</url>
        </snapshotRepository>
        <repository>
            <id>repo</id>

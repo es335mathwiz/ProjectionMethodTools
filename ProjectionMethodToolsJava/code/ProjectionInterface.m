@@ -1,6 +1,14 @@
 (* Mathematica Package *)
 (*ToDo make sure rationals mapped to numbers beofre java sees them otherwise obscure error MLGet out of sequence
 *)
+
+
+$Path=PrependTo[$Path,"~/git/ProtectedSymbols"]
+$Path=PrependTo[$Path,"~/git/mathAMA/NumericAMA"]  
+$Path=PrependTo[$Path,"~/git/mathAMA/AMAModel"]  
+$Path=PrependTo[$Path,"~/git/mathAMA/SymbolicAMA"]  
+$Path=PrependTo[$Path,"~/git/mathSmolyak"]  
+
 BeginPackage["ProjectionInterface`", {"ProtectedSymbols`", "JLink`"}]
 Print["reading ProjectionInterface`"];
 (* Exported symbols added here with SymbolName::usage *)  
@@ -827,7 +835,7 @@ myDeleteFile[fileName_String] :=
         ]
     ]
 
-
+Print["fixing ProjectionInterface`"]
 newWeightedStochasticBasis[model_Symbol,eqns_List] :=
     Block[ {},
         Clear[model];
@@ -937,7 +945,7 @@ GenerateModelCode[theModel_Symbol] :=
     	myDeleteFile[ToString[theModel]<>".java"];
         myDeleteFile[ToString[theModel]<>".class"];
         With[ {eqnsCode = doEqCodeSubs[ToString[theModel],eqns,snsVars]},
-(*Print["ingenmodcode:",eqnsCode,snsVars];*)
+Print["ingenmodcode:",eqnsCode,snsVars];
             {Map[(ToString[#])&,snsVars,{-1}],eqnsCode}(*was *)
             ]
     ]/;And[projLags[theModel]<= 1,projLeads[theModel]<= 1]
@@ -1405,27 +1413,38 @@ With[{futEqns=Select[expandEqns, Not[FreeQ[#, ProtectedSymbols`t + 1]] &]},
 
 
 doEqCodeSubs[modelName_String,eqns_List,svInfo_List] :=
-    Module[ {futureStuff=futureEqns[eqns]},(*Print["future",eqns//InputForm];*)(*Print["fin futureEqns"];*)
-        With[ {
-            eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],EquationValDrvEqns = makeParseSubs[futureStuff[[-1]]]},
-            With[ {theAugs = augEqns[eqNames],shkDef=defShocks[eqns],
-                theDefs = (StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2(*[[1]]*)<>";\n")&,
+    Module[ {futureStuff=futureEqns[eqns]},
+Print["future",eqns//InputForm];Print["fin futureEqns"];
+With[{eqNames = Table[ToString[Unique["eqn"]],{Length[eqns]}],
+EquationValDrvEqns = makeParseSubs[futureStuff[[-1]]]},
+  Print["eqNames:",{eqNames,EquationValDrvEqns}];
+ With[{theAugs = augEqns[eqNames],shkDef=defShocks[eqns],
+    theDefs = 
+(StringJoin@@MapThread[("EquationValDrv "<>#1<>"="<>#2(*[[1]]*)<>";\n")&,
                     {eqNames,EquationValDrvEqns}])<>"\n",
                 varDefs = makeVarDefs[eqns,svInfo]<>makeShockDefs[eqns]<>
-                makeDVarDefs[Union[Cases[eqns,ProtectedSymbols`theDeriv[___],Infinity]]],
-                                varDefsAtPt = makeVarDefsAtPt[eqns,svInfo]<>makeShockDefsAtPt[eqns],
+makeDVarDefs[Union[Cases[eqns,ProtectedSymbols`theDeriv[___],Infinity]]],
+    varDefsAtPt = makeVarDefsAtPt[eqns,svInfo]<>makeShockDefsAtPt[eqns],
             thePrms = theParams[eqns,svInfo]},
-                With[ {prmDefs = StringJoin @@(defParamString /@thePrms),
+   Print["theAugs:"{theAugs,shkDef,theDefs,varDefs,varDefsAtPt,
+thePrms}//InputForm];
+With[{prmDefs = StringJoin @@(defParamString /@thePrms),
                 	getDefs = StringJoin @@(getParamString /@thePrms),
                 	setDefs = StringJoin @@(setParamString /@thePrms),
                 	updateDefs=makeUpdateParams[thePrms]},
-                	With[{theIntDefs=forIntHeader<>forIntBody[futureStuff,eqns,varDefs]<>forIntFooter[eqns],
+  Print["prmDefs:",{prmDefs,getDefs,setDefs,updateDefs}//InputForm];
+With[{theIntDefs=
+forIntHeader<>forIntBody[futureStuff,eqns,varDefs]<>forIntFooter[eqns],
                 		shockEqnDefs=shockAssn[eqns]},
-                    writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],starCaretToE[varDefsAtPt],starCaretToE[theDefs],theAugs,
-                    	getDefs,setDefs,prmDefs,updateDefs,theIntDefs,shockEqnDefs,meFuncDef,useDoShocksDefs,
-                    	modelBottom,modelPostParams,modelPostParamsAtPt];
-                    (
-                   JavaNew[modelName])
+Print["theIntDefs:",{modelName,theIntDefs,shockEqnDefs}//InputForm];
+writeModel[modelName,modelTop,shkDef,modelNearTop,starCaretToE[varDefs],
+starCaretToE[varDefsAtPt],starCaretToE[theDefs],theAugs,
+ getDefs,setDefs,prmDefs,updateDefs,theIntDefs,
+shockEqnDefs,meFuncDef,useDoShocksDefs,
+ modelBottom,modelPostParams,modelPostParamsAtPt];
+      Print["post writeModel:",modelName];
+      JavaNew[modelName];
+      Print["post javaNew:",modelName];
                 ]
             ]
         ]
@@ -1535,33 +1554,41 @@ writeModel[modelName_String,
 	meFuncDef_String,useDoShocksDefs_String,
 	modelBottom_String,modelPostParams_String,modelPostParamsAtPt_String] :=
     Module[ {},
+Print["writeModel:"]
         With[ {theFile = modelName<>".java"},
             If[ True(*FileInformation[theFile]== {}*),
+Print["writeModel1:"]
                 WriteString[theFile,modelTop];
                 WriteString[theFile," "<>modelName<>" "];
                 WriteString[theFile,modelNearTop];
                 WriteString[theFile," "<>modelName<>meFuncDef];
                 WriteString[theFile,shkDef];
                 WriteString[theFile,prmDefs];
+Print["writeModel1:"]
                 WriteString[theFile,getDefs];
                 WriteString[theFile,setDefs];
                 WriteString[theFile,useDoShocksDefs];
                 WriteString[theFile,updateDefs];(*from here*)
                 WriteString[theFile,modelPostParams];
                 WriteString[theFile,varDefs];
+Print["writeModel1:"]
                 WriteString[theFile,theIntDefs];
                 WriteString[theFile,eqnDefs];
                 WriteString[theFile,eqnAugs];(*new stuff here*)
                 WriteString[theFile,modelPostParamsAtPt];
+Print["writeModel1:"]
                 WriteString[theFile,varDefsAtPt];
                 WriteString[theFile,theIntDefs];
                 WriteString[theFile,eqnDefs];
+Print["writeModel1:"]
                 WriteString[theFile,eqnAugs];
                (* WriteString[theFile,shockEqnDefs];*)
                 WriteString[theFile,modelBottom];
-                Close[theFile];
-                doJavac[modelName]
-           ]]]
+Print["writeModel1:"]
+               Close[theFile];
+	    ]]; 
+                doJavac[modelName];
+    ]
         
     
 
@@ -1769,13 +1796,16 @@ nonStateDoubleAtPt[varName_String] :=
 
 
 windowsQ[] := Not[StringFreeQ[$Version, "Windows"]]
+$JamaJar="/home/garyyrag/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/Jama-1.0.3.jar"
+							 
+$ProjJar="/home/garyyrag/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/OONumericalMethods-1.0.jar"
+
 doJavac[aFile_String] :=
-    With[ {cmdStr = If[ windowsQ[],
-    	"\"c:\\Program Files\\Java\\jdk1.7.0_51\\bin\\javac\"" <>" -cp ./;ProjectionMethodToolsJava-0.0.1-SNAPSHOT.jar;Jama-1.0.2-1.0-SNAPSHOT.jar  -target 1.7 "<>"./"<>aFile<>".java",
-    	             "/msu/scratch/m1gsa00/jdk1.6.0_02/bin/javac -cp ./:"<>
-($JamaJar)<>":"<>($ProjJar)<>":"<>Directory[]<>":/msu/scratch/m1gsa00/learnProjection/proto:/msu/scratch/m1gsa00/tryRep/gov/frb/ma/msu/projection/1.0-SNAPSHOT/projection-1.0-SNAPSHOT.jar:/msu/scratch/m1gsa00/tryRep/gov/frb/ma/msu/Jama-1.0.2/1.0-SNAPSHOT/Jama-1.0.2-1.0-SNAPSHOT.jar -target 1.5 "<>aFile<>".java"
-                    ]},Print[cmdStr];
-        Run[cmdStr]
+    With[ {cmdStr =   "/usr/bin/javac -cp ./:"<>
+($JamaJar)<>":"<>($ProjJar)<>":"<>Directory[]<>":~/git/learnProjection/proto:~/git/ProjectionMethodTools/ProjectionMethodToolsJava/code/ProjectionMethodToolsJava-0.0.1-SNAPSHOTnot.jar:~/git/ProjectionMethodTools/ProjectionMethodToolsJava/code  "<>aFile<>".java"
+	  },Print["about to run cmdStr:",cmdStr];
+      Run[cmdStr];
+      Print["cmdstr done"]
     ]
     (* "C:/RSMA/Wolfram Research/workbench/jre/bin/javac  @S:/tryBenchWindows/projectionJLinkWin/javaOutput/theArgs "<>"S:/tryBenchWindows/projectionJLinkWin/javaOutput/ -source 1.5 "<>aFile<>".java",
            
@@ -2810,3 +2840,4 @@ numIt[xx_]:=xx//.lucaSubs//Expand//Chop;Print["ProjectionInterface: taking //N o
 
 
 Print["done reading ProjectionInterface"]
+    
